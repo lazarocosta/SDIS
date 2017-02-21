@@ -1,75 +1,105 @@
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.net.UnknownHostException;
 
-	import java.net.DatagramPacket;
+public class Client {
 
-	import java.net.InetAddress;
+	private String multicastAddress;
+	private int multicastPort;
+	private String operation;
 
-	import java.net.MulticastSocket;
+	public void run(String[] args) throws UnknownHostException {
 
-	import java.net.UnknownHostException;
+		this.multicastAddress = args[0];
+		this.multicastPort = Integer.parseInt(args[1]);
+		this.operation = args[2]; // "register" or "lookup"
 
-	 
+		String message;
 
-	public class MulticastSocketClient {
+		switch (operation) {
+		case "register": {
+			if (args.length == 4) {
+				System.out.println("There is missing an argument for 'register' function.");
+				return;
+			}
 
-	     
+			String plateNumber = args[3];
+			String ownerName = args[4];
 
-	    final static String INET_ADDR = "224.0.0.3";
+			message = "REGISTER " + plateNumber + " " + ownerName;
+		}
 
-	    final static int PORT = 8888;
+			break;
 
-	 
+		case "lookup": {
+			if (args.length == 5) {
+				System.out.println("There is an extra argument for 'lookup' function.");
+				return;
+			}
 
-	    public static void main(String[] args) throws UnknownHostException {
+			String plateNumber = args[3];
 
-	        // Get the address that we are going to connect to.
+			message = "LOOKUP " + plateNumber;
+		}
 
-	        InetAddress address = InetAddress.getByName(INET_ADDR);
+			break;
 
-	         
+		default:
+			System.out.println("Bad argument for 'operation.'");
+			return;
+		}
 
-	        // Create a buffer of bytes, which will be used to store
+		// Get the address that we are going to connect to.
+		InetAddress address = InetAddress.getByName(this.multicastAddress);
 
-	        // the incoming bytes containing the information from the server.
+		// Create a buffer of bytes, which will be used to store
+		// the incoming bytes containing the information from the server.
+		// Since the message is small here, 256 bytes should be enough.
+		byte[] buf = new byte[256];
 
-	        // Since the message is small here, 256 bytes should be enough.
+		// Create a new Multicast socket (that will allow other sockets/programs
+		// to join it as well.
+		try (MulticastSocket clientSocket = new MulticastSocket(this.multicastPort)) {
 
-	        byte[] buf = new byte[256];
+			//Joint the Multicast group.
 
-	         
-	        // Create a new Multicast socket (that will allow other sockets/programs
+			clientSocket.joinGroup(address);
 
-	        // to join it as well.
-	        try (MulticastSocket clientSocket = new MulticastSocket(PORT)){
+			while (true) {
 
-	            //Joint the Multicast group.
+				// Receive the information and print it.
 
-	            clientSocket.joinGroup(address);
+				DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);
 
-	      
+				clientSocket.receive(msgPacket);
 
-	            while (true) {
+				String msg = new String(buf, 0, buf.length);
 
-	                // Receive the information and print it.
+				System.out.println("Socket 1 received msg: " + msg);
 
-	                DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);
+			}
 
-	                clientSocket.receive(msgPacket);
+		} catch (IOException ex) {
+			
+			ex.printStackTrace();
+			
+		}
+	}
 
-	 
+	public static void main(String[] args) throws UnknownHostException {
 
-	                String msg = new String(buf, 0, buf.length);
-
-	                System.out.println("Socket 1 received msg: " + msg);
-
-	            }
-
-	        } catch (IOException ex) {
-
-	            ex.printStackTrace();
-
-	        }
-
-	    }
+		try
+        {
+            Client myClient = new Client();
+            myClient.run(args);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace ();
+        }
 
 	}
+
+}
