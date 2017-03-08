@@ -23,24 +23,23 @@ public class Server {
 		this.multicastPort = Integer.parseInt(args[2]);
 
 		// Get the address that we are going to connect to.
-		InetAddress addr = InetAddress.getByName(multicastAddress);
+		//InetAddress addr = InetAddress.getByName(multicastAddress);
+		InetAddress addr = InetAddress.getByName("228.5.6.7");
+
+		System.out.println("wait");
 
 		// Open a new DatagramSocket, which will be used to send the data.
 		try (DatagramSocket serverSocket = new DatagramSocket()) {
 
-			for (int i = 0; i < 5; i++) {
+			while(true) {
 
-				String msg = "Sent message no " + i;
+				byte [] msg = new byte[1024];
 
-				// Create a packet that will contain the data
+				//receiver packet
+				DatagramPacket msgPacket = new DatagramPacket(msg, msg.length);
+				serverSocket.receive(msgPacket);
 
-				// (in the form of bytes) and send it.
-
-				DatagramPacket msgPacket = new DatagramPacket(msg.getBytes(), msg.getBytes().length, addr, this.multicastPort);
-
-				serverSocket.send(msgPacket);
-
-				System.out.println("Server sent packet with msg: " + msg);
+				System.out.println("Server receiver packet with msg: " + msg);
 
 				Thread.sleep(500);
 

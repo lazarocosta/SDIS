@@ -1,7 +1,11 @@
 import java.net.*;
+
+//RUN com---- Acer 3000 register matricula nome
+
+
 class UDPClient {
     public static void main(String args[]) throws Exception {
-        if (args.length != 4 && args.length != 5){
+        if (args.length != 4 && args.length != 5) {
             System.out.println("Usage: java UDPClient <host_name> <port_number> <oper> <opnd>*");
             return;
         }
@@ -13,7 +17,7 @@ class UDPClient {
 /* "register" or "lookup"*/
         String message;
 
-        switch (operation){
+        switch (operation) {
             case "register": {
                 if (args.length == 4) {
                     System.out.println("There is missing an argument for 'register' function.");
@@ -23,22 +27,23 @@ class UDPClient {
                 String ownerName = args[4];
                 message = "REGISTER " + plateNumber + " " + ownerName;
             }
-                break;
+            break;
 
-                case "lookup":{
-                    if (args.length == 5) {
-                        System.out.println("There is an extra argument for 'lookup' function.");
-                        return;
-                    }
-                    String plateNumber2 = args[3];
-                    message = "LOOKUP " + plateNumber2;
+            case "lookup": {
+                if (args.length == 5) {
+                    System.out.println("There is an extra argument for 'lookup' function.");
+                    return;
+                }
+                String plateNumber2 = args[3];
+                message = "LOOKUP " + plateNumber2;
             }
-                break;
+            break;
 
             default:
                 System.out.println("Bad argument for 'operation.'");
                 return;
         }
+
 
         System.out.println("EXECUTING: " + message);
 
@@ -54,13 +59,15 @@ class UDPClient {
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, Integer.parseInt(portNumber));
         clientSocket.send(sendPacket);
 
+
 // Receive future packet
-        byte[] receiveData = new byte[4096];
+        byte[] receiveData = new byte[3000];
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
         clientSocket.receive(receivePacket);
 
+
         System.out.println("Size: " + receiveData.length);
-        String receivedMessage = new String(receivePacket.getData());
+        String receivedMessage = new String(receivePacket.getData(), 0, receiveData.length);
         System.out.println("FROM SERVER: " + receivedMessage);
 
         clientSocket.close();
