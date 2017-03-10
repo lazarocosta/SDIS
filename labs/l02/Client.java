@@ -1,108 +1,101 @@
+import javafx.scene.chart.PieChart;
+
 import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.net.*;
 
+//client 228.5.6.7 4445 register wewe wewe
 public class Client {
 
-	private String multicastAddress;
-	private int multicastPort;
-	private String operation;
+    private String multicastAddress;
+    private int multicastPort;
+    private String operation;
+    private MulticastSocket multicastSocket;
+    private MulticastSocket clientSocket;
 
 
-	public void run(String[] args) throws UnknownHostException {
+    public void run(String[] args) throws UnknownHostException {
 
-		this.multicastAddress = args[0];
-		this.multicastPort = Integer.parseInt(args[1]);
-		this.operation = args[2]; // "register" or "lookup"
+        this.multicastAddress = args[0];
+        this.multicastPort = Integer.parseInt(args[1]);
+        this.operation = args[2]; // "register" or "lookup"
 
-		String message;
+       String port;
+        InetAddress IpServer;
 
-		switch (operation) {
-			case "register": {
-				if (args.length == 4) {
-					System.out.println("There is missing an argument for 'register' function.");
-					return;
-				}
+        String message;
 
-				String plateNumber = args[3];
-				String ownerName = args[4];
+        if (operation.equals("register")) {
+            if (args.length == 4) {
+                System.out.println("There is missing an argument for 'register' function.");
+                return;
+            }
 
-				message = "REGISTER " + plateNumber + " " + ownerName;
-			}
-			break;
+            String plateNumber = args[3];
+            String ownerName = args[4];
+            message = "REGISTER " + plateNumber + " " + ownerName;
 
-			case "lookup": {
-				if (args.length == 5) {
-					System.out.println("There is an extra argument for 'lookup' function.");
-					return;
-				}
+        } else if (operation.equals("lookup")) {
+            if (args.length == 5) {
+                System.out.println("There is an extra argument for 'lookup' function.");
+                return;
+            }
 
-				String plateNumber = args[3];
-				message = "LOOKUP " + plateNumber;
-			}
-			break;
+            String plateNumber = args[3];
+            message = "LOOKUP " + plateNumber;
 
-			default:
-				System.out.println("Bad argument for 'operation.'");
-				return;
-		}
+        } else {
+            System.out.println("Bad argument for 'operation.'");
+            return;
+        }
 
-		// Get the address that we are going to connect to.
-		//InetAddress address = InetAddress.getByName(this.multicastAddress);
-        InetAddress address =InetAddress.getByName("228.5.6.7");
+        // Get the address that we are going to connect to.
+        InetAddress group = InetAddress.getByName(this.multicastAddress);
 
 
+        System.out.println("Porta: " + this.multicastPort + " IP:" + group);
 
-		//Send DatagramPacket
-		// Create a buffer of bytes, which will be used to store
-		// the incoming bytes containing the information from the server.
-		// Since the message is small here, 256 bytes should be enough.
+        try {
+            clientSocket = new MulticastSocket(this.multicastPort);
+
+            clientSocket.joinGroup(group);
+
+            byte[] recive = new byte[100];
+            DatagramPacket init = new DatagramPacket(recive, recive.length);
+            System.out.println("aqui");
+            clientSocket.receive(init);
+            clientSocket.leaveGroup(group);
 
 
-		// Create a new Multicast socket (that will allow other sockets/programs
-		// to join it as well.
-		try (MulticastSocket clientSocket = new MulticastSocket(this.multicastPort)) {
+            port = new String(init.getData(),0,init.getLength());
+            IpServer = init.getAddress();
+            System.out.println("Ip:" + IpServer);
+            System.out.println("porta:" + Integer.parseInt(port));
 
-			//Joint the Multicast group.
-			clientSocket.joinGroup(address);
+            DatagramSocket sendSocke = new DatagramSocket();
+            DatagramPacket messageSend = new DatagramPacket(message.getBytes(), message.getBytes().length, IpServer,Integer.parseInt(port));
 
-			byte[] send = message.getBytes();
 
-			//http://docs.oracle.com/javase/7/docs/api/java/net/MulticastSocket.html
-			//Send Menssage
-			DatagramPacket sendMessa= new DatagramPacket(send, send.length, address, this.multicastPort);
-			clientSocket.send(sendMessa);
-            System.out.println("Send");
+            sendSocke.send(messageSend);
 
-			byte[] buf = new byte[3000];
-			//	while (true) {
-			// Receive the information and print it.
-			DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);
-			clientSocket.receive(msgPacket);
-			String msg = new String(buf, 0, buf.length);
-			if(msg.equals("-1"))
-				System.out.println("Cliente receiver: "+ message + " :: ERRO");
-			else
-				System.out.println("Cliente receiver: "+ message + " :: "+ msg);
+            Thread.sleep(1000);
 
-			clientSocket.leaveGroup(address);
-			System.out.println("Leave Group");
+        } catch (IOException | InterruptedException A){
 
-		} catch (IOException ex) {
+        }
 
-			ex.printStackTrace();
-		}
-	}
 
-	public static void main(String[] args) throws UnknownHostException {
+    }
 
-		try {
-			Client myClient = new Client();
-			myClient.run(args);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+    public static void main(String[] args) throws UnknownHostException {
 
-	}
+        try {
+            Client myClient = new Client();
+            myClient.run(args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }
