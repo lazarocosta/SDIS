@@ -10,22 +10,38 @@ public class Client {
     private String multicastAddress;
     private int multicastPort;
     private String operation;
-    private MulticastSocket multicastSocket;
     private MulticastSocket clientSocket;
+    private InetAddress group;
+    private DatagramPacket initialization;
+    private DatagramPacket recivePacket;
+    private int portServer;
+    private InetAddress IpServer;
+    private String message;
+    private DatagramSocket sendSocke;
+
+    public static void main(String[] args) throws UnknownHostException {
+        try {
+            Client myClient = new Client(args);
+            myClient.intPorts();
+            myClient.request();
+            myClient.waitMessage();
 
 
-    public void run(String[] args) throws UnknownHostException {
+        } catch (IOException A) {
+
+        }
+
+    }
+
+    public Client(String[] args) throws UnknownHostException {
 
         this.multicastAddress = args[0];
         this.multicastPort = Integer.parseInt(args[1]);
         this.operation = args[2]; // "register" or "lookup"
 
-       String port;
-        InetAddress IpServer;
 
-        String message;
-
-        if (operation.equals("register")) {
+        //valid message
+        if (operation.equals("register") | operation.equals("REGISTER")) {
             if (args.length == 4) {
                 System.out.println("There is missing an argument for 'register' function.");
                 return;
@@ -35,7 +51,7 @@ public class Client {
             String ownerName = args[4];
             message = "REGISTER " + plateNumber + " " + ownerName;
 
-        } else if (operation.equals("lookup")) {
+        } else if (operation.equals("lookup") | operation.equals("LOOKUP")) {
             if (args.length == 5) {
                 System.out.println("There is an extra argument for 'lookup' function.");
                 return;
@@ -49,53 +65,46 @@ public class Client {
             return;
         }
 
+
         // Get the address that we are going to connect to.
-        InetAddress group = InetAddress.getByName(this.multicastAddress);
+        group = InetAddress.getByName(this.multicastAddress);
 
+    }
 
-        System.out.println("Porta: " + this.multicastPort + " IP:" + group);
+    public void intPorts() throws IOException {
 
-        try {
-            clientSocket = new MulticastSocket(this.multicastPort);
+        clientSocket = new MulticastSocket(this.multicastPort);
+        clientSocket.joinGroup(group);
 
-            clientSocket.joinGroup(group);
+        byte[] recive = new byte[100];
+        initialization = new DatagramPacket(recive, recive.length);
+        clientSocket.receive(initialization);
+        System.out.println("recebeu");
+        clientSocket.leaveGroup(group);
 
-            byte[] recive = new byte[100];
-            DatagramPacket init = new DatagramPacket(recive, recive.length);
-            System.out.println("aqui");
-            clientSocket.receive(init);
-            clientSocket.leaveGroup(group);
+        portServer = initialization.getPort();
+        IpServer = initialization.getAddress();
+        System.out.println("Ip:" + IpServer);
+        System.out.println("porta:" + portServer);
+    }
 
+    public void request() throws IOException {
 
-            port = new String(init.getData(),0,init.getLength());
-            IpServer = init.getAddress();
-            System.out.println("Ip:" + IpServer);
-            System.out.println("porta:" + Integer.parseInt(port));
-
-            DatagramSocket sendSocke = new DatagramSocket();
-            DatagramPacket messageSend = new DatagramPacket(message.getBytes(), message.getBytes().length, IpServer,Integer.parseInt(port));
-
-
-            sendSocke.send(messageSend);
-
-            Thread.sleep(1000);
-
-        } catch (IOException | InterruptedException A){
-
-        }
+        sendSocke = new DatagramSocket();
+        DatagramPacket messageSend = new DatagramPacket(message.getBytes(), message.getBytes().length, IpServer, portServer);
+        sendSocke.send(messageSend);
 
 
     }
 
-    public static void main(String[] args) throws UnknownHostException {
+    public void waitMessage() throws IOException {
 
-        try {
-            Client myClient = new Client();
-            myClient.run(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        System.out.print("espera");
+        byte[] buf = new byte[1024];
+        recivePacket = new DatagramPacket(buf, buf.length);
+        sendSocke.receive(recivePacket);
 
     }
+
 
 }

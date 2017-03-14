@@ -42,7 +42,6 @@ public class Server {
             System.out.println("Server receiver packet with msg: " + msg);
         }
 
-
     }
 
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
