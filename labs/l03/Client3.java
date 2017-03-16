@@ -23,9 +23,7 @@ public class Client3 {
 
     }
 
-
     public Client3(String[] args) throws UnknownHostException {
-
 
         if (args.length < 3) {
             System.out.println("There is missing an arguments");
@@ -41,12 +39,10 @@ public class Client3 {
         try {
             echoSocket = new Socket(address, port_number);
 
-            out = new PrintWriter(echoSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(echoSocket.getInputStream()));
-
+            out = new PrintWriter(echoSocket.getOutputStream(), true);//fluxo de saida
+            in = new BufferedReader(new InputStreamReader(echoSocket.getInputStream()));//fluxo de entrada
 
             if (operation.equals("register") | operation.equals("REGISTER")) {
-
                 if (args.length != 5) {
                     System.out.println("Bad sintactic, expected:  <host_name> <port_number> <oper> <plate number> <owner name>");
                     return;
@@ -56,7 +52,6 @@ public class Client3 {
                 message = "REGISTER " + plateNumber + " " + ownerName;
 
             } else if (operation.equals("lookup") | operation.equals("LOOKUP")) {
-
                 if (args.length != 4) {
                     System.out.println("Bad sintactic, expected:  <host_name> <port_number> <oper> <plate number>");
                     return;
@@ -70,24 +65,19 @@ public class Client3 {
             }
 
             out.println(message);
-            System.out.println("Sended to : " + message);
+            System.out.println("SENDED: " + message);
 
         } catch (IOException A) {
             A.fillInStackTrace();
         }
-
-
     }
 
     public void waitResponse() throws IOException {
-
         String recived = in.readLine();
-        System.out.print(recived);
-
+        System.out.print("RECIVED:" + recived);
     }
 
     public void close() throws IOException {
-
         out.close();
         in.close();
     }
