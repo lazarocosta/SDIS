@@ -12,10 +12,12 @@ public class Client {
         String host = (args.length < 1) ? null : args[0];
         try {
             Registry registry = LocateRegistry.getRegistry(host);   // Gets the server's host address
-            RMIConnection stub = (RMIConnection) registry.lookup("RMI");  // Looks up for the stub with the "RMI" name binded
+            Hello stub = (Hello) registry.lookup("RMI");  // Looks up for the stub with the "Hello" name binded
 
-            String response = stub.sendString();  // Executes the interface of the stub
+            String response = stub.sayHello();  // Executes the interface of the stub
             System.out.println("response: " + response);
+
+            stub.exit();
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
             e.printStackTrace();
