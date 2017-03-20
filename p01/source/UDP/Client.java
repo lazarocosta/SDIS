@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.*;
 
 //client 228.5.6.7 4445 register wewe wewe
-public class Client {
+public class Client implements Runnable{
 
     private String multicastAddress;
     private int multicastPort;
@@ -19,17 +19,24 @@ public class Client {
     private DatagramSocket sendSocke;
     private String port;
 
-    public static void main(String[] args) throws UnknownHostException {
+    @Override
+    public void run() {
         try {
-            Client myClient = new Client(args);
-            myClient.intPorts();
-            myClient.request();
-            myClient.waitMessage();
 
+            this.intPorts();
+            this.request();
+            this.waitMessage();
 
         } catch (IOException A) {
             A.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) throws UnknownHostException {
+
+        Client myClient = new Client(args);
+
+        new Thread(myClient).start();
 
     }
 

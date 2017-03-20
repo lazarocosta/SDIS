@@ -10,7 +10,7 @@ import java.util.HashMap;
  * Multicast addresses: 224.0.0.0 to 239.255.255.255. Best to use 224-238 which are not reserved for anything.
  */
 
-public class Server {
+public class Server implements Runnable{
 
     private int servicePort;
     private String multicastAddress;
@@ -19,6 +19,11 @@ public class Server {
     private InetAddress addr;
     private HashMap<String, String> dataBase;
     private DatagramSocket serverSocket;
+
+    @Override
+    public void run() {
+
+    }
 
     public Server(String[] args) throws UnknownHostException, InterruptedException, IOException {
 
@@ -129,6 +134,7 @@ public class Server {
         }
 
     }
+
 
     public class MulticastThread extends Thread {
         private MulticastThread() {
