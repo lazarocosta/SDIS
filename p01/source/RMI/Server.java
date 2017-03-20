@@ -1,4 +1,4 @@
-package Systems;
+package RMI;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.registry.Registry;
