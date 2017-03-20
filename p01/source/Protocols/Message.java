@@ -10,19 +10,38 @@ import java.security.NoSuchAlgorithmException;
  */
 public class Message {
 
+    // TODO: Put Body on some messages and not on every single one.
+
+
     public String header;
     public String body;
 
-    private static String s = " ";
-    private static String crlf = "\r\n";   // CarriageReturn == "\r", LineFeed == "\n"
+    private static final String SPACE = " ";
+    private static final String CRLF = "\r\n";   // CarriageReturn == "\r", LineFeed == "\n"
 
-    public String generateHeaderLine(String msgType, String version, int senderId, String fileId, int chunkNum, int replicationDeg){
+
+    public String generatePutChunkLine(String version, int senderId, String fileId, int chunkNum, int replicationDeg)
+    {
+        return generateHeaderLine("PUTCHUNK", version, senderId, fileId, chunkNum, replicationDeg);
+    }
+
+    public String generateStoredLine(String version, int senderId, String fileId, int chunkNum)
+    {
+            return generateHeaderLine("STORED", version, senderId, fileId, null, null);
+    }
+
+    public String generateGetChunkLine(String version, int senderId, String fileId, int chunkNum)
+    {
+        return generateHeaderLine("GETCHUNK", version, senderId, fileId, null, null);
+    }
+
+    public String generateHeaderLine(String msgType, String version, Integer senderId, String fileId, Integer chunkNum, Integer replicationDeg){
 
         /**
          * String template: "<MessageType> <Version> <SenderId> <FileId> <ChunkNo> <ReplicationDeg> <CRLF>"
          * */
 
-        String line = msgType + s + version + s + Integer.toString(senderId) + s + fileId + s + Integer.toString(chunkNum) + s + Integer.toString(replicationDeg) + crlf;
+        String line = msgType + SPACE + version + SPACE + senderId.toString() + SPACE + fileId + SPACE + chunkNum.toString() + SPACE + replicationDeg.toString() + CRLF;
 
         return line;
     }
@@ -36,7 +55,7 @@ public class Message {
             header = header + lineArray[i];
         }
 
-        header = header + crlf; // header must end with "<CRLF><CRLF>"
+        header = header + CRLF; // header must end with "<CRLF><CRLF>"
 
         return header;
     }

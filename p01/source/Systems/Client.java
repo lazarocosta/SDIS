@@ -17,6 +17,7 @@ public class Client {
             String response = stub.sayHello();  // Executes the interface of the stub
             System.out.println("response: " + response);
 
+            // The exit() function must be executed or else the server won't end and the registry won't be freed
             stub.exit();
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
