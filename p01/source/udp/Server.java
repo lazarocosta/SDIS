@@ -1,4 +1,4 @@
-package UDP;
+package udp;
 
 import java.io.IOException;
 import java.net.*;
@@ -25,16 +25,12 @@ public class Server implements Runnable{
 
     }
 
-    public Server(String[] args) throws UnknownHostException, InterruptedException, IOException {
+    public Server(Integer servicePort, String multicastAddress, Integer multicastPort) throws UnknownHostException, InterruptedException, IOException {
 
-        if (args.length != 3) {
-            System.out.println("Usage: java Server <srvc_port> <mcast_addr> <mcast_port>.");
-            return;
-        }
 
-        this.servicePort = Integer.parseInt(args[0]);
-        this.multicastAddress = args[1];
-        this.multicastPort = Integer.parseInt(args[2]);
+        this.servicePort = servicePort;
+        this.multicastAddress = multicastAddress;
+        this.multicastPort = multicastPort;
 
         multicastSocket = new MulticastSocket();
         dataBase= new HashMap<String, String>();
@@ -124,15 +120,6 @@ public class Server implements Runnable{
             System.out.println("plate: " + result);
             return result;
         }
-    }
-
-    public static void main(String[] args) throws UnknownHostException, InterruptedException {
-        try {
-            Server myServer = new Server(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 
 

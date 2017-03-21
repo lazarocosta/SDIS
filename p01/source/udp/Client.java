@@ -1,4 +1,4 @@
-package UDP;
+package udp;
 
 import java.io.*;
 import java.net.*;
@@ -32,50 +32,14 @@ public class Client implements Runnable{
         }
     }
 
-    public static void main(String[] args) throws UnknownHostException {
-
-        Client myClient = new Client(args);
-
-        new Thread(myClient).start();
-
-    }
-
-    public Client(String[] args) throws UnknownHostException {
-
-        if (args.length < 3) {
-            System.out.println("There is missing an arguments");
-            return;
-        }
-
-        this.multicastAddress = args[0];
-        this.multicastPort = Integer.parseInt(args[1]);
-        this.operation = args[2]; // "register" or "lookup"
+    public Client(String multicastAddress, Integer multicastPort, String operation) throws UnknownHostException {
 
 
-        //valid message
-        if (operation.equals("register") | operation.equals("REGISTER")) {
-            if (args.length == 4) {
-                System.out.println("There is missing an argument for 'register' function.");
-                return;
-            }
+        this.multicastAddress = multicastAddress;
+        this.multicastPort = multicastPort;
+        this.operation = operation;
 
-            String plateNumber = args[3];
-            String ownerName = args[4];
-            message = "REGISTER " + plateNumber + " " + ownerName;
-
-        } else if (operation.equals("lookup") | operation.equals("LOOKUP")) {
-            if (args.length == 5) {
-                System.out.println("There is an extra argument for 'lookup' function.");
-                return;
-            }
-
-            String plateNumber = args[3];
-            message = "LOOKUP " + plateNumber;
-
-        } else {
-            System.out.println("Bad argument for 'operation.'");
-            return;
-        }
+        message = operation;
 
         // Get the address that we are going to connect to.
         group = InetAddress.getByName(this.multicastAddress);
@@ -103,7 +67,7 @@ public class Client implements Runnable{
         DatagramPacket messageSend = new DatagramPacket(message.getBytes(), message.getBytes().length, IpServer, 3000);
         sendSocke.send(messageSend);
 
-        System.out.println("Sended: " + message);
+        System.out.println("Sent: " + message);
 
 
     }

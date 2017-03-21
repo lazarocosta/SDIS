@@ -1,4 +1,4 @@
-package RMI;
+package rmi;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.registry.Registry;
@@ -47,7 +47,7 @@ public class Server implements Hello {
     }
 
     /**
-     * This function creates and binds a RMI registry to the server, through which the clients will communicate.
+     * This function creates and binds a rmi registry to the server, through which the clients will communicate.
      *
      * @param port  Port on which the remote object is.
      * @throws RemoteException
@@ -66,7 +66,7 @@ public class Server implements Hello {
         registry.bind(this.serverName, stub);
 
         /**
-         * Java RMI provides a registry API for applications to bind a name to a remote object's stub and for clients to look up remote objects by name in order to obtain their stubs.
+         * Java rmi provides a registry API for applications to bind a name to a remote object's stub and for clients to look up remote objects by name in order to obtain their stubs.
          * So in this case, the stub is binded with the name "Hello", which clients may search for.
          *
          * The static method LocateRegistry.getRegistry that takes no arguments returns a stub that implements the remote interface java.rmi.registry.Registry and sends
@@ -99,7 +99,7 @@ public class Server implements Hello {
             // Unregister ourself
             this.serverRegistry.unbind(serverName);
 
-            // Unexport; this will also remove us from the RMI runtime
+            // Unexport; this will also remove us from the rmi runtime
             UnicastRemoteObject.unexportObject(this, true);
 
             System.out.println("Server exiting.");
