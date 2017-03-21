@@ -20,18 +20,15 @@ public class Message {
     private static final String CRLF = "\r\n";   // CarriageReturn == "\r", LineFeed == "\n"
 
 
-    public String generatePutChunkLine(String version, int senderId, String fileId, int chunkNum, int replicationDeg)
-    {
+    public String generatePutChunkLine(String version, int senderId, String fileId, int chunkNum, int replicationDeg)    {
         return generateHeaderLine("PUTCHUNK", version, senderId, fileId, chunkNum, replicationDeg);
     }
 
-    public String generateStoredLine(String version, int senderId, String fileId, int chunkNum)
-    {
+    public String generateStoredLine(String version, int senderId, String fileId, int chunkNum)    {
             return generateHeaderLine("STORED", version, senderId, fileId, null, null);
     }
 
-    public String generateGetChunkLine(String version, int senderId, String fileId, int chunkNum)
-    {
+    public String generateGetChunkLine(String version, int senderId, String fileId, int chunkNum)    {
         return generateHeaderLine("GETCHUNK", version, senderId, fileId, null, null);
     }
 

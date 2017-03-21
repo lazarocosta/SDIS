@@ -1,8 +1,10 @@
 package udp;
 
+import protocols.Message;
+
 import java.io.IOException;
+
 import java.net.*;
-import java.util.HashMap;
 
 // run server 3000 228.5.6.7 4445
 
@@ -10,140 +12,71 @@ import java.util.HashMap;
  * Multicast addresses: 224.0.0.0 to 239.255.255.255. Best to use 224-238 which are not reserved for anything.
  */
 
-public class Server implements Runnable{
+public class Server implements Runnable {
 
-    private int servicePort;
-    private String multicastAddress;
-    private int multicastPort;
-    private MulticastSocket multicastSocket;
-    private InetAddress addr;
-    private HashMap<String, String> dataBase;
-    private DatagramSocket serverSocket;
+    private InetAddress multicastAddress = InetAddress.getByName("228.5.6.7");
+    private DatagramPacket datagramPacketSend;
+    private int multicastPortSend = 4000;
+    private MulticastSocket multicastSocketSend;
+
+    private DatagramPacket datagramPacketRecive;
+    private int multicastPortRecive = 3000;
+    private MulticastSocket multicastSocketRecive;
+
+    private int BUF_LENGTH = 2000;
 
     @Override
     public void run() {
 
     }
 
-    public Server(Integer servicePort, String multicastAddress, Integer multicastPort) throws UnknownHostException, InterruptedException, IOException {
+    public Server() throws UnknownHostException, InterruptedException, IOException {
 
 
-        this.servicePort = servicePort;
-        this.multicastAddress = multicastAddress;
-        this.multicastPort = multicastPort;
-
-        multicastSocket = new MulticastSocket();
-        dataBase= new HashMap<String, String>();
-
-        // Get the address that we are going to connect to.
-        addr = InetAddress.getByName(multicastAddress);
-
-        MulticastThread multicastThread = new MulticastThread();
-        multicastThread.start();
-
-        // Open a new DatagramSocket, which will be used to send the data.
-        serverSocket = new DatagramSocket(this.servicePort);
-
-        while (true) {
-            byte[] msg = new byte[2000];
+        try {
             System.out.println("espero");
+            multicastSocketSend= new MulticastSocket(multicastPortSend);
 
-            //receiver packet
-            DatagramPacket msgPacket = new DatagramPacket(msg, msg.length);
-            serverSocket.receive(msgPacket);
-            System.out.println("Server receiver packet with msg: " + msg);
+            multicastSocketRecive = new MulticastSocket(multicastPortRecive);
+            multicastSocketRecive.joinGroup(multicastAddress);
 
-            String buffer = new String(msgPacket.getData(), 0, msgPacket.getLength());
-            String[] recive = buffer.split("\\s");
-            int port = msgPacket.getPort();
-            InetAddress adress = msgPacket.getAddress();
+            byte[] recive = new byte[BUF_LENGTH];
+            datagramPacketRecive = new DatagramPacket(recive, recive.length);
+            multicastSocketRecive.receive(datagramPacketRecive);
+            System.out.println("recive");
 
-
-            System.out.println(recive[0]);
-
-
-            if (recive[0].equals("REGISTER")) {
-                if (recive.length != 3) {
-                    System.out.println("Invalid number Commands");
-                    return;
-                }
-
-                 String resultMessage = this.registe(recive[1], recive[2]);
-               send(resultMessage, port, adress);
+            this.send();
+        } catch (IOException A) {
+            A.printStackTrace();
+        }
 
 
-            } else if (recive[0].equals("LOOKUP")) {
-                if (recive.length != 2) {
-                    System.out.println("Invalid number Commands");
-                    return;
-                }
+    }
 
-                String resultMessage = this.lookup(recive[1]);
-                send(resultMessage, port, adress);
+    public void send() throws IOException {
 
 
-            } else {
-                System.out.println("Invalid Commands");
-                return;
-            }
+        Message messageLine = new Message();
+        String message = messageLine.generatePutChunkLine("1",1,"fileid",1,1);
+
+        DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, multicastAddress, multicastPortSend);
+        multicastSocketSend.send(datagramPacketSend);
+        System.out.println("enviou");
+
+    }
+
+    public static void main(String[] args) throws UnknownHostException, InterruptedException {
+
+        try {
+            Server server = new Server();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
 
-    public void send(String result, int port, InetAddress address) throws IOException {
-
-        DatagramPacket packet = new DatagramPacket(result.getBytes(), result.getBytes().length, address, port);
-        serverSocket.send(packet);
-        System.out.println("SENDED: "+ result);
-
-    }
-
-    public String registe(String plate, String name) {
-
-        if (dataBase.get(plate) == null) {
-            dataBase.put(plate, name);
-            System.out.println("registered");
-            return "REGISTERED";
-        } else {
-            System.out.println("error");
-            return "ERROR";
-        }
-    }
-
-    public String lookup(String plate) {
-
-        if (dataBase.get(plate) == null) {
-            System.out.println("error");
-            return "ERROR";
-        } else {
-            String result = dataBase.get(plate).toString();
-            System.out.println("plate: " + result);
-            return result;
-        }
-    }
-
-
-    public class MulticastThread extends Thread {
-        private MulticastThread() {
-        }
-
-        public void run() {
-            String message = Integer.toString(servicePort);
-            System.out.println(addr + "  " + servicePort);
-            System.out.println(message);
-
-            while (true) {
-                try {
-                    DatagramPacket packet = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, multicastPort);
-                    multicastSocket.send(packet);
-                    System.out.println("enviei");
-                    Thread.sleep(1000);
-                } catch (IOException | InterruptedException end) {
-                    System.out.println("erro");
-                }
-            }
-        }
-    }
 
 }
 
