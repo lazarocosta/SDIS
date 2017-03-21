@@ -70,18 +70,6 @@ public class Message {
         return header;
     }
 
-    public String getHashFromString(String str) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-
-        md.update(str.getBytes("UTF-8")); // Change this to "UTF-16" if needed
-        byte[] digest = md.digest();
-
-        return DatatypeConverter.printHexBinary(digest).toLowerCase();
-
-    }
-
-
 
     // For testing
     public static void main(String[] args) throws UnsupportedEncodingException, NoSuchAlgorithmException {
