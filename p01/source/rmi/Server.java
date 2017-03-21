@@ -1,11 +1,20 @@
 package rmi;
 
+import chunk.Chunk;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
+import java.nio.file.Files;
 import java.rmi.AlreadyBoundException;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+
+import static java.util.Arrays.copyOfRange;
 
 /**
  * TO RUN THE SERVER:
@@ -36,6 +45,19 @@ public class Server implements Service {
 
     @Override
     public void backupFile(File file, int replicationDegree) throws RemoteException {
+
+        ArrayList<Chunk> chunks = divideFileIntoChunks(file);
+
+        for(int i = 0; i < chunks.size(); i++)
+        {
+            System.out.println(chunks.get(i).getData());
+
+            try {
+                System.out.println(new String(chunks.get(i).getData(), "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 
@@ -129,5 +151,35 @@ public class Server implements Service {
      */
     private void createRegistry() throws AlreadyBoundException, RemoteException {
         this.createRegistry(DEFAULT_REGISTRY_PORT);
+    }
+
+    private ArrayList<Chunk> divideFileIntoChunks(File file){
+
+        ArrayList<Chunk> fileChunks = new ArrayList<Chunk>();
+
+        try{
+
+            int currentByte = 0;
+            int currentChunk = 1;
+
+            byte[] data = Files.readAllBytes(file.toPath());
+
+            while(currentByte < data.length)
+            {
+                byte[] dataChunk = copyOfRange(data, currentByte, Chunk.MAX_SIZE);
+                Chunk c = new Chunk(file.getName(), currentChunk, 1, dataChunk);
+                fileChunks.add(c);
+
+                currentByte += Chunk.MAX_SIZE;
+                currentChunk++;
+            }
+
+
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return fileChunks;
     }
 }
