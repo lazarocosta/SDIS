@@ -56,10 +56,13 @@ public class Client implements Runnable {
         } catch (IOException A) {
             A.printStackTrace();
         }
+        Integer[] A= new Integer[10];
+        A[1]=A[2];
 
         String recive = new String(datagramPacketRecive.getData(), 0, datagramPacketRecive.getLength());
 
         System.out.println(recive);
+
 
     }
 

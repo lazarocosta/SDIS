@@ -14,14 +14,18 @@ import java.net.*;
 
 public class Server implements Runnable {
 
-    private InetAddress multicastAddress = InetAddress.getByName("228.5.6.7");
-    private DatagramPacket datagramPacketSend;
-    private int multicastPortSend = 4000;
-    private MulticastSocket multicastSocketSend;
+    private InetAddress mControl;
+    private InetAddress mBackup;
+    private InetAddress mResture;
 
-    private DatagramPacket datagramPacketRecive;
-    private int multicastPortRecive = 3000;
-    private MulticastSocket multicastSocketRecive;
+    private int portControl;
+    private int portBackup;
+    private int portResture;
+
+    private MulticastSocket sControl;
+    private MulticastSocket sBackup;
+    private MulticastSocket sResture;
+
 
     private int BUF_LENGTH = 2000;
 
@@ -30,19 +34,27 @@ public class Server implements Runnable {
 
     }
 
-    public Server() throws UnknownHostException, InterruptedException, IOException {
+    public Server(String MControl, int PortControl, String MBackup, int PortBachup, String MResture, int PortResture) throws UnknownHostException, InterruptedException, IOException {
 
+
+        this.mControl = InetAddress.getByName(MControl);
+        this.mBackup = InetAddress.getByName(MBackup);
+        this.mResture = InetAddress.getByName(MResture);
+
+        this.portBackup = PortBachup;
+        this.portControl = PortControl;
+        this.portResture = PortResture;
 
         try {
             System.out.println("espero");
-            multicastSocketSend= new MulticastSocket(multicastPortSend);
+            sControl = new MulticastSocket(portControl);
 
-            multicastSocketRecive = new MulticastSocket(multicastPortRecive);
-            multicastSocketRecive.joinGroup(multicastAddress);
+            sBackup = new MulticastSocket(portBackup);
+            sBackup.joinGroup(mControl);
 
             byte[] recive = new byte[BUF_LENGTH];
-            datagramPacketRecive = new DatagramPacket(recive, recive.length);
-            multicastSocketRecive.receive(datagramPacketRecive);
+            DatagramPacket datagramPacketRecive = new DatagramPacket(recive, recive.length);
+            sBackup.receive(datagramPacketRecive);
             System.out.println("recive");
 
             this.send();
@@ -56,11 +68,11 @@ public class Server implements Runnable {
     public void send() throws IOException {
 
 
-        Message messageLine = new Message();
-        String message = messageLine.generatePutChunkLine("1",1,"fileid",1,1);
+        Message messageLine = new Message("vers", 1, "file", 1, 2);
+        String message = messageLine.generatePutChunkLine();
 
-        DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, multicastAddress, multicastPortSend);
-        multicastSocketSend.send(datagramPacketSend);
+        DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, mControl, portControl);
+        sControl.send(datagramPacketSend);
         System.out.println("enviou");
 
     }
@@ -68,7 +80,7 @@ public class Server implements Runnable {
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
 
         try {
-            Server server = new Server();
+            Server server = new Server("228.5.6.7", 3000, "228.5.6.6", 4000, "228.5.6.8", 5000);
 
 
         } catch (Exception e) {
