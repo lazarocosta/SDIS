@@ -5,8 +5,8 @@
 # A || B  Run B if A failed
 # A &     Run A in background.
 
-xterm -hold -e java -cp production RMI.Server &
+xterm -hold -e java -cp production rmi.Server &
 sleep 1 &&
-xterm -hold -e java -cp production RMI.Client
+xterm -hold -e java -cp production rmi.Client
 
 # -cp is a flag standing for Class Path
