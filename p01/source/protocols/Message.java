@@ -24,7 +24,7 @@ public class Message {
     private String fileId;
     private int chunkNum;
     private int replicationDeg;
-    private String msgType;
+    public String msgType;
 
     public Message(String version, int senderId, String fileId, int chunkNum, int replicationDeg) {
 
