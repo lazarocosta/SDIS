@@ -1,12 +1,12 @@
 package rmi;
 
-import chunk.Chunk;
+import files.Chunk;
+import files.MyFile;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.rmi.AlreadyBoundException;
@@ -36,6 +36,8 @@ public class Server implements Service {
 
     static int DEFAULT_REGISTRY_PORT = 1099;
 
+    // TODO: Allow to run 2 servers on same Port. Use exceptions to see if port is already in use.
+
     String serverName;
     Registry serverRegistry;
 
@@ -54,7 +56,7 @@ public class Server implements Service {
     @Override
     public void backupFile(File file, int replicationDegree) throws RemoteException {
 
-        ArrayList<Chunk> chunks = divideFileIntoChunks(file);
+        ArrayList<Chunk> chunks = MyFile.divideFileIntoChunks(file, fileIdToFileName);
 
         for(int i = 0; i < chunks.size(); i++)
         {
@@ -163,60 +165,4 @@ public class Server implements Service {
         this.createRegistry(DEFAULT_REGISTRY_PORT);
     }
 
-    private ArrayList<Chunk> divideFileIntoChunks(File file){
-
-        ArrayList<Chunk> fileChunks = new ArrayList<Chunk>();
-
-        try{
-
-            int currentByte = 0;
-            int currentChunk = 1;
-
-            byte[] data = Files.readAllBytes(file.toPath());
-
-            String fileId = null;
-
-            try {
-                fileId = generateFileId(file);
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            }
-
-            while(currentByte < data.length)
-            {
-                byte[] dataChunk = copyOfRange(data, currentByte, Chunk.MAX_SIZE);
-                Chunk c = new Chunk(fileId, currentChunk, 1, dataChunk);
-                fileChunks.add(c);
-
-                currentByte += Chunk.MAX_SIZE;
-                currentChunk++;
-            }
-
-
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return fileChunks;
-    }
-
-    public String generateFileId(File file) throws NoSuchAlgorithmException, IOException {
-
-        BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-
-        String str = file.getName() + attr.creationTime() + attr.size();    // generate hash from file name, creation time and size
-
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-
-        md.update(str.getBytes("UTF-8")); // Change this to "UTF-16" if needed
-        byte[] digest = md.digest();
-
-        String encodedFileId = DatatypeConverter.printHexBinary(digest).toLowerCase();
-
-        fileIdToFileName.put(encodedFileId, file.getName());
-
-        return encodedFileId;
-
-    }
 }
