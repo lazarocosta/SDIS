@@ -26,14 +26,14 @@ public class MulticastRestore implements Runnable {
         }
     }
 
-    public void sends(String message) {
+    public void sendsChunk(String version, int senderId, String fileId, int chunkNo, byte[]body) {
         try {
-            //Message messageLine = new Message("vers", 1, "file", 1, 2);
-            //String message = messageLine.generatePutChunkLine();
+            Message messageLine = new Message(version, senderId, fileId, chunkNo);
+            String message = messageLine.msgPutChunk(body);
 
             DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
             socket.send(datagramPacketSend);
-            System.out.println("sends message");
+            System.out.println("sends message Chunk");
 
         } catch (IOException A) {
             A.printStackTrace();
@@ -62,8 +62,6 @@ public class MulticastRestore implements Runnable {
                         //envia a resposta pelo Mcontrol
                     }
                     break;
-
-
                     default:
                         System.out.println("discard");
                 }

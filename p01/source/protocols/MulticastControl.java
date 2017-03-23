@@ -26,14 +26,56 @@ public class MulticastControl implements Runnable {
         }
     }
 
-    public void sendsDelete(String version, int senderId, String fileId) {
+    public void sendsDelete(String version, int serverId, String fileId) {
         try {
-            Message messageLine = new Message("1.0", 1, "file");
+            Message messageLine = new Message(version, serverId, fileId);
            String message = messageLine.msgDelete();
 
             DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
             socket.send(datagramPacketSend);
-            System.out.println("sends message");
+            System.out.println("sends message Delete");
+
+        } catch (IOException A) {
+            A.printStackTrace();
+        }
+    }
+
+    public void sendsStored(String version, int serverId, String fileId, int ChunkNo) {
+        try {
+            Message messageLine = new Message(version, serverId, fileId, ChunkNo);
+            String message = messageLine.msgStored();
+
+            DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
+            socket.send(datagramPacketSend);
+            System.out.println("sends message Stored");
+
+        } catch (IOException A) {
+            A.printStackTrace();
+        }
+    }
+
+    public void sendsGetChunk(String version, int serverId, String fileId, int ChunkNo) {
+        try {
+            Message messageLine = new Message(version, serverId, fileId, ChunkNo);
+            String message = messageLine.msgGetChunk();
+
+            DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
+            socket.send(datagramPacketSend);
+            System.out.println("sends message GetChunk");
+
+        } catch (IOException A) {
+            A.printStackTrace();
+        }
+    }
+
+    public void sendsRemoved(String version, int serverId, String fileId, int ChunkNo) {
+        try {
+            Message messageLine = new Message(version, serverId, fileId, ChunkNo);
+            String message = messageLine.msgRemoved();
+
+            DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
+            socket.send(datagramPacketSend);
+            System.out.println("sends message GetChunk");
 
         } catch (IOException A) {
             A.printStackTrace();

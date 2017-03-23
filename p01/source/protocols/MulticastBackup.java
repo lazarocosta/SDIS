@@ -26,14 +26,14 @@ public class MulticastBackup implements Runnable {
         }
     }
 
-    public void sends(String message) {
+    public void sendsPutChunk(String version, int senderId, String fileId, int chunkNo, int replication, byte[] body) {
         try {
-            //Message messageLine = new Message("vers", 1, "file", 1, 2);
-            //String message = messageLine.generatePutChunkLine();
+            Message messageLine = new Message(version, senderId, fileId, chunkNo, replication);
+            String message = messageLine.msgPutChunk(body);
 
             DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
             socket.send(datagramPacketSend);
-            System.out.println("sends message");
+            System.out.println("sends message PutChunk");
 
         } catch (IOException A) {
             A.printStackTrace();
