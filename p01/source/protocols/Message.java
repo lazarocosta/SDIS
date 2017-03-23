@@ -24,7 +24,7 @@ public class Message {
     private String fileId;
     private int chunkNum;
     private int replicationDeg;
-    public String msgType;
+    private String msgType;
 
     public Message(String version, int senderId, String fileId, int chunkNum, int replicationDeg) {
 
@@ -92,6 +92,31 @@ public class Message {
         return generateHeaderLine("REMOVED", this.version, this.senderId, this.fileId, this.chunkNum, null);
     }
 
+    public String getVersion() {
+        return version;
+    }
+
+    public int getSenderId() {
+        return senderId;
+    }
+
+    public String getFileId() {
+        return fileId;
+    }
+
+    public int getChunkNum() {
+        return chunkNum;
+    }
+
+    public int getReplicationDeg() {
+        return replicationDeg;
+    }
+
+    public String getMsgType() {
+        return msgType;
+    }
+
+
     /**
      * @param version        This is the version of the PROTOCOL. It is a three ASCII char sequence with the format <n>'.'<m>, where <n> and <m> are the ASCII codes of digits.
      *                       For example, version 1.0, the one specified in this document, should be encoded as the char sequence '1''.''0'.
@@ -122,7 +147,7 @@ public class Message {
 
         String header = "";
 
-        for(int i = 0; i < lineArray.length; i++) {
+        for (int i = 0; i < lineArray.length; i++) {
             header = header + lineArray[i];
         }
 

@@ -1,8 +1,6 @@
 package udp;
 
-import protocols.Message;
-import protocols.Delete;
-import protocols.Resture;
+import protocols.*;
 
 import java.io.IOException;
 
@@ -20,20 +18,13 @@ public class Server implements Runnable {
     private int idServer;
     private String acessPoint;
 
-    private InetAddress mControl;
-    private InetAddress mBackup;
-    private InetAddress mRestore;
-
-    private int portControl;
-    private int portBackup;
-    private int portRestore;
-
-    private MulticastSocket sControl;
-    private MulticastSocket sBackup;
-    private MulticastSocket sRestore;
-
 
     private int BUF_LENGTH = 65000;
+    private int ATTEMPTS = 5;
+
+    private MulticastBackup MDB;
+    private MulticastControl MC;
+    private MulticastRestore MDR;
 
     @Override
     public void run() {
@@ -42,34 +33,26 @@ public class Server implements Runnable {
 
     public Server(String version, int idServer, String acessPoint, String MControl, int PortControl, String MBackup, int PortBackup, String MRestore, int PortRestore) throws InterruptedException, IOException {
 
+
         this.version = version;
         this.idServer = idServer;
         this.acessPoint = acessPoint;
 
-        this.mControl = InetAddress.getByName(MControl);
-        this.mBackup = InetAddress.getByName(MBackup);
-        this.mRestore = InetAddress.getByName(MRestore);
 
-        this.portBackup = PortBackup;
-        this.portControl = PortControl;
-        this.portRestore = PortRestore;
+        MDB = new MulticastBackup(PortBackup, MBackup);
+        MC = new MulticastControl(PortControl, MControl);
+        MDR = new MulticastRestore(PortRestore, MRestore);
 
 
-        try {
-            sControl = new MulticastSocket(portControl);
-            sBackup = new MulticastSocket(portBackup);
-            sRestore = new MulticastSocket(portRestore);
+        //Init all threads
+        Thread MC_Thread = new Thread(MC);
+        MC_Thread.start();
 
-            sRestore.joinGroup(mRestore);
-            sBackup.joinGroup(mBackup);
-            sControl.joinGroup(mControl);
+        Thread MDB_Thread = new Thread(MDB);
+        MDB_Thread.start();
 
-        } catch (IOException A) {
-            A.printStackTrace();
-        }
-        MulticastControl multicastControl = new MulticastControl();
-
-        multicastControl.start();
+        Thread MDR_Thread = new Thread(MDR);
+        MDR_Thread.start();
 
     }
 
@@ -83,160 +66,6 @@ public class Server implements Runnable {
         }
 
     }
-
-    public class MulticastRestore extends Thread {
-
-        public void sends(String message) {
-            try {
-                //Message messageLine = new Message("vers", 1, "file", 1, 2);
-                //String message = messageLine.generatePutChunkLine();
-
-                DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, mControl, portControl);
-                sRestore.send(datagramPacketSend);
-                System.out.println("sends message");
-
-            } catch (IOException A) {
-                A.printStackTrace();
-            }
-        }
-
-        public void receive() {
-
-            System.out.println("MulticastRestore");
-
-            while (true) {
-                try {
-                    byte[] receive = new byte[BUF_LENGTH];
-                    DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
-                    sRestore.receive(datagramPacketReceive);
-                    String messageComplete = new String(datagramPacketReceive.getData(), 0, datagramPacketReceive.getLength());
-
-                    Message message = new Message(messageComplete);
-
-                    switch (message.msgType) {
-                        case "CHUNK": {
-                            //recebe os CHUNK
-                        }
-                        break;
-                        default:
-                            System.out.println("erro");
-                    }
-
-                } catch (IOException A) {
-                    A.fillInStackTrace();
-                }
-            }
-        }
-    }
-
-    public class MulticastBackup extends Thread {
-
-        public void sends(String message) {
-            try {
-                //Message messageLine = new Message("vers", 1, "file", 1, 2);
-                //String message = messageLine.generatePutChunkLine();
-
-                DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, mControl, portControl);
-                sBackup.send(datagramPacketSend);
-                System.out.println("sends message");
-
-            } catch (IOException A) {
-                A.printStackTrace();
-            }
-        }
-
-        public void receive() {
-            System.out.println("MulticastBackup");
-
-            while (true) {
-                try {
-
-                    byte[] recive = new byte[BUF_LENGTH];
-                    DatagramPacket datagramPacketRecive = new DatagramPacket(recive, recive.length);
-                    sBackup.receive(datagramPacketRecive);
-                    String messageComplete = new String(datagramPacketRecive.getData(), 0, datagramPacketRecive.getLength());
-
-                    Message message = new Message(messageComplete);
-
-                    switch (message.msgType) {
-                        case "PUTCHUNK": {
-                            //faz o backup
-
-                            //envia a resposta pelo Mcontrol
-                        }
-                        break;
-
-
-                        default:
-                            System.out.println("erro");
-                    }
-
-                } catch (IOException A) {
-                    A.fillInStackTrace();
-                }
-            }
-        }
-    }
-
-    public class MulticastControl extends Thread {
-
-        public void sends(String message) {
-            try {
-                //Message messageLine = new Message("vers", 1, "file", 1, 2);
-                //String message = messageLine.generatePutChunkLine();
-
-                DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, mControl, portControl);
-                sControl.send(datagramPacketSend);
-                System.out.println("sends message");
-
-            } catch (IOException A) {
-                A.printStackTrace();
-            }
-        }
-
-        public void receive() {
-
-            System.out.println("MulticastControl");
-
-            while (true) {
-                try {
-                    byte[] recived = new byte[BUF_LENGTH];
-                    DatagramPacket datagramPacketRecived = new DatagramPacket(recived, recived.length);
-                    sControl.receive(datagramPacketRecived);
-                    String messageComplete = new String(datagramPacketRecived.getData(), 0, datagramPacketRecived.getLength());
-
-                    Message message = new Message(messageComplete);
-
-
-                    switch (message.msgType) {
-                        case "GETCHUNK": {
-                            //faz o resture
-                            //envia a resposta pelor resure
-                        }
-                        break;
-                        case "DELETE": {
-                            Delete deleteFile = new Delete();
-                            //faz o delete
-                        }
-                        break;
-                        case "REMOVED": {
-                            //
-                        }
-                        break;
-
-
-                        default:
-                            System.out.println("erro");
-                    }
-
-
-                } catch (IOException A) {
-                    A.fillInStackTrace();
-                }
-            }
-        }
-    }
-
 
 }
 

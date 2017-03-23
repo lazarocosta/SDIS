@@ -2,15 +2,20 @@ package protocols;
 
 public class Delete {
 
+    private String fileId;
 
+    public Delete(String fileId) {
 
-    public Delete() {
+        this.fileId = fileId;
+    }
+
+    void deletefile(){
 
 
     }
 
 
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
 
 
     }
