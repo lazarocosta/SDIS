@@ -48,8 +48,8 @@ public class MulticastRestore implements Runnable {
         while (true) {
             try {
 
-                byte[] recive = new byte[BUF_LENGTH];
-                DatagramPacket datagramPacketReceive = new DatagramPacket(recive, recive.length);
+                byte[] receive = new byte[BUF_LENGTH];
+                DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
                 socket.receive(datagramPacketReceive);
                 String messageComplete = new String(datagramPacketReceive.getData(), 0, datagramPacketReceive.getLength());
 
@@ -65,7 +65,7 @@ public class MulticastRestore implements Runnable {
 
 
                     default:
-                        System.out.println("erro");
+                        System.out.println("discard");
                 }
 
             } catch (IOException A) {

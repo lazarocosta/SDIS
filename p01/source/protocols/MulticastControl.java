@@ -26,10 +26,10 @@ public class MulticastControl implements Runnable {
         }
     }
 
-    public void sends(String message) {
+    public void sendsDelete(String version, int senderId, String fileId) {
         try {
-            //Message messageLine = new Message("vers", 1, "file", 1, 2);
-            //String message = messageLine.generatePutChunkLine();
+            Message messageLine = new Message("1.0", 1, "file");
+           String message = messageLine.msgDelete();
 
             DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
             socket.send(datagramPacketSend);
@@ -47,8 +47,8 @@ public class MulticastControl implements Runnable {
         while (true) {
             try {
 
-                byte[] recive = new byte[BUF_LENGTH];
-                DatagramPacket datagramPacketReceive = new DatagramPacket(recive, recive.length);
+                byte[] receive = new byte[BUF_LENGTH];
+                DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
                 socket.receive(datagramPacketReceive);
                 String messageComplete = new String(datagramPacketReceive.getData(), 0, datagramPacketReceive.getLength());
 
@@ -56,7 +56,7 @@ public class MulticastControl implements Runnable {
 
                 switch (message.getMsgType()) {
                     case "GETCHUNK": {
-                        //faz o resture
+                        //faz o restore
                         //envia a resposta pelor resure
                     }
                     break;
@@ -72,7 +72,7 @@ public class MulticastControl implements Runnable {
 
 
                     default:
-                        System.out.println("erro");
+                        System.out.println("discard");
                 }
 
 

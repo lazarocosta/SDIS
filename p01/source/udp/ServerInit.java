@@ -10,14 +10,16 @@ import java.net.*;
  * Multicast addresses: 224.0.0.0 to 239.255.255.255. Best to use 224-238 which are not reserved for anything.
  */
 
-public class Server implements Runnable {
+public class ServerInit implements Runnable {
 
     private String version;
     private int idServer;
     private String acessPoint;
+    private String fileId;
 
 
     private int BUF_LENGTH = 65000;
+    private int ATTEMPTS = 5;
 
     private MulticastBackup MDB;
     private MulticastControl MC;
@@ -28,7 +30,7 @@ public class Server implements Runnable {
 
     }
 
-    public Server(String[] args) throws InterruptedException, IOException {
+    public ServerInit(String[] args) throws InterruptedException, IOException {
 
         String version = args[0];
         int idServer = Integer.parseInt(args[1]);
@@ -62,11 +64,16 @@ public class Server implements Runnable {
 
     }
 
+    void delete(String path, MulticastControl MC){
+
+        //cria o fileId
+        MC.sendsDelete(version,idServer, fileId);
+    }
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
 
         try {
             //"1.0", 2, "acessPoint", "228.5.6.7", 3000, "228.5.6.6", 4000, "228.5.6.8", 5000
-            Server server = new Server(args);
+            ServerInit server = new ServerInit(args);
 
         } catch (Exception e) {
             e.printStackTrace();
