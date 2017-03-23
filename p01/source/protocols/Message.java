@@ -35,6 +35,21 @@ public class Message {
         this.replicationDeg = replicationDeg;
     }
 
+    public Message(String version, int senderId, String fileId, int chunkNum) {
+
+        this.version = version;
+        this.senderId = senderId;
+        this.fileId = fileId;
+        this.chunkNum = chunkNum;
+    }
+
+    public Message(String version, int senderId, String fileId){
+
+        this.version = version;
+        this.senderId = senderId;
+        this.fileId = fileId;
+    }
+
     public Message(String message) {
 
         String[] result = message.split("\\s+");
@@ -46,23 +61,34 @@ public class Message {
             this.fileId = result[3];
             this.chunkNum = Integer.parseInt(result[4]);
             this.replicationDeg = Integer.parseInt(result[5]);
-        }
-        else
+        } else
             System.out.println("mensagem incompleta, faltam parametros");//temos que ver para o caso de ter 4 o que fazemos
 
 
     }
 
-    public String generatePutChunkLine() {
+    public String msgPutChunk() {
         return generateHeaderLine("PUTCHUNK", this.version, this.senderId, this.fileId, this.chunkNum, this.replicationDeg);
     }
 
-    public String generateStoredLine() {
-        return generateHeaderLine("STORED", this.version, this.senderId, this.fileId, null, null);
+    public String msgGetChunk() {
+        return generateHeaderLine("GETCHUNK", this.version, this.senderId, this.fileId, this.chunkNum, null);
     }
 
-    public String generateGetChunkLine() {
-        return generateHeaderLine("GETCHUNK", this.version, this.senderId, this.fileId, null, null);
+    public String msgStored() {
+        return generateHeaderLine("STORED", this.version, this.senderId, this.fileId, this.chunkNum, null);
+    }
+
+    public String msgChunk() {
+        return generateHeaderLine("CHUNK", this.version, this.senderId, this.fileId, this.chunkNum, null);
+    }
+
+    public String msgDelete() {
+        return generateHeaderLine("DELETE", this.version, this.senderId, this.fileId, null, null);
+    }
+
+    public String msgRemoved() {
+        return generateHeaderLine("REMOVED", this.version, this.senderId, this.fileId, this.chunkNum, null);
     }
 
     /**
@@ -115,7 +141,7 @@ public class Message {
 
         //Message message = new Message();
 
-       // System.out.println(unEscapeString(message.generateHeader(new String[]{message.generatePutChunkLine("1.0", 1, "23hj123", 0, 2)})));
+        // System.out.println(unEscapeString(message.generateHeader(new String[]{message.generatePutChunkLine("1.0", 1, "23hj123", 0, 2)})));
     }
 
     public static String unEscapeString(String s) {

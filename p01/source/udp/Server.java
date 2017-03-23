@@ -171,7 +171,7 @@ public class Server implements Runnable {
                 sControl.send(datagramPacketSend);
                 System.out.println("sends message");
 
-            }catch (IOException A){
+            } catch (IOException A) {
                 A.printStackTrace();
             }
         }
