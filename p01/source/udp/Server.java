@@ -16,19 +16,21 @@ import java.net.*;
 
 public class Server implements Runnable {
 
+    private String version;
+    private int idServer;
+    private String acessPoint;
+
     private InetAddress mControl;
     private InetAddress mBackup;
-    private InetAddress mResture;
+    private InetAddress mRestore;
 
     private int portControl;
     private int portBackup;
-    private int portResture;
+    private int portRestore;
 
     private MulticastSocket sControl;
     private MulticastSocket sBackup;
-    private MulticastSocket sResture;
-
-    private int idServer;
+    private MulticastSocket sRestore;
 
 
     private int BUF_LENGTH = 65000;
@@ -38,26 +40,27 @@ public class Server implements Runnable {
 
     }
 
-    public Server(int idServer, String MControl, int PortControl, String MBackup, int PortBachup, String MResture, int PortResture) throws UnknownHostException, InterruptedException, IOException {
+    public Server(String version, int idServer, String acessPoint, String MControl, int PortControl, String MBackup, int PortBackup, String MRestore, int PortRestore) throws InterruptedException, IOException {
 
+        this.version = version;
+        this.idServer = idServer;
+        this.acessPoint = acessPoint;
 
         this.mControl = InetAddress.getByName(MControl);
         this.mBackup = InetAddress.getByName(MBackup);
-        this.mResture = InetAddress.getByName(MResture);
+        this.mRestore = InetAddress.getByName(MRestore);
 
-        this.portBackup = PortBachup;
+        this.portBackup = PortBackup;
         this.portControl = PortControl;
-        this.portResture = PortResture;
-
-        this.idServer = idServer;
+        this.portRestore = PortRestore;
 
 
         try {
             sControl = new MulticastSocket(portControl);
             sBackup = new MulticastSocket(portBackup);
-            sResture = new MulticastSocket(portResture);
+            sRestore = new MulticastSocket(portRestore);
 
-            sResture.joinGroup(mResture);
+            sRestore.joinGroup(mRestore);
             sBackup.joinGroup(mBackup);
             sControl.joinGroup(mControl);
 
@@ -70,23 +73,10 @@ public class Server implements Runnable {
 
     }
 
-    public void send() throws IOException {
-
-
-        Message messageLine = new Message("vers", 1, "file", 1, 2);
-        String message = messageLine.generatePutChunkLine();
-
-        DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, mControl, portControl);
-        sControl.send(datagramPacketSend);
-        System.out.println("enviou");
-
-    }
-
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
 
         try {
-            Server server = new Server(2, "228.5.6.7", 3000, "228.5.6.6", 4000, "228.5.6.8", 5000);
-
+            Server server = new Server("1.0", 2, "acessPoint", "228.5.6.7", 3000, "228.5.6.6", 4000, "228.5.6.8", 5000);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -94,18 +84,32 @@ public class Server implements Runnable {
 
     }
 
-    public class MulticastResture extends Thread {
+    public class MulticastRestore extends Thread {
 
-        public void run() {
+        public void sends(String message) {
+            try {
+                //Message messageLine = new Message("vers", 1, "file", 1, 2);
+                //String message = messageLine.generatePutChunkLine();
 
-            System.out.println("MulticastResture");
+                DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, mControl, portControl);
+                sRestore.send(datagramPacketSend);
+                System.out.println("sends message");
+
+            } catch (IOException A) {
+                A.printStackTrace();
+            }
+        }
+
+        public void receive() {
+
+            System.out.println("MulticastRestore");
 
             while (true) {
                 try {
-                    byte[] recive = new byte[BUF_LENGTH];
-                    DatagramPacket datagramPacketRecive = new DatagramPacket(recive, recive.length);
-                    sResture.receive(datagramPacketRecive);
-                    String messageComplete = new String(datagramPacketRecive.getData(), 0, datagramPacketRecive.getLength());
+                    byte[] receive = new byte[BUF_LENGTH];
+                    DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
+                    sRestore.receive(datagramPacketReceive);
+                    String messageComplete = new String(datagramPacketReceive.getData(), 0, datagramPacketReceive.getLength());
 
                     Message message = new Message(messageComplete);
 
@@ -127,7 +131,21 @@ public class Server implements Runnable {
 
     public class MulticastBackup extends Thread {
 
-        public void run() {
+        public void sends(String message) {
+            try {
+                //Message messageLine = new Message("vers", 1, "file", 1, 2);
+                //String message = messageLine.generatePutChunkLine();
+
+                DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, mControl, portControl);
+                sBackup.send(datagramPacketSend);
+                System.out.println("sends message");
+
+            } catch (IOException A) {
+                A.printStackTrace();
+            }
+        }
+
+        public void receive() {
             System.out.println("MulticastBackup");
 
             while (true) {
