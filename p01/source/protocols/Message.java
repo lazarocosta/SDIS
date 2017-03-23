@@ -43,7 +43,8 @@ public class Message {
         this.chunkNum = chunkNum;
     }
 
-    public Message(String version, int senderId, String fileId){
+
+    public Message(String version, int senderId, String fileId) {
 
         this.version = version;
         this.senderId = senderId;
@@ -100,13 +101,19 @@ public class Message {
      * @param replicationDeg This field contains the desired replication degree of the chunk. This is a digit, thus allowing a replication degree of up to 9.
      * @return Generated message in a String field.
      */
-    public String generateHeaderLine(String msgType, String version, Integer senderId, String fileId, Integer chunkNum, Integer replicationDeg) {
+    private String generateHeaderLine(String msgType, String version, Integer senderId, String fileId, Integer chunkNum, Integer replicationDeg) {
 
         /**
          * String template: "<MessageType> <Version> <SenderId> <FileId> <ChunkNo> <ReplicationDeg> <CRLF>"
          * */
-
-        String line = msgType + SPACE + version + SPACE + senderId.toString() + SPACE + fileId + SPACE + chunkNum.toString() + SPACE + replicationDeg.toString() + CRLF;
+        String line;
+        if (replicationDeg == null) {
+            if (chunkNum == null) {
+                line = msgType + SPACE + version + SPACE + senderId.toString() + SPACE + fileId + CRLF;
+            } else
+                line = msgType + SPACE + version + SPACE + senderId.toString() + SPACE + fileId + SPACE + chunkNum.toString() + CRLF;
+        } else
+            line = msgType + SPACE + version + SPACE + senderId.toString() + SPACE + fileId + SPACE + chunkNum.toString() + SPACE + replicationDeg.toString() + CRLF;
 
         return line;
     }
@@ -115,7 +122,7 @@ public class Message {
 
         String header = "";
 
-        for (int i = 0; i < lineArray.length; i++) {
+        for(int i = 0; i < lineArray.length; i++) {
             header = header + lineArray[i];
         }
 
