@@ -2,6 +2,7 @@ package protocols;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Arrays;
 
 /**
  * Created by Lazaro on 23/03/2017.
@@ -27,9 +28,13 @@ public class MulticastBackup implements Runnable {
     }
 
     public void sendsPutChunk(String version, int senderId, String fileId, int chunkNo, int replication, byte[] body) {
+
+
         try {
             Message messageLine = new Message(version, senderId, fileId, chunkNo, replication);
-            String message = messageLine.msgPutChunk(body);
+            messageLine.setBody(Arrays.toString(body));
+            String message = messageLine.msgPutChunk();
+
 
             DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
             socket.send(datagramPacketSend);

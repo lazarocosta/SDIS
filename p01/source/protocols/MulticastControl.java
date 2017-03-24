@@ -1,8 +1,8 @@
 package protocols;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
+import java.util.Arrays;
 
 /**
  * Created by Lazaro on 23/03/2017.
@@ -100,6 +100,8 @@ public class MulticastControl implements Runnable {
 
                 switch (msg.getMsgType()) {
                     case "GETCHUNK": {
+                        String body = this.getChunkOfSender(msg.getVersion(), msg.getSenderId(), msg.getFileId(), msg.getChunkNo());
+                        //ENVIAR RESULT PARA O RESTORE
                         //
                     }
                     break;
@@ -126,7 +128,7 @@ public class MulticastControl implements Runnable {
         }
     }
 
-    void deleteFile(int senderId, String fileId) {
+    private void deleteFile(int senderId, String fileId) {
 
         String pathSenderId = "Sender" + senderId;
         String pathFileId = pathSenderId + "/" + fileId;
@@ -147,5 +149,30 @@ public class MulticastControl implements Runnable {
                 }
             }
         }
+    }
+
+    public String getChunkOfSender(String version, int senderId, String fileId, int chunkNo) throws IOException {
+
+        String pathSenderId = "Sender" + senderId;
+        String pathChunkNo = pathSenderId + "/" + fileId + "/" + chunkNo;
+        byte[] body;
+
+
+        File f = new File(pathChunkNo);
+
+        if (f.exists()) {
+
+            InputStream is = new FileInputStream(pathChunkNo);
+            int size = is.available();
+            body = new byte[size];
+
+            for (int i = 0; i < size; i++) {
+                body[i] = (byte) is.read();
+            }
+        } else return null;
+
+
+
+        return Arrays.toString(body);
     }
 }

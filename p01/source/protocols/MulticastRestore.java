@@ -2,6 +2,7 @@ package protocols;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Arrays;
 
 /**
  * Created by Lazaro on 23/03/2017.
@@ -26,10 +27,11 @@ public class MulticastRestore implements Runnable {
         }
     }
 
-    public void sendsChunk(String version, int senderId, String fileId, int chunkNo, byte[]body) {
+    public void sendsChunk(String version, int senderId, String fileId, int chunkNo, byte[] body) {
         try {
             Message messageLine = new Message(version, senderId, fileId, chunkNo);
-            String message = messageLine.msgPutChunk(body);
+            messageLine.setBody(Arrays.toString(body));
+            String message = messageLine.msgPutChunk();
 
             DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
             socket.send(datagramPacketSend);
@@ -46,7 +48,6 @@ public class MulticastRestore implements Runnable {
 
         while (true) {
             try {
-
                 byte[] receive = new byte[BUF_LENGTH];
                 DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
                 socket.receive(datagramPacketReceive);

@@ -54,10 +54,10 @@ public class Message {
     public Message() {
     }
 
-    public String msgPutChunk(byte[] body) {
-        this.body = Arrays.toString(body);
+    public String msgPutChunk() {
+
         String header = generateHeaderLine("PUTCHUNK", this.version, this.senderId, this.fileId, this.chunkNo, this.replicationDeg);
-        header += body;
+        header +=this.body;
 
         return header;
     }
@@ -70,10 +70,9 @@ public class Message {
         return generateHeaderLine("STORED", this.version, this.senderId, this.fileId, this.chunkNo, null);
     }
 
-    public String msgChunk(byte[] body) {
-        this.body = Arrays.toString(body);
+    public String msgChunk() {
         String header = generateHeaderLine("CHUNK", this.version, this.senderId, this.fileId, this.chunkNo, null);
-        header += body;
+        header += this.body;
 
         return header;
     }
@@ -84,6 +83,10 @@ public class Message {
 
     public String msgRemoved() {
         return generateHeaderLine("REMOVED", this.version, this.senderId, this.fileId, this.chunkNo, null);
+    }
+
+    public void setBody(String body) {
+        this.body = body;
     }
 
     public String getVersion() {
