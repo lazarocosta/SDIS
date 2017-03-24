@@ -1,5 +1,6 @@
 package protocols;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.*;
 
@@ -88,7 +89,6 @@ public class MulticastControl implements Runnable {
 
         while (true) {
             try {
-
                 byte[] receive = new byte[BUF_LENGTH];
                 DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
                 socket.receive(datagramPacketReceive);
@@ -104,8 +104,8 @@ public class MulticastControl implements Runnable {
                     }
                     break;
                     case "DELETE": {
-                        Delete deleteFile = new Delete(msg.getFileId());
-                        //faz o delete
+                        this.deleteFile(msg.getSenderId(), msg.getFileId());
+                        System.out.println("Delete");
                     }
                     break;
                     case "REMOVED": {
@@ -120,9 +120,31 @@ public class MulticastControl implements Runnable {
                         System.out.println("discard");
                 }
 
-
             } catch (IOException A) {
                 A.fillInStackTrace();
+            }
+        }
+    }
+
+    void deleteFile(int senderId, String fileId) {
+
+        String pathSenderId = "Sender" + senderId;
+        String pathFileId = pathSenderId + "/" + fileId;
+
+        File f = new File(pathFileId);
+        File fileSender = new File(pathSenderId);
+
+        if (f.exists()) {
+            for (File file : f.listFiles()) {
+                file.delete();
+                System.out.println("delete file into" + pathFileId);
+            }
+
+            for (File file : fileSender.listFiles()) {
+                if (file.compareTo(f) == 0) {//equals
+                    file.delete();
+                    System.out.println("delete diretory" + pathFileId);
+                }
             }
         }
     }
