@@ -139,7 +139,7 @@ public class Message {
 
     public String generateHeader(String[] lineArray) {
 
-        String header = lineArray.toString();
+        String header = Arrays.toString(lineArray);
         header = header + CRLF + CRLF; // header must end with "<CRLF><CRLF>"
 
         return header;
@@ -219,12 +219,15 @@ public class Message {
             this.version = header[1];
             this.senderId = Integer.parseInt(header[2]);
             this.fileId = header[3];
-        }
-        if (header.length >= 5) {
-            this.chunkNo = Integer.parseInt(header[4]);
-        }
-        if (header.length >= 6) {
-            this.replicationDeg = Integer.parseInt(header[5]);
+
+            if (header.length >= 5) {
+                this.chunkNo = Integer.parseInt(header[4]);
+
+                if (header.length >= 6) {
+                    this.replicationDeg = Integer.parseInt(header[5]);
+                }
+
+            }
         }
     }
 
