@@ -51,24 +51,8 @@ public class Message {
         this.fileId = fileId;
     }
 
-
-    public Message(String message) {
-
-        String[] result = message.split("\\s+");
-
-        if (result.length == 6) {
-            this.msgType = result[0];
-            this.version = result[1];
-            this.senderId = Integer.parseInt(result[2]);
-            this.fileId = result[3];
-            this.chunkNo = Integer.parseInt(result[4]);
-            this.replicationDeg = Integer.parseInt(result[5]);
-        } else
-            System.out.println("mensagem incompleta, faltam parametros");//temos que ver para o caso de ter 4 o que fazemos
-
-
+    public Message() {
     }
-
 
     public String msgPutChunk(byte[] body) {
         this.body = Arrays.toString(body);
@@ -132,7 +116,7 @@ public class Message {
      *                       For example, version 1.0, the one specified in this document, should be encoded as the char sequence '1''.''0'.
      * @param senderId       This is the id of the server that has sent the message. This field is useful in many subprotocols. This is encoded as a variable length sequence of ASCII digits.
      * @param fileId         This is the file identifier for the backup service. As stated above, it is supposed to be obtained by using the SHA256 cryptographic hash function.
-     * @param chunkNo       This field together with the FileId specifies a chunk in the file. The chunk numbers are integers and should be assigned sequentially starting at 0.
+     * @param chunkNo        This field together with the FileId specifies a chunk in the file. The chunk numbers are integers and should be assigned sequentially starting at 0.
      * @param replicationDeg This field contains the desired replication degree of the chunk. This is a digit, thus allowing a replication degree of up to 9.
      * @return Generated message in a String field.
      */
@@ -200,5 +184,49 @@ public class Message {
             }
         return sb.toString();
     }
+
+    public void separateFullMsg(String message) {
+
+        // PUTCHUNK <Version> <SenderId> <FileId> <ChunkNo> <ReplicationDeg> <CRLF><CRLF><Body>
+        // CHUNK <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF><Body>
+        String[] tokens = message.split(CRLF + CRLF);
+
+        this.body = tokens[1];
+        String[] header = tokens[0].split("\\s+");
+
+        if (header.length >= 5) {
+            this.msgType = header[0];
+            this.version = header[1];
+            this.senderId = Integer.parseInt(header[2]);
+            this.fileId = header[3];
+            this.chunkNo = Integer.parseInt(header[4]);
+        }
+        if (header.length >= 6) {
+            this.replicationDeg = Integer.parseInt(header[5]);
+        }
+    }
+
+    public void separateMsg(String message) {
+
+        // <msgType> <Version> <SenderId> <FileId> <ChunkNo> <ReplicationDeg> <CRLF><CRLF>
+        // <msgType> <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF>
+        // <msgType> <Version> <SenderId> <FileId> <CRLF><CRLF>
+
+        String[] header = message.split("\\s+");
+
+        if (header.length >= 4) {
+            this.msgType = header[0];
+            this.version = header[1];
+            this.senderId = Integer.parseInt(header[2]);
+            this.fileId = header[3];
+        }
+        if (header.length >= 5) {
+            this.chunkNo = Integer.parseInt(header[4]);
+        }
+        if (header.length >= 6) {
+            this.replicationDeg = Integer.parseInt(header[5]);
+        }
+    }
+
 
 }

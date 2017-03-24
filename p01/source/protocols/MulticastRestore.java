@@ -40,7 +40,6 @@ public class MulticastRestore implements Runnable {
         }
     }
 
-
     @Override
     public void run() {
         System.out.println("MulticastRestore");
@@ -53,10 +52,11 @@ public class MulticastRestore implements Runnable {
                 socket.receive(datagramPacketReceive);
                 String messageComplete = new String(datagramPacketReceive.getData(), 0, datagramPacketReceive.getLength());
 
-                Message message = new Message(messageComplete);
+                Message msg = new Message();
+                msg.separateFullMsg(messageComplete);
 
-                switch (message.getMsgType()) {
-                    case "PUTCHUNK": {
+                switch (msg.getMsgType()) {
+                    case "CHUNK": {
                         //faz o backup
 
                         //envia a resposta pelo Mcontrol

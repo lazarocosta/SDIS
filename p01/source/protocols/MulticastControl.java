@@ -29,7 +29,7 @@ public class MulticastControl implements Runnable {
     public void sendsDelete(String version, int serverId, String fileId) {
         try {
             Message messageLine = new Message(version, serverId, fileId);
-           String message = messageLine.msgDelete();
+            String message = messageLine.msgDelete();
 
             DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
             socket.send(datagramPacketSend);
@@ -94,16 +94,17 @@ public class MulticastControl implements Runnable {
                 socket.receive(datagramPacketReceive);
                 String messageComplete = new String(datagramPacketReceive.getData(), 0, datagramPacketReceive.getLength());
 
-                Message message = new Message(messageComplete);
+                Message msg = new Message();
+                msg.separateMsg(messageComplete);
 
-                switch (message.getMsgType()) {
+
+                switch (msg.getMsgType()) {
                     case "GETCHUNK": {
-                        //faz o restore
-                        //envia a resposta pelor resure
+                        //
                     }
                     break;
                     case "DELETE": {
-                        Delete deleteFile = new Delete(message.getFileId());
+                        Delete deleteFile = new Delete(msg.getFileId());
                         //faz o delete
                     }
                     break;
@@ -111,8 +112,10 @@ public class MulticastControl implements Runnable {
                         //
                     }
                     break;
-
-
+                    case "STORED": {
+                        //
+                    }
+                    break;
                     default:
                         System.out.println("discard");
                 }

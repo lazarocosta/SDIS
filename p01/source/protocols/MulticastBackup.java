@@ -53,9 +53,10 @@ public class MulticastBackup implements Runnable {
                 socket.receive(datagramPacketReceive);
                 String messageComplete = new String(datagramPacketReceive.getData(), 0, datagramPacketReceive.getLength());
 
-                Message message = new Message(messageComplete);
+                Message msg = new Message();
+                msg.separateFullMsg(messageComplete);
 
-                switch (message.getMsgType()) {
+                switch (msg.getMsgType()) {
                     case "PUTCHUNK": {
                         //faz o backup
 
@@ -65,7 +66,7 @@ public class MulticastBackup implements Runnable {
 
 
                     default:
-                        System.out.println("erro");
+                        System.out.println("discard");
                 }
 
             } catch (IOException A) {
