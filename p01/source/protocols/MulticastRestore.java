@@ -17,7 +17,7 @@ public class MulticastRestore implements Runnable {
 
     public MulticastRestore(int port, String address, int idSender) {
 
-        this.idSender=idSender;
+        this.idSender = idSender;
         try {
             this.port = port;
             addr = InetAddress.getByName(address);
@@ -29,19 +29,27 @@ public class MulticastRestore implements Runnable {
         }
     }
 
-    public void sendsChunk(String version, int senderId, String fileId, int chunkNo, byte[] body) {
-        try {
-            Message messageLine = new Message(version, senderId, fileId, chunkNo);
-            messageLine.setBody(Arrays.toString(body));
-            String message = messageLine.msgPutChunk();
+    public String messageChunk(String version, int senderId, String fileId, int chunkNo, String body) {
 
+        Message messageLine = new Message(version, senderId, fileId, chunkNo);
+        messageLine.setBody(body);
+        String message = messageLine.msgPutChunk();
+
+        System.out.println("sends message Chunk");
+        return message;
+
+    }
+
+    public void sendsMessage(String message) {
+
+        try {
             DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
             socket.send(datagramPacketSend);
             System.out.println("sends message Chunk");
-
         } catch (IOException A) {
             A.printStackTrace();
         }
+
     }
 
     @Override

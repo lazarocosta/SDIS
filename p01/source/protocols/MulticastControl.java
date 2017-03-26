@@ -29,60 +29,55 @@ public class MulticastControl implements Runnable {
         }
     }
 
-    public void sendsDelete(String version, int serverId, String fileId) {
-        try {
-            Message messageLine = new Message(version, idSender, fileId);
-            String message = messageLine.msgDelete();
+    public String messageDelete(String version, int idSender, String fileId) {
 
-            DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
-            socket.send(datagramPacketSend);
-            System.out.println("sends message Delete");
+        Message messageLine = new Message(version, idSender, fileId);
+        String message = messageLine.msgDelete();
+        return message;
 
-        } catch (IOException A) {
-            A.printStackTrace();
-        }
+
     }
 
-    public void sendsStored(String version, int idSender, String fileId, int ChunkNo) {
-        try {
-            Message messageLine = new Message(version, idSender, fileId, ChunkNo);
-            String message = messageLine.msgStored();
+    public String messageStored(String version, int idSender, String fileId, int ChunkNo) {
 
-            DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
-            socket.send(datagramPacketSend);
-            System.out.println("sends message Stored");
+        Message messageLine = new Message(version, idSender, fileId, ChunkNo);
+        String message = messageLine.msgStored();
 
-        } catch (IOException A) {
-            A.printStackTrace();
-        }
+        System.out.println(" message Stored");
+        return message;
+
     }
 
-    public void sendsGetChunk(String version, int idSender, String fileId, int ChunkNo) {
-        try {
-            Message messageLine = new Message(version, idSender, fileId, ChunkNo);
-            String message = messageLine.msgGetChunk();
+    public String messageGetChunk(String version, int idSender, String fileId, int ChunkNo) {
 
-            DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
-            socket.send(datagramPacketSend);
-            System.out.println("sends message GetChunk");
+        Message messageLine = new Message(version, idSender, fileId, ChunkNo);
+        String message = messageLine.msgGetChunk();
 
-        } catch (IOException A) {
-            A.printStackTrace();
-        }
+        System.out.println(" message GetChunk");
+        return message;
+
     }
 
-    public void sendsRemoved(String version, int idSender, String fileId, int ChunkNo) {
-        try {
-            Message messageLine = new Message(version, idSender, fileId, ChunkNo);
-            String message = messageLine.msgRemoved();
+    public String messageRemoved(String version, int idSender, String fileId, int ChunkNo) {
 
+        Message messageLine = new Message(version, idSender, fileId, ChunkNo);
+        String message = messageLine.msgRemoved();
+
+        System.out.println(" message GetChunk");
+        return message;
+
+    }
+
+    public void sendsMessage(String message) {
+        try {
             DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
             socket.send(datagramPacketSend);
-            System.out.println("sends message GetChunk");
+            System.out.println("sends message");
 
         } catch (IOException A) {
             A.printStackTrace();
         }
+
     }
 
     @Override
@@ -103,9 +98,8 @@ public class MulticastControl implements Runnable {
                 if (msg.getSenderId() != idSender) {
                     switch (msg.getMsgType()) {
                         case "GETCHUNK": {
-                            System.out.println("receive Get");
-                            System.out.println("senderId" + msg.getSenderId());
-                            System.out.println("chunkNo" + msg.getChunkNo());
+                            // System.out.println("senderId" + msg.getSenderId());
+                            //System.out.println("chunkNo" + msg.getChunkNo());
                             String body = this.getChunkOfSender(msg.getVersion(), msg.getSenderId(), msg.getFileId(), msg.getChunkNo());
                             System.out.println(body);
                             //ENVIAR RESULT PARA O RESTORE

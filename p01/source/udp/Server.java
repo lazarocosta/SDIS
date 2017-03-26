@@ -47,7 +47,7 @@ public class Server implements Runnable {
 
 
         MDB = new MulticastBackup(PortBackup, MBackup, idSender);
-        MC = new MulticastControl(PortControl, MControl,idSender);
+        MC = new MulticastControl(PortControl, MControl, idSender);
         MDR = new MulticastRestore(PortRestore, MRestore, idSender);
 
 
@@ -61,18 +61,32 @@ public class Server implements Runnable {
         MDR_Thread.start();
 
 
-        if(idSender==1){
-           // MC.sendsDelete("1.0",idSender,"1");
-            MC.sendsGetChunk("1.0",idSender,"1",1);
+        if (idSender == 1) {
+            //String message=MC.messageDelete("1.0",idSender,"1");
+            String message1 = MC.messageGetChunk("1.0", idSender, "1", 1);
+            MC.sendsMessage(message1);
         }
 
     }
 
+    public void sendForRestore(String message) {
+        this.MDR.sendsMessage(message);
+    }
+
+    public void sendForBackup(String message) {
+        this.MDB.sendsMessage(message);
+    }
+
+    public void sendForControl(String message) {
+        this.MC.sendsMessage(message);
+    }
+
+
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
 
         try {
-            //"1.0" 1 "acessPoint" "228.5.6.7" 3000 "228.5.6.6" 4000 "228.5.6.8" 5000
-            //"1.0" 2 "acessPoint" "228.5.6.7" 3000 "228.5.6.6" 4000 "228.5.6.8" 5000
+            //java udp.Server "1.0" 1 "acessPoint" "228.5.6.7" 3000 "228.5.6.6" 4000 "228.5.6.8" 5000
+            //java udp.Server "1.0" 2 "acessPoint" "228.5.6.7" 3000 "228.5.6.6" 4000 "228.5.6.8" 5000
             Server server = new Server(args);
 
         } catch (Exception e) {

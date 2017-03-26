@@ -17,7 +17,7 @@ public class MulticastBackup implements Runnable {
 
     public MulticastBackup(int port, String address, int idSender) {
 
-        this.idSender=idSender;
+        this.idSender = idSender;
         try {
             this.port = port;
             addr = InetAddress.getByName(address);
@@ -29,15 +29,19 @@ public class MulticastBackup implements Runnable {
         }
     }
 
-    public void sendsPutChunk(String version, int senderId, String fileId, int chunkNo, int replication, byte[] body) {
+    public String messagePutChunk(String version, int senderId, String fileId, int chunkNo, int replication, String body) {
+
+        Message messageLine = new Message(version, senderId, fileId, chunkNo, replication);
+        messageLine.setBody(body);
+        String message = messageLine.msgPutChunk();
+
+        return message;
+    }
+
+    public void sendsMessage(String message) {
 
 
         try {
-            Message messageLine = new Message(version, senderId, fileId, chunkNo, replication);
-            messageLine.setBody(Arrays.toString(body));
-            String message = messageLine.msgPutChunk();
-
-
             DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
             socket.send(datagramPacketSend);
             System.out.println("sends message PutChunk");
@@ -46,7 +50,6 @@ public class MulticastBackup implements Runnable {
             A.printStackTrace();
         }
     }
-
 
     @Override
     public void run() {
