@@ -13,9 +13,11 @@ public class MulticastRestore implements Runnable {
     private int port;
     private InetAddress addr;
     private int BUF_LENGTH = 65000;
+    private int idSender;
 
-    public MulticastRestore(int port, String address) {
+    public MulticastRestore(int port, String address, int idSender) {
 
+        this.idSender=idSender;
         try {
             this.port = port;
             addr = InetAddress.getByName(address);
@@ -48,6 +50,7 @@ public class MulticastRestore implements Runnable {
 
         while (true) {
             try {
+                System.out.println("control wait");
                 byte[] receive = new byte[BUF_LENGTH];
                 DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
                 socket.receive(datagramPacketReceive);

@@ -63,6 +63,7 @@ public class Message {
     }
 
     public String msgGetChunk() {
+        System.out.println("mensagemas" +senderId);
         return generateHeaderLine("GETCHUNK", this.version, this.senderId, this.fileId, this.chunkNo, null);
     }
 

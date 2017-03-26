@@ -13,9 +13,11 @@ public class MulticastControl implements Runnable {
     private int port;
     private InetAddress addr;
     private int BUF_LENGTH = 65000;
+    private int idSender;
 
-    public MulticastControl(int port, String address) {
+    public MulticastControl(int port, String address, int idSender) {
 
+        this.idSender = idSender;
         try {
             this.port = port;
             addr = InetAddress.getByName(address);
@@ -29,7 +31,7 @@ public class MulticastControl implements Runnable {
 
     public void sendsDelete(String version, int serverId, String fileId) {
         try {
-            Message messageLine = new Message(version, serverId, fileId);
+            Message messageLine = new Message(version, idSender, fileId);
             String message = messageLine.msgDelete();
 
             DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
@@ -41,9 +43,9 @@ public class MulticastControl implements Runnable {
         }
     }
 
-    public void sendsStored(String version, int serverId, String fileId, int ChunkNo) {
+    public void sendsStored(String version, int idSender, String fileId, int ChunkNo) {
         try {
-            Message messageLine = new Message(version, serverId, fileId, ChunkNo);
+            Message messageLine = new Message(version, idSender, fileId, ChunkNo);
             String message = messageLine.msgStored();
 
             DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
@@ -55,9 +57,9 @@ public class MulticastControl implements Runnable {
         }
     }
 
-    public void sendsGetChunk(String version, int serverId, String fileId, int ChunkNo) {
+    public void sendsGetChunk(String version, int idSender, String fileId, int ChunkNo) {
         try {
-            Message messageLine = new Message(version, serverId, fileId, ChunkNo);
+            Message messageLine = new Message(version, idSender, fileId, ChunkNo);
             String message = messageLine.msgGetChunk();
 
             DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
@@ -69,9 +71,9 @@ public class MulticastControl implements Runnable {
         }
     }
 
-    public void sendsRemoved(String version, int serverId, String fileId, int ChunkNo) {
+    public void sendsRemoved(String version, int idSender, String fileId, int ChunkNo) {
         try {
-            Message messageLine = new Message(version, serverId, fileId, ChunkNo);
+            Message messageLine = new Message(version, idSender, fileId, ChunkNo);
             String message = messageLine.msgRemoved();
 
             DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
@@ -89,41 +91,46 @@ public class MulticastControl implements Runnable {
 
         while (true) {
             try {
+                System.out.println("Control wait");
                 byte[] receive = new byte[BUF_LENGTH];
                 DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
                 socket.receive(datagramPacketReceive);
                 String messageComplete = new String(datagramPacketReceive.getData(), 0, datagramPacketReceive.getLength());
-
                 Message msg = new Message();
                 msg.separateMsg(messageComplete);
 
-
-                switch (msg.getMsgType()) {
-                    case "GETCHUNK": {
-                        String body = this.getChunkOfSender(msg.getVersion(), msg.getSenderId(), msg.getFileId(), msg.getChunkNo());
-                        //ENVIAR RESULT PARA O RESTORE
-                        //
+                System.out.println(msg.getMsgType());
+                if (msg.getSenderId() != idSender) {
+                    switch (msg.getMsgType()) {
+                        case "GETCHUNK": {
+                            System.out.println("receive Get");
+                            System.out.println("senderId" + msg.getSenderId());
+                            System.out.println("chunkNo" + msg.getChunkNo());
+                            String body = this.getChunkOfSender(msg.getVersion(), msg.getSenderId(), msg.getFileId(), msg.getChunkNo());
+                            System.out.println(body);
+                            //ENVIAR RESULT PARA O RESTORE
+                            //
+                        }
+                        break;
+                        case "DELETE": {
+                            this.deleteFile(msg.getSenderId(), msg.getFileId());
+                            System.out.println("Delete");
+                        }
+                        break;
+                        case "REMOVED": {
+                            //
+                        }
+                        break;
+                        case "STORED": {
+                            //
+                        }
+                        break;
+                        default:
+                            System.out.println("discard");
                     }
-                    break;
-                    case "DELETE": {
-                        this.deleteFile(msg.getSenderId(), msg.getFileId());
-                        System.out.println("Delete");
-                    }
-                    break;
-                    case "REMOVED": {
-                        //
-                    }
-                    break;
-                    case "STORED": {
-                        //
-                    }
-                    break;
-                    default:
-                        System.out.println("discard");
                 }
-
-            } catch (IOException A) {
-                A.fillInStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -154,25 +161,24 @@ public class MulticastControl implements Runnable {
     public String getChunkOfSender(String version, int senderId, String fileId, int chunkNo) throws IOException {
 
         String pathSenderId = "Sender" + senderId;
-        String pathChunkNo = pathSenderId + "/" + fileId + "/" + chunkNo;
-        byte[] body;
+        String pathChunkNo = pathSenderId + "/" + fileId + "/" + chunkNo + ".txt"; // TEMOS QUE VER AQUI A TERMINAÇAO
 
+        String body = "";
 
         File f = new File(pathChunkNo);
 
         if (f.exists()) {
-
+            System.out.println("existe chunk");
             InputStream is = new FileInputStream(pathChunkNo);
             int size = is.available();
-            body = new byte[size];
 
             for (int i = 0; i < size; i++) {
-                body[i] = (byte) is.read();
+                int re = is.read();
+                String read = Character.toString((char) re);
+                body += read;
             }
         } else return null;
 
-
-
-        return Arrays.toString(body);
+        return body;
     }
 }

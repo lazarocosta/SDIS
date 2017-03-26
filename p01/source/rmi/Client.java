@@ -11,15 +11,47 @@ public class Client {
 
     public static void main(String[] args) throws IOException {
 
-        /* NAO APAGAR********************     NAO APAGAR  TESTE
+        //NAO APAGAR********************     NAO APAGAR  TESTE
 
-        System.out.println("response: ");
-        File f = new File("aaaaa");
+    /*    System.out.println("response: ");
+        File f = new File("aaaassa/qq.txt");
         f.mkdirs();
-        OutputStream os = new FileOutputStream("aaaaa/qq.txt");
-        String string = "abcdefgijklmnopkrstuvwxyz";
+        if(f.exists())
+            System.out.println("tem");
+        f.delete();*/
 
-        byte bWrite[] = string.getBytes();
+
+        String pathSenderId = "Sender" + 1;
+        String pathFileId = pathSenderId + "/" + 1;
+
+        File f = new File(pathFileId);
+        File fileSender = new File(pathSenderId);
+
+        //f.mkdirs();
+        if (f.exists()) {
+            for (File file : f.listFiles()) {
+                file.delete();
+                System.out.println("delete file into" + pathFileId);
+            }
+
+            for (File file : fileSender.listFiles()) {
+                if(file.compareTo(f)==0) {//equals
+                   // file.delete();
+                    System.out.println("delete diretory" + pathFileId);
+                }
+            }
+        }
+
+
+
+
+      /*  OutputStream os = new FileOutputStream("aaaaa/qq.txt");
+        String string = "abcdefgijklmnopkrstuvwxyz";
+        File[] este = f.listFiles();
+        este[0].delete();
+        System.out.println(este.length);
+
+     /*   byte bWrite[] = string.getBytes();
         for (int x = 0; x < bWrite.length; x++) {
             os.write(bWrite[x]);   // writes the bytes
         }
@@ -33,10 +65,13 @@ public class Client {
         for (int i = 0; i < size; i++) {
             System.out.print((char) is.read() + "  ");
         }
-        */
+        System.out.println();
+        System.out.println(f.getPath());
+        System.out.println(f.getAbsolutePath());*/
 
 
-        File file = null;
+
+      /*  File file = null;
         String[] paths;
         String host = (args.length < 1) ? null : args[0];
         try {
@@ -55,6 +90,6 @@ public class Client {
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
             e.printStackTrace();
-        }
+        }*/
     }
 }

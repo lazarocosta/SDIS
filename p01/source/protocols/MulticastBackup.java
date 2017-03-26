@@ -13,9 +13,11 @@ public class MulticastBackup implements Runnable {
     private int port;
     private InetAddress addr;
     private int BUF_LENGTH = 65000;
+    private int idSender;
 
-    public MulticastBackup(int port, String address) {
+    public MulticastBackup(int port, String address, int idSender) {
 
+        this.idSender=idSender;
         try {
             this.port = port;
             addr = InetAddress.getByName(address);
@@ -52,7 +54,7 @@ public class MulticastBackup implements Runnable {
 
         while (true) {
             try {
-
+                System.out.println("backup wait");
                 byte[] receive = new byte[BUF_LENGTH];
                 DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
                 socket.receive(datagramPacketReceive);

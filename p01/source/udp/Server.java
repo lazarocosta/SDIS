@@ -13,7 +13,7 @@ import java.net.*;
 public class Server implements Runnable {
 
     private String version;
-    private int idServer;
+    private int idSender;
     private String acessPoint;
 
 
@@ -31,7 +31,7 @@ public class Server implements Runnable {
     public Server(String[] args) throws InterruptedException, IOException {
 
         String version = args[0];
-        int idServer = Integer.parseInt(args[1]);
+        int idSender = Integer.parseInt(args[1]);
         String acessPoint = args[2];
         String MControl = args[3];
         int PortControl = Integer.parseInt(args[4]);
@@ -42,13 +42,13 @@ public class Server implements Runnable {
 
 
         this.version = version;
-        this.idServer = idServer;
+        this.idSender = idSender;
         this.acessPoint = acessPoint;
 
 
-        MDB = new MulticastBackup(PortBackup, MBackup);
-        MC = new MulticastControl(PortControl, MControl);
-        MDR = new MulticastRestore(PortRestore, MRestore);
+        MDB = new MulticastBackup(PortBackup, MBackup, idSender);
+        MC = new MulticastControl(PortControl, MControl,idSender);
+        MDR = new MulticastRestore(PortRestore, MRestore, idSender);
 
 
         Thread MC_Thread = new Thread(MC);
@@ -60,12 +60,19 @@ public class Server implements Runnable {
         Thread MDR_Thread = new Thread(MDR);
         MDR_Thread.start();
 
+
+        if(idSender==1){
+           // MC.sendsDelete("1.0",idSender,"1");
+            MC.sendsGetChunk("1.0",idSender,"1",1);
+        }
+
     }
 
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
 
         try {
-            //"1.0", 2, "acessPoint", "228.5.6.7", 3000, "228.5.6.6", 4000, "228.5.6.8", 5000
+            //"1.0" 1 "acessPoint" "228.5.6.7" 3000 "228.5.6.6" 4000 "228.5.6.8" 5000
+            //"1.0" 2 "acessPoint" "228.5.6.7" 3000 "228.5.6.6" 4000 "228.5.6.8" 5000
             Server server = new Server(args);
 
         } catch (Exception e) {
