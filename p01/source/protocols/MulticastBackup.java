@@ -1,5 +1,7 @@
 package protocols;
 
+import udp.Server;
+
 import java.io.IOException;
 import java.net.*;
 import java.util.Arrays;
@@ -14,10 +16,12 @@ public class MulticastBackup implements Runnable {
     private InetAddress addr;
     private int BUF_LENGTH = 65000;
     private int idSender;
+    private Server sender;
 
-    public MulticastBackup(int port, String address, int idSender) {
+    public MulticastBackup(int port, String address, int idSender, Server sender) {
 
         this.idSender = idSender;
+        this.sender = sender;
         try {
             this.port = port;
             addr = InetAddress.getByName(address);

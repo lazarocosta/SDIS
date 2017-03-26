@@ -6,13 +6,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-/**
- *
- */
 public class Message {
 
     // TODO: Put Body on some messages and not on every single one.
-
 
     public String header;
     public String body;
@@ -57,13 +53,13 @@ public class Message {
     public String msgPutChunk() {
 
         String header = generateHeaderLine("PUTCHUNK", this.version, this.senderId, this.fileId, this.chunkNo, this.replicationDeg);
-        header +=this.body;
+        header += this.body;
 
         return header;
     }
 
     public String msgGetChunk() {
-        System.out.println("mensagemas" +senderId);
+        System.out.println("mensagems" + senderId);
         return generateHeaderLine("GETCHUNK", this.version, this.senderId, this.fileId, this.chunkNo, null);
     }
 
@@ -112,6 +108,10 @@ public class Message {
 
     public String getMsgType() {
         return msgType;
+    }
+
+    public String getBody() {
+        return body;
     }
 
 

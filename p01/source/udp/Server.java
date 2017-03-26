@@ -46,9 +46,9 @@ public class Server implements Runnable {
         this.acessPoint = acessPoint;
 
 
-        MDB = new MulticastBackup(PortBackup, MBackup, idSender);
-        MC = new MulticastControl(PortControl, MControl, idSender);
-        MDR = new MulticastRestore(PortRestore, MRestore, idSender);
+        MDB = new MulticastBackup(PortBackup, MBackup, idSender, this);
+        MC = new MulticastControl(PortControl, MControl, idSender, this);
+        MDR = new MulticastRestore(PortRestore, MRestore, idSender, this);
 
 
         Thread MC_Thread = new Thread(MC);

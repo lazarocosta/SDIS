@@ -1,6 +1,8 @@
 package protocols;
 
-import java.io.IOException;
+import udp.Server;
+
+import java.io.*;
 import java.net.*;
 import java.util.Arrays;
 
@@ -14,8 +16,9 @@ public class MulticastRestore implements Runnable {
     private InetAddress addr;
     private int BUF_LENGTH = 65000;
     private int idSender;
+    private Server sender;
 
-    public MulticastRestore(int port, String address, int idSender) {
+    public MulticastRestore(int port, String address, int idSender, Server sender) {
 
         this.idSender = idSender;
         try {
@@ -58,7 +61,6 @@ public class MulticastRestore implements Runnable {
 
         while (true) {
             try {
-                System.out.println("control wait");
                 byte[] receive = new byte[BUF_LENGTH];
                 DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
                 socket.receive(datagramPacketReceive);
@@ -67,11 +69,13 @@ public class MulticastRestore implements Runnable {
                 Message msg = new Message();
                 msg.separateFullMsg(messageComplete);
 
+                System.out.println(msg.getMsgType());
                 switch (msg.getMsgType()) {
                     case "CHUNK": {
-                        //faz o backup
-
-                        //envia a resposta pelo Mcontrol
+                        if (idSender == msg.getSenderId()) {
+                            System.out.println(idSender);
+                            this.restoreFile(msg);
+                        }
                     }
                     break;
                     default:
@@ -82,6 +86,32 @@ public class MulticastRestore implements Runnable {
                 A.fillInStackTrace();
             }
 
+        }
+    }
+
+    public void restoreFile(Message message) {
+
+        String pathSenderId = "Sender" + message.getSenderId();
+        String pathFileId = pathSenderId + "/" + message.getFileId();
+        String pathChunkNo = pathFileId + "/" + message.getChunkNo() + "copia.txt";
+
+        File f = new File(pathFileId);
+        File fChunk = new File(pathChunkNo);
+
+        if (!f.exists()) {
+            f.mkdir();
+            System.out.println("fez path");
+        }
+
+        try {
+            OutputStream is = new FileOutputStream(fChunk);
+            String body = message.getBody();
+
+            for (int i = 0; i < body.length(); i++) {
+                is.write(body.charAt(i));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

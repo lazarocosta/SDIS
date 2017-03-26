@@ -1,5 +1,7 @@
 package protocols;
 
+import udp.Server;
+
 import java.io.*;
 import java.net.*;
 import java.util.Arrays;
@@ -13,11 +15,13 @@ public class MulticastControl implements Runnable {
     private int port;
     private InetAddress addr;
     private int BUF_LENGTH = 65000;
-    private int idSender;
+    private int senderId;
+    private Server sender;
 
-    public MulticastControl(int port, String address, int idSender) {
+    public MulticastControl(int port, String address, int senderId, Server sender) {
 
-        this.idSender = idSender;
+        this.senderId = senderId;
+        this.sender = sender;
         try {
             this.port = port;
             addr = InetAddress.getByName(address);
@@ -58,6 +62,17 @@ public class MulticastControl implements Runnable {
 
     }
 
+    public String messageChunk(String version, int idSender, String fileId, int ChunkNo, String body) {
+
+        Message messageLine = new Message(version, idSender, fileId, ChunkNo);
+        messageLine.setBody(body);
+        String message = messageLine.msgChunk();
+
+        System.out.println(" message Chunk");
+        return message;
+
+    }
+
     public String messageRemoved(String version, int idSender, String fileId, int ChunkNo) {
 
         Message messageLine = new Message(version, idSender, fileId, ChunkNo);
@@ -86,7 +101,7 @@ public class MulticastControl implements Runnable {
 
         while (true) {
             try {
-                System.out.println("Control wait");
+
                 byte[] receive = new byte[BUF_LENGTH];
                 DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
                 socket.receive(datagramPacketReceive);
@@ -95,15 +110,15 @@ public class MulticastControl implements Runnable {
                 msg.separateMsg(messageComplete);
 
                 System.out.println(msg.getMsgType());
-                if (msg.getSenderId() != idSender) {
+                if (msg.getSenderId() != senderId) {
                     switch (msg.getMsgType()) {
                         case "GETCHUNK": {
-                            // System.out.println("senderId" + msg.getSenderId());
-                            //System.out.println("chunkNo" + msg.getChunkNo());
-                            String body = this.getChunkOfSender(msg.getVersion(), msg.getSenderId(), msg.getFileId(), msg.getChunkNo());
+
+                            String body = this.getChunkOfSender(msg.getVersion(), msg.getFileId(), msg.getChunkNo());
                             System.out.println(body);
-                            //ENVIAR RESULT PARA O RESTORE
-                            //
+
+                            String sendToServer = this.messageChunk(msg.getVersion(), msg.getSenderId(), msg.getFileId(), msg.getChunkNo(), body);
+                            this.sender.sendForRestore(sendToServer);
                         }
                         break;
                         case "DELETE": {
@@ -152,7 +167,7 @@ public class MulticastControl implements Runnable {
         }
     }
 
-    public String getChunkOfSender(String version, int senderId, String fileId, int chunkNo) throws IOException {
+    public String getChunkOfSender(String version, String fileId, int chunkNo) throws IOException {
 
         String pathSenderId = "Sender" + senderId;
         String pathChunkNo = pathSenderId + "/" + fileId + "/" + chunkNo + ".txt"; // TEMOS QUE VER AQUI A TERMINAÇAO
