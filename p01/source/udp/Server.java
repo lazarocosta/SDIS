@@ -18,10 +18,12 @@ public class Server implements Runnable {
 
 
     private int BUF_LENGTH = 65000;
+    private int AVAILABLE_SPACE = 124000000;
 
     private MulticastBackup MDB;
     private MulticastControl MC;
     private MulticastRestore MDR;
+    public int availableSpace = AVAILABLE_SPACE;
 
     @Override
     public void run() {
@@ -81,12 +83,13 @@ public class Server implements Runnable {
         this.MC.sendsMessage(message);
     }
 
-
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
 
         try {
             //java udp.Server "1.0" 1 "acessPoint" "228.5.6.7" 3000 "228.5.6.6" 4000 "228.5.6.8" 5000
             //java udp.Server "1.0" 2 "acessPoint" "228.5.6.7" 3000 "228.5.6.6" 4000 "228.5.6.8" 5000
+
+
             Server server = new Server(args);
 
         } catch (Exception e) {

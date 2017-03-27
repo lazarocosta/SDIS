@@ -62,9 +62,9 @@ public class MulticastControl implements Runnable {
 
     }
 
-    public String messageChunk(String version, int idSender, String fileId, int ChunkNo, String body) {
+    public String messageChunk(String version, String fileId, int ChunkNo, String body) {
 
-        Message messageLine = new Message(version, idSender, fileId, ChunkNo);
+        Message messageLine = new Message(version, senderId, fileId, ChunkNo);
         messageLine.setBody(body);
         String message = messageLine.msgChunk();
 
@@ -109,7 +109,7 @@ public class MulticastControl implements Runnable {
                 Message msg = new Message();
                 msg.separateMsg(messageComplete);
 
-                System.out.println(msg.getMsgType());
+                System.out.println("Type" + msg.getMsgType());
                 if (msg.getSenderId() != senderId) {
                     switch (msg.getMsgType()) {
                         case "GETCHUNK": {
@@ -117,7 +117,7 @@ public class MulticastControl implements Runnable {
                             String body = this.getChunkOfSender(msg.getVersion(), msg.getFileId(), msg.getChunkNo());
                             System.out.println(body);
 
-                            String sendToServer = this.messageChunk(msg.getVersion(), msg.getSenderId(), msg.getFileId(), msg.getChunkNo(), body);
+                            String sendToServer = this.messageChunk(msg.getVersion(), msg.getFileId(), msg.getChunkNo(), body);
                             this.sender.sendForRestore(sendToServer);
                         }
                         break;

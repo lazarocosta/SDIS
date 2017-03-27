@@ -21,6 +21,7 @@ public class MulticastRestore implements Runnable {
     public MulticastRestore(int port, String address, int idSender, Server sender) {
 
         this.idSender = idSender;
+        this.sender= sender;
         try {
             this.port = port;
             addr = InetAddress.getByName(address);
@@ -72,7 +73,7 @@ public class MulticastRestore implements Runnable {
                 System.out.println(msg.getMsgType());
                 switch (msg.getMsgType()) {
                     case "CHUNK": {
-                        if (idSender == msg.getSenderId()) {
+                        if (idSender != msg.getSenderId()) {
                             System.out.println(idSender);
                             this.restoreFile(msg);
                         }
@@ -85,13 +86,12 @@ public class MulticastRestore implements Runnable {
             } catch (IOException A) {
                 A.fillInStackTrace();
             }
-
         }
     }
 
     public void restoreFile(Message message) {
 
-        String pathSenderId = "Sender" + message.getSenderId();
+        String pathSenderId = "Sender" + idSender;
         String pathFileId = pathSenderId + "/" + message.getFileId();
         String pathChunkNo = pathFileId + "/" + message.getChunkNo() + "copia.txt";
 
@@ -110,6 +110,7 @@ public class MulticastRestore implements Runnable {
             for (int i = 0; i < body.length(); i++) {
                 is.write(body.charAt(i));
             }
+            is.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
