@@ -43,12 +43,14 @@ public class ServerInitiation extends Server implements Service {
     Registry serverRegistry;
 
     Map<String, String> fileIdToFileName = new HashMap<>();
+    private int ATTEMPTS = 5;
+    private long SLEEP_ms = 50;
+
 
     public ServerInitiation(String version, int idSender, String acessPoint, String MControl, int PortControl, String MBackup, int PortBackup, String MRestore, int PortRestore, String serverName) throws AlreadyBoundException, IOException, InterruptedException {
         super(version, idSender, acessPoint, MControl, PortControl, MBackup, PortBackup, MRestore, PortRestore);
 
         this.serverName = serverName;
-
         this.createRegistry();
     }
 
@@ -81,10 +83,18 @@ public class ServerInitiation extends Server implements Service {
     }
 
     @Override
-    public void deleteFile(String version, int idSender, String fileId) throws RemoteException {
+    public void deleteFile(String version, int idSender, String fileId) throws RemoteException, InterruptedException {
 
-        String msgDelete = this.MC.messageDelete(version, idSender, fileId);
-        this.MC.sendsMessage(msgDelete);
+        int attempts = ATTEMPTS;
+
+        while (attempts > 0) {
+
+            String msgDelete = this.MC.messageDelete(version, idSender, fileId);
+            this.MC.sendsMessage(msgDelete);
+
+            Thread.sleep(SLEEP_ms);
+            attempts--;
+        }
     }
 
     @Override

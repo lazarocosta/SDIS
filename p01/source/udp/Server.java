@@ -1,5 +1,6 @@
 package udp;
 
+import files.Disk;
 import protocols.*;
 
 import java.io.IOException;
@@ -18,12 +19,11 @@ public class Server implements Runnable {
 
 
     private int BUF_LENGTH = 65000;
-    private int AVAILABLE_SPACE = 124000000;
 
     protected MulticastBackup MDB;
     protected MulticastControl MC;
     protected MulticastRestore MDR;
-    public int availableSpace = AVAILABLE_SPACE;
+    protected Disk diskServer;
 
     @Override
     public void run() {
@@ -36,6 +36,7 @@ public class Server implements Runnable {
         this.version = version;
         this.idSender = idSender;
         this.acessPoint = acessPoint;
+        this.diskServer= new Disk();
 
 
         MDB = new MulticastBackup(PortBackup, MBackup, idSender, this);
@@ -54,8 +55,8 @@ public class Server implements Runnable {
 
 
         if (idSender == 1) {
-            String message=MC.messageDelete("1.0",idSender,"1");
-            //String message1 = MC.messageGetChunk("1.0", idSender, "1", 1);
+            // String message=MC.messageDelete("1.0",idSender,"1");
+            String message = MC.messageGetChunk("1.0", idSender, "1", 1);
             MC.sendsMessage(message);
         }
 

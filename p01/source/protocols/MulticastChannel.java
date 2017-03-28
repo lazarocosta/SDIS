@@ -16,12 +16,12 @@ public class MulticastChannel implements Runnable{
     protected int port;
     protected InetAddress addr;
     protected int BUF_LENGTH = 65000;
-    protected int idSender;
+    protected int senderId;
     protected Server sender;
 
-    public MulticastChannel(int port, String address, int idSender, Server sender) {
+    public MulticastChannel(int port, String address, int senderId, Server sender) {
 
-        this.idSender = idSender;
+        this.senderId = senderId;
         this.sender = sender;
         try {
             this.port = port;

@@ -44,7 +44,7 @@ public class MulticastRestore extends MulticastChannel {
                 switch (msg.getMsgType()) {
                     case "CHUNK": {
 
-                            System.out.println(idSender);
+                            System.out.println(senderId);
                             this.restoreFile(msg);
                     }
 
@@ -61,7 +61,7 @@ public class MulticastRestore extends MulticastChannel {
 
     public void restoreFile(Message message) {
 
-        String pathSenderId = "Sender" + idSender;
+        String pathSenderId = "Sender" + senderId;
         String pathFileId = pathSenderId + "/" + message.getFileId();
         String pathChunkNo = pathFileId + "/" + message.getChunkNo() + "copia.txt";
 
@@ -70,7 +70,7 @@ public class MulticastRestore extends MulticastChannel {
 
         if (!f.exists()) {
           //  f.mkdir();
-            System.out.println("fez path");
+            System.out.println("nao fez restore");
         }else {
 
             try {

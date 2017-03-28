@@ -46,7 +46,7 @@ public class MulticastControl extends MulticastChannel {
 
     public String messageChunk(String version, String fileId, int ChunkNo, String body) {
 
-        Message messageLine = new Message(version, this.idSender, fileId, ChunkNo);
+        Message messageLine = new Message(version, this.senderId, fileId, ChunkNo);
         messageLine.setBody(body);
         String message = messageLine.msgChunk();
 
@@ -81,19 +81,21 @@ public class MulticastControl extends MulticastChannel {
                 msg.separateMsg(messageComplete);
 
                 System.out.println("Type" + msg.getMsgType());
-                if (msg.getSenderId() != this.idSender) {
+                if (msg.getSenderId() != this.senderId) {
                     switch (msg.getMsgType()) {
                         case "GETCHUNK": {
 
                             String body = this.getChunkOfSender(msg.getVersion(), msg.getFileId(), msg.getChunkNo());
                             System.out.println(body);
 
-                            String sendToServer = this.messageChunk(msg.getVersion(), msg.getFileId(), msg.getChunkNo(), body);
-                            this.sender.sendForRestore(sendToServer);
+                            if (body != null) {
+                                String sendToServer = this.messageChunk(msg.getVersion(), msg.getFileId(), msg.getChunkNo(), body);
+                                this.sender.sendForRestore(sendToServer);
+                            }
                         }
                         break;
                         case "DELETE": {
-                            this.deleteFile(msg.getSenderId(), msg.getFileId());
+                            this.deleteFile(msg.getFileId());
                             System.out.println("Delete");
                         }
                         break;
@@ -115,7 +117,7 @@ public class MulticastControl extends MulticastChannel {
         }
     }
 
-    private void deleteFile(int senderId, String fileId) {
+    private void deleteFile(String fileId) {
 
         String pathSenderId = "Sender" + senderId;
         String pathFileId = pathSenderId + "/" + fileId;
@@ -140,7 +142,7 @@ public class MulticastControl extends MulticastChannel {
 
     public String getChunkOfSender(String version, String fileId, int chunkNo) throws IOException {
 
-        String pathSenderId = "Sender" + idSender;
+        String pathSenderId = "Sender" + senderId;
         String pathChunkNo = pathSenderId + "/" + fileId + "/" + chunkNo + ".txt"; // TEMOS QUE VER AQUI A TERMINAÇAO
 
         String body = "";
@@ -148,6 +150,7 @@ public class MulticastControl extends MulticastChannel {
         File f = new File(pathChunkNo);
 
         if (f.exists()) {
+
             System.out.println("existe chunk");
             InputStream is = new FileInputStream(pathChunkNo);
             int size = is.available();

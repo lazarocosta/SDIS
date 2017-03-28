@@ -18,7 +18,7 @@ public class Disk implements Serializable{
 
 
     public Disk() {
-        this("disk.disk", DEFAULT_STORAGE_SPACE);
+        this("disk", DEFAULT_STORAGE_SPACE);
     }
 
     public Disk(String filename, int storageSpace)
@@ -87,7 +87,6 @@ public class Disk implements Serializable{
     public void addStorageSpace(int bytes){
         this.storageSpace = this.storageSpace + bytes;
     }
-
 
     public void removeStorageSpace(int bytes){
         this.storageSpace = this.storageSpace - bytes;

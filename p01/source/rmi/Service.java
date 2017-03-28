@@ -21,7 +21,7 @@ public interface Service extends Remote {
 
     void restoreFile(File file) throws RemoteException;
 
-    void deleteFile(String version, int idSender, String fileId) throws RemoteException;
+    void deleteFile(String version, int idSender, String fileId) throws RemoteException, InterruptedException;
 
     void freeSpace(int amount) throws RemoteException;
 
