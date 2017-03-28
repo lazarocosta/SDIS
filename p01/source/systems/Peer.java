@@ -1,4 +1,4 @@
-package Systems;
+package systems;
 
 import java.io.IOException;
 
