@@ -2,6 +2,7 @@ package rmi;
 
 import files.Chunk;
 import files.MyFile;
+import udp.Server;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
@@ -24,7 +25,7 @@ import static java.util.Arrays.copyOfRange;
 
 /**
  * TO RUN THE SERVER:
- *
+ * <p>
  * - Run 'rmiregistry &' (default port 1099) OR 'rmiregistry <port> &'.
  * - javac Server
  */
@@ -32,7 +33,7 @@ import static java.util.Arrays.copyOfRange;
 /**
  * The Server class implements the 'Service' interface in which ALL THE REMOTE METHODS SHOULD BE DECLARED. A method not declared in the 'Remote' interface may not be invoked remotely, but it may still be used locally (on the same computer).
  */
-public class ServerInitiation implements Service {
+public class ServerInitiation extends Server implements Service {
 
     static int DEFAULT_REGISTRY_PORT = 1099;
 
@@ -43,7 +44,9 @@ public class ServerInitiation implements Service {
 
     Map<String, String> fileIdToFileName = new HashMap<>();
 
-    public ServerInitiation(String serverName) throws AlreadyBoundException, RemoteException {
+    public ServerInitiation(String version, int idSender, String acessPoint, String MControl, int PortControl, String MBackup, int PortBackup, String MRestore, int PortRestore, String serverName) throws AlreadyBoundException, IOException, InterruptedException {
+        super(version, idSender, acessPoint, MControl, PortControl, MBackup, PortBackup, MRestore, PortRestore);
+
         this.serverName = serverName;
 
         this.createRegistry();
@@ -58,8 +61,7 @@ public class ServerInitiation implements Service {
 
         ArrayList<Chunk> chunks = MyFile.divideFileIntoChunks(file, fileIdToFileName);
 
-        for(int i = 0; i < chunks.size(); i++)
-        {
+        for (int i = 0; i < chunks.size(); i++) {
             System.out.println(chunks.get(i).getData());
 
             try {
@@ -94,9 +96,8 @@ public class ServerInitiation implements Service {
      * @throws RemoteException
      */
     @Override
-    public void exit() throws RemoteException
-    {
-        try{
+    public void exit() throws RemoteException {
+        try {
             // Unregister the RMI
             this.serverRegistry.unbind(serverName);
 
@@ -104,8 +105,7 @@ public class ServerInitiation implements Service {
             UnicastRemoteObject.unexportObject(this, true);
 
             System.out.println("Server exiting.");
-        }
-        catch(Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -113,7 +113,7 @@ public class ServerInitiation implements Service {
     public static void main(String args[]) {
 
         try {
-            ServerInitiation server = new ServerInitiation("RMI");
+            ServerInitiation server = new ServerInitiation(args[0], Integer.parseInt(args[1]), args[2], args[3], Integer.parseInt(args[4]), args[5], Integer.parseInt(args[6]), args[7], Integer.parseInt(args[8]),"RMI");
 
             System.err.println("Server ready");
 

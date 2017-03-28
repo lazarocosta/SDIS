@@ -73,10 +73,9 @@ public class MulticastRestore implements Runnable {
                 System.out.println(msg.getMsgType());
                 switch (msg.getMsgType()) {
                     case "CHUNK": {
-                        if (idSender != msg.getSenderId()) {
+
                             System.out.println(idSender);
                             this.restoreFile(msg);
-                        }
                     }
 
                     break;
@@ -100,20 +99,21 @@ public class MulticastRestore implements Runnable {
         File fChunk = new File(pathChunkNo);
 
         if (!f.exists()) {
-            f.mkdir();
+          //  f.mkdir();
             System.out.println("fez path");
-        }
+        }else {
 
-        try {
-            OutputStream is = new FileOutputStream(fChunk);
-            String body = message.getBody();
+            try {
+                OutputStream is = new FileOutputStream(fChunk);
+                String body = message.getBody();
 
-            for (int i = 0; i < body.length(); i++) {
-                is.write(body.charAt(i));
+                for (int i = 0; i < body.length(); i++) {
+                    is.write(body.charAt(i));
+                }
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            is.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

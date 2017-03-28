@@ -30,17 +30,7 @@ public class Server implements Runnable {
 
     }
 
-    public Server(String[] args) throws InterruptedException, IOException {
-
-        String version = args[0];
-        int idSender = Integer.parseInt(args[1]);
-        String acessPoint = args[2];
-        String MControl = args[3];
-        int PortControl = Integer.parseInt(args[4]);
-        String MBackup = args[5];
-        int PortBackup = Integer.parseInt(args[6]);
-        String MRestore = args[7];
-        int PortRestore = Integer.parseInt(args[8]);
+    public Server(String version, int idSender, String acessPoint, String MControl, int PortControl, String MBackup, int PortBackup, String MRestore, int PortRestore) throws InterruptedException, IOException {
 
 
         this.version = version;
@@ -90,7 +80,7 @@ public class Server implements Runnable {
             //java udp.Server "1.0" 2 "acessPoint" "228.5.6.7" 3000 "228.5.6.6" 4000 "228.5.6.8" 5000
 
 
-            Server server = new Server(args);
+            Server server = new Server(args[0], Integer.parseInt(args[1]), args[2], args[3], Integer.parseInt(args[4]), args[5], Integer.parseInt(args[6]), args[7], Integer.parseInt(args[8]));
 
         } catch (Exception e) {
             e.printStackTrace();
