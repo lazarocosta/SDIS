@@ -54,10 +54,12 @@ public class Server implements Runnable {
 
         if (idSender == 1) {
             // String message=MC.messageDelete("1.0",idSender,"1");
-            String message = MC.messageGetChunk("1.0", idSender, "1", 1);
-            MC.sendsMessage(message);
-        }
+           // String message = MC.messageGetChunk("1.0", idSender, "1", 1);
+            //TER em atenção porque canais se manda a mensagem
 
+            String message = MDB.messagePutChunk("1.0", idSender, "putchunk", 99,   1,"1111111111");
+            MDB.sendsMessage(message);
+        }
     }
 
     public void sendForRestore(String message) {
