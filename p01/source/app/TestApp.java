@@ -1,6 +1,7 @@
 package app;
 
 import java.io.File;
+import java.rmi.RemoteException;
 
 /**
  * Class to be run when testing the app.
@@ -17,26 +18,26 @@ public class TestApp {
 
     private static rmi.Service service;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RemoteException {
 
         if(!verifyArgs(args))
             return;
 
         switch (command) {
             case TestAppCommands.BACKUP:
-                //service.backup(new File(filepath), replicationDegree);
+                service.backupFile(new File(filePath), replication_degree);
                 break;
 
             case TestAppCommands.RESTORE:
-                //service.restore(new File(filePath));
+                service.restoreFile(new File(filePath));
                 break;
 
             case TestAppCommands.DELETE:
-                //service.delete(new File(filePath));
+                //TODO: service.deleteFile(new File(filePath));
                 break;
 
             case TestAppCommands.RECLAIM:
-                //service.reclaim(bytes);
+                service.reclaim(size);
                 break;
 
             default:
@@ -47,8 +48,21 @@ public class TestApp {
 
     public static boolean verifyArgs(String[] args) {
 
+        if(args.length == 0)
+        {
+            TestAppCommands.printUsage();
+            return false;
+        }
+
         if(args[0] == "help")
         {
+            TestAppCommands.printUsage();
+            return false;
+        }
+
+        if(args.length < 2)
+        {
+            System.out.println("Missing arguments");
             TestAppCommands.printUsage();
             return false;
         }
