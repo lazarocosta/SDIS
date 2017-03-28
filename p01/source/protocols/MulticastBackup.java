@@ -9,28 +9,10 @@ import java.util.Arrays;
 /**
  * Created by Lazaro on 23/03/2017.
  */
-public class MulticastBackup implements Runnable {
-
-    private MulticastSocket socket;
-    private int port;
-    private InetAddress addr;
-    private int BUF_LENGTH = 65000;
-    private int idSender;
-    private Server sender;
+public class MulticastBackup extends MulticastChannel {
 
     public MulticastBackup(int port, String address, int idSender, Server sender) {
-
-        this.idSender = idSender;
-        this.sender = sender;
-        try {
-            this.port = port;
-            addr = InetAddress.getByName(address);
-            this.socket = new MulticastSocket(port);
-            this.socket.joinGroup(addr);
-
-        } catch (IOException A) {
-            A.printStackTrace();
-        }
+        super(port, address, idSender, sender);
     }
 
     public String messagePutChunk(String version, int senderId, String fileId, int chunkNo, int replication, String body) {
@@ -40,20 +22,6 @@ public class MulticastBackup implements Runnable {
         String message = messageLine.msgPutChunk();
 
         return message;
-    }
-
-    public void sendsMessage(String message) {
-
-
-        try {
-            DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
-            socket.send(datagramPacketSend);
-            System.out.println("sends message PutChunk");
-
-
-        } catch (IOException A) {
-            A.printStackTrace();
-        }
     }
 
     @Override

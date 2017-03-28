@@ -9,28 +9,10 @@ import java.util.Arrays;
 /**
  * Created by Lazaro on 23/03/2017.
  */
-public class MulticastRestore implements Runnable {
-
-    private MulticastSocket socket;
-    private int port;
-    private InetAddress addr;
-    private int BUF_LENGTH = 65000;
-    private int idSender;
-    private Server sender;
+public class MulticastRestore extends MulticastChannel {
 
     public MulticastRestore(int port, String address, int idSender, Server sender) {
-
-        this.idSender = idSender;
-        this.sender= sender;
-        try {
-            this.port = port;
-            addr = InetAddress.getByName(address);
-            this.socket = new MulticastSocket(port);
-            this.socket.joinGroup(addr);
-
-        } catch (IOException A) {
-            A.printStackTrace();
-        }
+        super(port, address, idSender, sender);
     }
 
     public String messageChunk(String version, int senderId, String fileId, int chunkNo, String body) {
@@ -41,18 +23,6 @@ public class MulticastRestore implements Runnable {
 
         System.out.println("sends message Chunk");
         return message;
-
-    }
-
-    public void sendsMessage(String message) {
-
-        try {
-            DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
-            socket.send(datagramPacketSend);
-            System.out.println("sends message Chunk");
-        } catch (IOException A) {
-            A.printStackTrace();
-        }
 
     }
 

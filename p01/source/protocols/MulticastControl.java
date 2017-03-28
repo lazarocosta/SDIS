@@ -9,28 +9,10 @@ import java.util.Arrays;
 /**
  * Created by Lazaro on 23/03/2017.
  */
-public class MulticastControl implements Runnable {
-
-    private MulticastSocket socket;
-    private int port;
-    private InetAddress addr;
-    private int BUF_LENGTH = 65000;
-    private int senderId;
-    private Server sender;
+public class MulticastControl extends MulticastChannel {
 
     public MulticastControl(int port, String address, int senderId, Server sender) {
-
-        this.senderId = senderId;
-        this.sender = sender;
-        try {
-            this.port = port;
-            addr = InetAddress.getByName(address);
-            this.socket = new MulticastSocket(port);
-            this.socket.joinGroup(addr);
-
-        } catch (IOException A) {
-            A.printStackTrace();
-        }
+        super(port, address, senderId, sender);
     }
 
     public String messageDelete(String version, int idSender, String fileId) {
@@ -64,7 +46,7 @@ public class MulticastControl implements Runnable {
 
     public String messageChunk(String version, String fileId, int ChunkNo, String body) {
 
-        Message messageLine = new Message(version, senderId, fileId, ChunkNo);
+        Message messageLine = new Message(version, this.idSender, fileId, ChunkNo);
         messageLine.setBody(body);
         String message = messageLine.msgChunk();
 
@@ -84,18 +66,6 @@ public class MulticastControl implements Runnable {
 
     }
 
-    public void sendsMessage(String message) {
-        try {
-            DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
-            socket.send(datagramPacketSend);
-            System.out.println("sends message");
-
-        } catch (IOException A) {
-            A.printStackTrace();
-        }
-
-    }
-
     @Override
     public void run() {
         System.out.println("MulticastControl");
@@ -111,7 +81,7 @@ public class MulticastControl implements Runnable {
                 msg.separateMsg(messageComplete);
 
                 System.out.println("Type" + msg.getMsgType());
-                if (msg.getSenderId() != senderId) {
+                if (msg.getSenderId() != this.idSender) {
                     switch (msg.getMsgType()) {
                         case "GETCHUNK": {
 
@@ -170,7 +140,7 @@ public class MulticastControl implements Runnable {
 
     public String getChunkOfSender(String version, String fileId, int chunkNo) throws IOException {
 
-        String pathSenderId = "Sender" + senderId;
+        String pathSenderId = "Sender" + idSender;
         String pathChunkNo = pathSenderId + "/" + fileId + "/" + chunkNo + ".txt"; // TEMOS QUE VER AQUI A TERMINAÇAO
 
         String body = "";
