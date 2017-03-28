@@ -54,7 +54,6 @@ public class ServerInitiation extends Server implements Service {
         this.createRegistry();
     }
 
-
     @Override
     public String sayHello() throws RemoteException {
         return null;
@@ -65,7 +64,7 @@ public class ServerInitiation extends Server implements Service {
 
         ArrayList<Chunk> chunks = MyFile.divideFileIntoChunks(file, fileIdToFileName);
 
-        for (int i = 0; i < chunks.size(); i++) {
+      /*  for (int i = 0; i < chunks.size(); i++) {
             System.out.println(chunks.get(i).getData());
 
             try {
@@ -73,7 +72,29 @@ public class ServerInitiation extends Server implements Service {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+        }*/
+
+        for (int i = 0; i <chunks.size(); i++) {
+            int timeout = 1000;
+            for (int j = 0; j < 5; j++) {
+
+              /*  MC.count_reply = 0;
+                chunk = new Chunk(file.getFileID(), i, file.cutDataForChunk(i));
+                MDB.BackupRequest(peer_id, file.getFileID(), i, replication, chunk);
+                try {
+                    Thread.sleep(timeout);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(MulticastDataBackup.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                if (MC.count_reply >= replication) {
+                    break;
+                }
+                */
+                timeout *= 2;
+            }
         }
+
+
 
         System.out.println(fileIdToFileName);
 

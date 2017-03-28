@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.net.*;
 import java.util.Arrays;
 
+
 /**
  *
  */
@@ -25,16 +26,18 @@ public class MulticastBackup extends MulticastChannel {
         String pathChunkNo = pathFileId + "/" + chunkNo + ".txt";
 
         File f = new File(pathFileId);
+
         File fChunk = new File(pathChunkNo);
 
         if (!f.exists()) {
             f.mkdirs();
-            System.out.println("criou path");
+            System.out.println("criou path ");
         }
 
         try {
 
             OutputStream is = new FileOutputStream(fChunk);
+            this.sender.getDisk().saveFile(body.length());
 
             for (int i = 0; i < body.length(); i++) {
                 System.out.print(body.charAt(i));
