@@ -5,7 +5,7 @@
 # A || B  Run B if A failed
 # A &     Run A in background.
 
-xterm -hold -e java -cp production rmi.Server &
+xterm -hold -e java -cp production rmi.ServerInitiation &
 sleep 1 &&
 xterm -hold -e java -cp production rmi.Client
 

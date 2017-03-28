@@ -15,7 +15,7 @@ import java.rmi.AlreadyBoundException;
 /**
  *
  */
-public class Peer {
+public class    Peer {
 
     private static PeerInfo info; // info that defines the peer
     private static MulticastSocket mcSocket;    // socket through which the Peer will provide service

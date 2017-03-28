@@ -1,12 +1,17 @@
 package app;
 
 import java.io.File;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 /**
  * Class to be run when testing the app.
  */
 public class TestApp {
+
+    private static final String rmiHost = "localhost";
 
     private enum operations {BACKUP, RESTORE, DELETE, RECLAIM};
 
@@ -18,6 +23,7 @@ public class TestApp {
 
     private static rmi.Service service;
 
+    // java app.TestApp
     public static void main(String[] args) throws RemoteException {
 
         if(!verifyArgs(args))
@@ -69,6 +75,17 @@ public class TestApp {
 
         peer_ap = args[0];
         sub_protocol = args[1];
+
+        try {
+            Registry registry = LocateRegistry.getRegistry(rmiHost);
+
+            service = (rmi.Service) registry.lookup(peer_ap);
+
+        } catch (RemoteException | NotBoundException e) {
+            System.err.println("Invalid RMI object name");
+
+            return false;
+        }
 
         if((command = TestAppCommands.getCommand(sub_protocol)) == null)
         {
@@ -133,7 +150,7 @@ public class TestApp {
                     return false;
                 }
 
-                if((replication_degree = validIntegerArg(args[2]))== null)
+                if((size = validIntegerArg(args[2]))== null)
                 {
                     System.out.println(TestAppCommands.USAGE_DELETE + "\n");
                     return false;

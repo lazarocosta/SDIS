@@ -54,8 +54,11 @@ public class ServerInitiation extends Server implements Service {
         this.createRegistry();
     }
 
+    @Override
     public String sayHello() {
-        return "Service, world!";
+        System.out.println("Service, world!");
+
+        return("Hello, world!");
     }
 
     @Override
@@ -98,9 +101,10 @@ public class ServerInitiation extends Server implements Service {
     }
 
     @Override
-    public void freeSpace(int amount) throws RemoteException {
+    public void reclaim(int amount) throws RemoteException {
 
     }
+
 
     /**
      * Unbinds server from registry, freeing it.
