@@ -20,9 +20,9 @@ public class Server implements Runnable {
     private int BUF_LENGTH = 65000;
     private int AVAILABLE_SPACE = 124000000;
 
-    private MulticastBackup MDB;
-    private MulticastControl MC;
-    private MulticastRestore MDR;
+    protected MulticastBackup MDB;
+    protected MulticastControl MC;
+    protected MulticastRestore MDR;
     public int availableSpace = AVAILABLE_SPACE;
 
     @Override
@@ -54,9 +54,9 @@ public class Server implements Runnable {
 
 
         if (idSender == 1) {
-            //String message=MC.messageDelete("1.0",idSender,"1");
-            String message1 = MC.messageGetChunk("1.0", idSender, "1", 1);
-            MC.sendsMessage(message1);
+            String message=MC.messageDelete("1.0",idSender,"1");
+            //String message1 = MC.messageGetChunk("1.0", idSender, "1", 1);
+            MC.sendsMessage(message);
         }
 
     }

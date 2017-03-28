@@ -9,7 +9,7 @@ public class ChunkDatabase implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
-    Map<String, String> db;    // <ChunkID, ChunkInfo>
+    Map<String, String> db;    // <ChunkInfo, Chunk>
     Map<String, String> files;  // <String, FileInfo>
 
     public ChunkDatabase(){

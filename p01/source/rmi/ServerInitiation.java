@@ -81,8 +81,10 @@ public class ServerInitiation extends Server implements Service {
     }
 
     @Override
-    public void deleteFile(File file) throws RemoteException {
+    public void deleteFile(String version, int idSender, String fileId) throws RemoteException {
 
+        String msgDelete = this.MC.messageDelete(version, idSender, fileId);
+        this.MC.sendsMessage(msgDelete);
     }
 
     @Override
@@ -113,7 +115,7 @@ public class ServerInitiation extends Server implements Service {
     public static void main(String args[]) {
 
         try {
-            ServerInitiation server = new ServerInitiation(args[0], Integer.parseInt(args[1]), args[2], args[3], Integer.parseInt(args[4]), args[5], Integer.parseInt(args[6]), args[7], Integer.parseInt(args[8]),"RMI");
+            ServerInitiation server = new ServerInitiation(args[0], Integer.parseInt(args[1]), args[2], args[3], Integer.parseInt(args[4]), args[5], Integer.parseInt(args[6]), args[7], Integer.parseInt(args[8]), "RMI");
 
             System.err.println("Server ready");
 
@@ -126,7 +128,7 @@ public class ServerInitiation extends Server implements Service {
     /**
      * This function creates and binds a rmi registry to the server, through which the clients will communicate.
      *
-     * @param port  Port on which the remote object is.
+     * @param port Port on which the remote object is.
      * @throws RemoteException
      * @throws AlreadyBoundException
      */
