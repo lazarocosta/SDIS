@@ -23,7 +23,7 @@ public interface Service extends Remote {
 
     void deleteFile(String version, int idSender, String fileId) throws RemoteException, InterruptedException;
 
-    void freeSpace(int amount) throws RemoteException;
+    void reclaim(int amount) throws RemoteException;
 
     void exit() throws RemoteException;
 }

@@ -23,7 +23,6 @@ public class Server implements Runnable {
     protected MulticastBackup MDB;
     protected MulticastControl MC;
     protected MulticastRestore MDR;
-    protected Disk diskServer;
 
     @Override
     public void run() {
@@ -36,7 +35,6 @@ public class Server implements Runnable {
         this.version = version;
         this.idSender = idSender;
         this.acessPoint = acessPoint;
-        this.diskServer= new Disk();
 
 
         MDB = new MulticastBackup(PortBackup, MBackup, idSender, this);
