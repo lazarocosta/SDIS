@@ -14,11 +14,8 @@ import java.net.*;
 public class Server implements Runnable {
 
     private String version;
-    private int idSender;
+    private int senderId;
     private String acessPoint;
-
-
-    private int BUF_LENGTH = 65000;
 
     protected MulticastBackup MDB;
     protected MulticastControl MC;
@@ -29,18 +26,15 @@ public class Server implements Runnable {
 
     }
 
-    public Server(String version, int idSender, String acessPoint, String MControl, int PortControl, String MBackup, int PortBackup, String MRestore, int PortRestore) throws InterruptedException, IOException {
-
+    public Server(String version, int senderId, String acessPoint, String MControl, int PortControl, String MBackup, int PortBackup, String MRestore, int PortRestore) throws InterruptedException, IOException {
 
         this.version = version;
-        this.idSender = idSender;
+        this.senderId = senderId;
         this.acessPoint = acessPoint;
 
-
-        MDB = new MulticastBackup(PortBackup, MBackup, idSender, this);
-        MC = new MulticastControl(PortControl, MControl, idSender, this);
-        MDR = new MulticastRestore(PortRestore, MRestore, idSender, this);
-
+        MDB = new MulticastBackup(PortBackup, MBackup, senderId, this);
+        MC = new MulticastControl(PortControl, MControl, senderId, this);
+        MDR = new MulticastRestore(PortRestore, MRestore, senderId, this);
 
         Thread MC_Thread = new Thread(MC);
         MC_Thread.start();
@@ -51,13 +45,12 @@ public class Server implements Runnable {
         Thread MDR_Thread = new Thread(MDR);
         MDR_Thread.start();
 
-
-        if (idSender == 1) {
+        if (senderId == 1) {
             // String message=MC.messageDelete("1.0",idSender,"1");
            // String message = MC.messageGetChunk("1.0", idSender, "1", 1);
             //TER em atenção porque canais se manda a mensagem
 
-            String message = MDB.messagePutChunk("1.0", idSender, "putchunk", 99,   1,"1111111111");
+            String message = MDB.messagePutChunk("1.0", senderId, "putchunk", 99,   1,"1111111111");
             MDB.sendsMessage(message);
         }
     }
@@ -85,8 +78,6 @@ public class Server implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
-
 }
 

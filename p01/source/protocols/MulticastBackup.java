@@ -10,7 +10,7 @@ import java.net.*;
 import java.util.Arrays;
 
 /**
- * Created by Lazaro on 23/03/2017.
+ *
  */
 public class MulticastBackup extends MulticastChannel {
 
@@ -33,6 +33,7 @@ public class MulticastBackup extends MulticastChannel {
         }
 
         try {
+
             OutputStream is = new FileOutputStream(fChunk);
 
             for (int i = 0; i < body.length(); i++) {

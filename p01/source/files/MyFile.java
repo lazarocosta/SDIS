@@ -44,8 +44,6 @@ public class MyFile {
                 currentByte += Chunk.MAX_SIZE;
                 currentChunk++;
             }
-
-
         }
         catch (IOException e) {
             e.printStackTrace();
