@@ -11,8 +11,7 @@ public class Chunk {
     private int replicationDegree;
     private byte[] data;
 
-    public Chunk(String fileId, int chunkNo, int replicationDegree, byte[] data)
-    {
+    public Chunk(String fileId, int chunkNo, int replicationDegree, byte[] data) {
         this.fileId = fileId;
         this.chunkNo = chunkNo;
         this.replicationDegree = replicationDegree;
@@ -37,32 +36,29 @@ public class Chunk {
 
     @Override
     public String toString() {
-        return "FileID: " +  fileId + ", ChunkNo: " +  chunkNo;
+        return "FileID: " + fileId + ", ChunkNo: " + chunkNo;
     }
 
     /**
      * Whenever a.equals(b), then a.hashCode() must be same as b.hashCode().
-     *
+     * <p>
      * In practice:
-     *
+     * <p>
      * If you override one, then you should override the other.
      * Use the same set of fields that you use to compute equals() to compute hashCode().
-     *
+     * <p>
      * From: https://www.mkyong.com/java/java-how-to-overrides-equals-and-hashcode/ section 2.:
      */
     @Override
     public boolean equals(Object obj) {
 
-        if (obj == this)
-            return true;    // if it is the same reference, it is the same object
+        if (obj == this) return true;    // if it is the same reference, it is the same object
 
-        if (!(obj instanceof Chunk))
-            return false;   // if it is not a Chunk object, it can't be the same object
+        if (!(obj instanceof Chunk)) return false;   // if it is not a Chunk object, it can't be the same object
 
         Chunk c = (Chunk) obj;
 
-        return chunkNo == c.chunkNo &&
-                Objects.equals(fileId, c.fileId);
+        return chunkNo == c.chunkNo && Objects.equals(fileId, c.fileId);
     }
 
     @Override

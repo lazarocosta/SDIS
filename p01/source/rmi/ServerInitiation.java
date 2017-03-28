@@ -32,7 +32,7 @@ import static java.util.Arrays.copyOfRange;
 /**
  * The Server class implements the 'Service' interface in which ALL THE REMOTE METHODS SHOULD BE DECLARED. A method not declared in the 'Remote' interface may not be invoked remotely, but it may still be used locally (on the same computer).
  */
-public class Server implements Service {
+public class ServerInitiation implements Service {
 
     static int DEFAULT_REGISTRY_PORT = 1099;
 
@@ -43,7 +43,7 @@ public class Server implements Service {
 
     Map<String, String> fileIdToFileName = new HashMap<>();
 
-    public Server(String serverName) throws AlreadyBoundException, RemoteException {
+    public ServerInitiation(String serverName) throws AlreadyBoundException, RemoteException {
         this.serverName = serverName;
 
         this.createRegistry();
@@ -113,7 +113,7 @@ public class Server implements Service {
     public static void main(String args[]) {
 
         try {
-            Server server = new Server("RMI");
+            ServerInitiation server = new ServerInitiation("RMI");
 
             System.err.println("Server ready");
 
