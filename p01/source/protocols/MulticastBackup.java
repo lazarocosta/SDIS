@@ -2,7 +2,10 @@ package protocols;
 
 import udp.Server;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.*;
 import java.util.Arrays;
 
@@ -11,26 +14,43 @@ import java.util.Arrays;
  */
 public class MulticastBackup extends MulticastChannel {
 
-    public MulticastBackup(int port, String address, int idSender, Server sender) {
-        super(port, address, idSender, sender);
+    public MulticastBackup(int port, String address, int senderId, Server sender) {
+        super(port, address, senderId, sender);
     }
 
-    public String messagePutChunk(String version, int senderId, String fileId, int chunkNo, int replication, String body) {
+    public void backupFile(String version, String fileId, int chunkNo, String body) {
 
-        Message messageLine = new Message(version, senderId, fileId, chunkNo, replication);
-        messageLine.setBody(body);
-        String message = messageLine.msgPutChunk();
+        String pathSenderId = "Sender" + senderId;
+        String pathFileId = pathSenderId + "/" + fileId;
+        String pathChunkNo = pathFileId + "/" + chunkNo + ".txt";
 
-        return message;
+        File f = new File(pathFileId);
+        File fChunk = new File(pathChunkNo);
+
+        if (!f.exists()) {
+            f.mkdirs();
+            System.out.println("criou path");
+        }
+
+        try {
+            OutputStream is = new FileOutputStream(fChunk);
+
+            for (int i = 0; i < body.length(); i++) {
+                System.out.print(body.charAt(i));
+
+                is.write(body.charAt(i));
+            }
+            is.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void run() {
-        System.out.println("MulticastBackup");
 
         while (true) {
             try {
-                System.out.println("backup wait");
                 byte[] receive = new byte[BUF_LENGTH];
                 DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
                 socket.receive(datagramPacketReceive);
@@ -38,16 +58,19 @@ public class MulticastBackup extends MulticastChannel {
 
                 Message msg = new Message();
                 msg.separateFullMsg(messageComplete);
+                System.out.println(msg.getMsgType());
 
                 switch (msg.getMsgType()) {
                     case "PUTCHUNK": {
-                        //faz o backup
+                        if (msg.getSenderId() != senderId) {
+                            this.backupFile(msg.getVersion(), msg.getFileId(), msg.getChunkNo(), msg.getBody());
 
-                        //envia a resposta pelo Mcontrol
+                            String sendToServer = this.messageStored(msg.getVersion(), senderId, msg.getFileId(), msg.getChunkNo());
+                            //envia a resposta pelo Mcontrol
+                            this.sender.sendForControl(sendToServer);
+                        }
                     }
                     break;
-
-
                     default:
                         System.out.println("discard");
                 }

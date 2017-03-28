@@ -56,10 +56,12 @@ public class Server implements Runnable {
 
         if (idSender == 1) {
             // String message=MC.messageDelete("1.0",idSender,"1");
-            String message = MC.messageGetChunk("1.0", idSender, "1", 1);
-            MC.sendsMessage(message);
-        }
+           // String message = MC.messageGetChunk("1.0", idSender, "1", 1);
+            //TER em atenção porque canais se manda a mensagem
 
+            String message = MDB.messagePutChunk("1.0", idSender, "putchunk", 99,   1,"1111111111");
+            MDB.sendsMessage(message);
+        }
     }
 
     public void sendForRestore(String message) {
@@ -79,7 +81,6 @@ public class Server implements Runnable {
         try {
             //java udp.Server "1.0" 1 "acessPoint" "228.5.6.7" 3000 "228.5.6.6" 4000 "228.5.6.8" 5000
             //java udp.Server "1.0" 2 "acessPoint" "228.5.6.7" 3000 "228.5.6.6" 4000 "228.5.6.8" 5000
-
 
             Server server = new Server(args[0], Integer.parseInt(args[1]), args[2], args[3], Integer.parseInt(args[4]), args[5], Integer.parseInt(args[6]), args[7], Integer.parseInt(args[8]));
 
