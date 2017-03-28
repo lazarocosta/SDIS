@@ -11,14 +11,37 @@ public class TestApp {
 
     private static String peer_ap;
     private static String sub_protocol;
+    private static String command;
     private static String  filePath;
     private static Integer replication_degree, size;
 
+    private static rmi.Service service;
 
     public static void main(String[] args) {
 
         if(!verifyArgs(args))
             return;
+
+        switch (command) {
+            case TestAppCommands.BACKUP:
+                //service.backup(new File(filepath), replicationDegree);
+                break;
+
+            case TestAppCommands.RESTORE:
+                //service.restore(new File(filePath));
+                break;
+
+            case TestAppCommands.DELETE:
+                //service.delete(new File(filePath));
+                break;
+
+            case TestAppCommands.RECLAIM:
+                //service.reclaim(bytes);
+                break;
+
+            default:
+                break;
+        }
 
     }
 
@@ -30,11 +53,8 @@ public class TestApp {
             return false;
         }
 
-        String peer_ap = args[0];
-        String sub_protocol = args[1];
-
-
-        String command;
+        peer_ap = args[0];
+        sub_protocol = args[1];
 
         if((command = TestAppCommands.getCommand(sub_protocol)) == null)
         {
