@@ -46,34 +46,34 @@ public class MulticastChannel implements Runnable {
 
     }
 
-    public String messagePutChunk(String version, int senderId, String fileId, int chunkNo, int replication, String body) {
+    public String messagePutChunk(int senderId, String fileId, int chunkNo, int replication, String body) {
 
-        Message messageLine = new Message(version, senderId, fileId, chunkNo, replication);
+        Message messageLine = new Message(senderId, fileId, chunkNo, replication);
         messageLine.setBody(body);
         String message = messageLine.msgPutChunk();
 
         return message;
     }
 
-    public String messageStored(String version, int idSender, String fileId, int ChunkNo) {
+    public String messageStored(int idSender, String fileId, int ChunkNo) {
 
-        Message messageLine = new Message(version, idSender, fileId, ChunkNo);
+        Message messageLine = new Message(idSender, fileId, ChunkNo);
         String message = messageLine.msgStored();
 
         System.out.println(" message Stored");
         return message;
     }
 
-    public String messageDelete(String version, int idSender, String fileId) {
+    public String messageDelete(int idSender, String fileId) {
 
-        Message messageLine = new Message(version, idSender, fileId);
+        Message messageLine = new Message(idSender, fileId);
         String message = messageLine.msgDelete();
         return message;
     }
 
-    public String messageGetChunk(String version, int idSender, String fileId, int ChunkNo) {
+    public String messageGetChunk(int idSender, String fileId, int ChunkNo) {
 
-        Message messageLine = new Message(version, idSender, fileId, ChunkNo);
+        Message messageLine = new Message(idSender, fileId, ChunkNo);
         String message = messageLine.msgGetChunk();
 
         System.out.println(" message GetChunk");
@@ -83,7 +83,7 @@ public class MulticastChannel implements Runnable {
 
     public String messageChunk(String version, String fileId, int ChunkNo, String body) {
 
-        Message messageLine = new Message(version, this.senderId, fileId, ChunkNo);
+        Message messageLine = new Message(this.senderId, fileId, ChunkNo);
         messageLine.setBody(body);
         String message = messageLine.msgChunk();
 
@@ -94,7 +94,7 @@ public class MulticastChannel implements Runnable {
 
     public String messageRemoved(String version, int idSender, String fileId, int ChunkNo) {
 
-        Message messageLine = new Message(version, idSender, fileId, ChunkNo);
+        Message messageLine = new Message(idSender, fileId, ChunkNo);
         String message = messageLine.msgRemoved();
 
         System.out.println(" message GetChunk");

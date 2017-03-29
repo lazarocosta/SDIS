@@ -39,7 +39,7 @@ public class Peer {
 
     // Main method for running a peer
     // args = <version> <senderId> <accessPoint> <IP MC> <Port MC> <IP MDB> <Port MDB> <IP MDR> <Port MDR>
-    // args = "1.0", 2, "accessPoint", "228.5.6.7", 3000, "228.5.6.6", 4000, "228.5.6.8", 5000
+    // args = 1.0 2 accessPoint 228.5.6.7 3000 228.5.6.6 4000 228.5.6.8 5000
     public static void main(String[] args) throws IOException, AlreadyBoundException, InterruptedException {
 
         if(args.length != 9)

@@ -52,8 +52,10 @@ public class MulticastControl extends MulticastChannel {
                 DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
                 socket.receive(datagramPacketReceive);
                 String messageComplete = new String(datagramPacketReceive.getData(), 0, datagramPacketReceive.getLength());
+
                 Message msg = new Message();
                 msg.separateMsg(messageComplete);
+                System.err.println(messageComplete);
 
                 System.out.println("Type" + msg.getMsgType());
                 if (msg.getSenderId() != this.senderId) {

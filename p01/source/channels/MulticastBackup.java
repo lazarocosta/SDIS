@@ -69,7 +69,7 @@ public class MulticastBackup extends MulticastChannel {
                         if (msg.getSenderId() != senderId) {
                             this.backupFile(msg.getVersion(), msg.getFileId(), msg.getChunkNo(), msg.getBody());
 
-                            String sendToServer = this.messageStored(msg.getVersion(), senderId, msg.getFileId(), msg.getChunkNo());
+                            String sendToServer = this.messageStored(senderId, msg.getFileId(), msg.getChunkNo());
                             //envia a resposta pelo Mcontrol
                             this.sender.sendForControl(sendToServer);
                         }

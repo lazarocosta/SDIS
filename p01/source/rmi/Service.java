@@ -3,6 +3,7 @@ package rmi;
 import files.Chunk;
 import files.MyFile;
 import channels.ChannelGroup;
+import protocol.Backup;
 import protocol.Delete;
 import protocol.SubProtocol;
 import systems.Peer;
@@ -13,6 +14,7 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
+import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,7 +60,11 @@ public class Service implements ServiceInterface {
     @Override
     public void backupFile(String filePath, int replicationDegree) throws RemoteException {
 
+        System.out.println("Backing up file '" + filePath + "' with replication degree '" + replicationDegree + "'.");
+
         ArrayList<Chunk> chunks = MyFile.divideFileIntoChunks(new File (filePath), fileIdToFileName);
+
+        Backup.sendBackupRequest(chunks);
 
       /*  for (int i = 0; i < chunks.size(); i++) {
             System.out.println(chunks.get(i).getData());
@@ -70,25 +76,25 @@ public class Service implements ServiceInterface {
             }
         }*/
 
-        for (int i = 0; i <chunks.size(); i++) {
-            int timeout = 1000;
-            for (int j = 0; j < 5; j++) {
-
-              /*  MC.count_reply = 0;
-                chunk = new Chunk(file.getFileID(), i, file.cutDataForChunk(i));
-                MDB.BackupRequest(peer_id, file.getFileID(), i, replication, chunk);
-                try {
-                    Thread.sleep(timeout);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(MulticastDataBackup.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                if (MC.count_reply >= replication) {
-                    break;
-                }
-                */
-                timeout *= 2;
-            }
-        }
+//        for (int i = 0; i <chunks.size(); i++) {
+//            int timeout = 1000;
+//            for (int j = 0; j < 5; j++) {
+//
+//              /*  MC.count_reply = 0;
+//                chunk = new Chunk(file.getFileID(), i, file.cutDataForChunk(i));
+//                MDB.BackupRequest(peer_id, file.getFileID(), i, replication, chunk);
+//                try {
+//                    Thread.sleep(timeout);
+//                } catch (InterruptedException ex) {
+//                    Logger.getLogger(MulticastDataBackup.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//                if (MC.count_reply >= replication) {
+//                    break;
+//                }
+//                */
+//                timeout *= 2;
+//            }
+//        }
 
 
 
@@ -112,7 +118,7 @@ public class Service implements ServiceInterface {
 
         while (attempts > 0) {
 
-            String msgDelete = Peer.getUdpChannelGroup().getMC().messageDelete(SubProtocol.getVersion(), Peer.getSenderId(), fileId);
+            String msgDelete = Peer.getUdpChannelGroup().getMC().messageDelete(Peer.getSenderId(), fileId);
 
             try {
                 Thread.sleep(SLEEP_ms);
@@ -153,9 +159,8 @@ public class Service implements ServiceInterface {
      *
      * @param port Port on which the remote object is.
      * @throws RemoteException
-     * @throws AlreadyBoundException
      */
-    private void createRegistry(int port) throws RemoteException, AlreadyBoundException {
+    private void createRegistry(int port) throws RemoteException {
         /**
          * A stub, in this context, means a mock implementation.
          * That is, a simple, fake implementation that conforms to the interface and is to be used for testing.
@@ -164,8 +169,17 @@ public class Service implements ServiceInterface {
         ServiceInterface stub = (ServiceInterface) UnicastRemoteObject.exportObject(this, 0);
 
         // Bind the remote object's stub in the registry
-        Registry registry = LocateRegistry.createRegistry(port);
-        registry.bind(this.accessPoint, stub);
+        Registry registry = null;
+        try {
+            registry = LocateRegistry.createRegistry(port);
+            registry.bind(this.accessPoint, stub);
+        }
+        catch (ExportException e) {
+            registry = LocateRegistry.getRegistry(1099);
+        }
+        catch (AlreadyBoundException e) {
+            e.printStackTrace();
+        }
 
         /**
          * Java rmi provides a registry API for applications to bind a name to a remote object's stub and for clients to look up remote objects by name in order to obtain their stubs.
@@ -183,10 +197,9 @@ public class Service implements ServiceInterface {
     /**
      * Default bindRegistry which binds to default port 1099.
      *
-     * @throws AlreadyBoundException
      * @throws RemoteException
      */
-    private void createRegistry() throws AlreadyBoundException, RemoteException {
+    private void createRegistry() throws RemoteException {
         this.createRegistry(DEFAULT_REGISTRY_PORT);
     }
 

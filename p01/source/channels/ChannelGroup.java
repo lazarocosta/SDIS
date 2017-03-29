@@ -45,7 +45,7 @@ public class ChannelGroup implements Runnable {
             // String message = MC.messageGetChunk("1.0", idSender, "1", 1);
             //TER em atenção porque canais se manda a mensagem
 
-            String message = MDB.messagePutChunk("1.0", senderId, "putchunk", 99, 1, "1111111111");
+            String message = MDB.messagePutChunk(senderId, "putchunk", 99, 1, "1111111111");
             MDB.sendsMessage(message);
         }
     }

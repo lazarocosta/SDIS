@@ -23,32 +23,30 @@ public class Message {
     private int replicationDeg;
     private String msgType;
 
-    public Message(String version, int senderId, String fileId, int chunkNo, int replicationDeg) {
+    // Message constructors
+    public Message(int senderId, String fileId, int chunkNo, int replicationDeg) {
 
-        this.version = version;
-        this.senderId = senderId;
-        this.fileId = fileId;
-        this.chunkNo = chunkNo;
+        new Message(senderId, fileId, chunkNo);
         this.replicationDeg = replicationDeg;
     }
 
-    public Message(String version, int senderId, String fileId, int chunkNo) {
+    public Message(int senderId, String fileId, int chunkNo) {
 
-        this.version = version;
-        this.senderId = senderId;
-        this.fileId = fileId;
+        new Message(senderId, fileId);
         this.chunkNo = chunkNo;
     }
 
-    public Message(String version, int senderId, String fileId) {
+    public Message(int senderId, String fileId) {
 
-        this.version = version;
+        new Message();
         this.senderId = senderId;
         this.fileId = fileId;
     }
 
-    public Message() {
+    public Message(){
+        this.version = SubProtocol.getVersion();
     }
+
 
     public String msgPutChunk() {
 
