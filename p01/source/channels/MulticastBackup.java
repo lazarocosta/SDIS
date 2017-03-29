@@ -1,13 +1,13 @@
-package protocols;
+package channels;
 
-import udp.Server;
+import protocol.Message;
+import systems.Peer;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.*;
-import java.util.Arrays;
 
 
 /**
@@ -15,7 +15,7 @@ import java.util.Arrays;
  */
 public class MulticastBackup extends MulticastChannel {
 
-    public MulticastBackup(int port, String address, int senderId, Server sender) {
+    public MulticastBackup(int port, String address, int senderId, ChannelGroup sender) {
         super(port, address, senderId, sender);
     }
 
@@ -37,7 +37,7 @@ public class MulticastBackup extends MulticastChannel {
         try {
 
             OutputStream is = new FileOutputStream(fChunk);
-            this.sender.getDisk().saveFile(body.length());
+            Peer.getDisk().saveFile(body.length());
 
             for (int i = 0; i < body.length(); i++) {
                 System.out.print(body.charAt(i));

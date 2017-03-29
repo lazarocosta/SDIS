@@ -1,6 +1,6 @@
-package protocols;
+package channels;
 
-import udp.Server;
+import protocol.Message;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -17,9 +17,9 @@ public class MulticastChannel implements Runnable {
     protected InetAddress addr;
     protected int BUF_LENGTH = 65000;
     protected int senderId;
-    protected Server sender;
+    protected ChannelGroup sender;
 
-    public MulticastChannel(int port, String address, int senderId, Server sender) {
+    public MulticastChannel(int port, String address, int senderId, ChannelGroup sender) {
 
         this.senderId = senderId;
         this.sender = sender;

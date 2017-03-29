@@ -1,4 +1,4 @@
-package protocols;
+package protocol;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.UnsupportedEncodingException;

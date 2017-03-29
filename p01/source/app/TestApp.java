@@ -1,5 +1,7 @@
 package app;
 
+import rmi.ServiceInterface;
+
 import java.io.File;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -9,7 +11,7 @@ import java.rmi.registry.Registry;
 /**
  * Class to be run when testing the app.
  */
-public class TestApp {
+public class  TestApp {
 
     private static final String rmiHost = "localhost";
 
@@ -21,7 +23,7 @@ public class TestApp {
     private static String  filePath;
     private static Integer replication_degree, size;
 
-    private static rmi.Service service;
+    private static ServiceInterface stub;
 
     // java app.TestApp
     public static void main(String[] args) throws RemoteException {
@@ -31,19 +33,19 @@ public class TestApp {
 
         switch (command) {
             case TestAppCommands.BACKUP:
-                service.backupFile(new File(filePath), replication_degree);
+                stub.backupFile(filePath, replication_degree);
                 break;
 
             case TestAppCommands.RESTORE:
-                service.restoreFile(new File(filePath));
+                stub.restoreFile(filePath);
                 break;
 
             case TestAppCommands.DELETE:
-                //TODO: service.deleteFile(new File(filePath));
+                stub.deleteFile(filePath);
                 break;
 
             case TestAppCommands.RECLAIM:
-                service.reclaim(size);
+                stub.reclaim(size);
                 break;
 
             default:
@@ -79,7 +81,7 @@ public class TestApp {
         try {
             Registry registry = LocateRegistry.getRegistry(rmiHost);
 
-            service = (rmi.Service) registry.lookup(peer_ap);
+            stub = (ServiceInterface) registry.lookup(peer_ap);
 
         } catch (RemoteException | NotBoundException e) {
             System.err.println("Invalid RMI object name");

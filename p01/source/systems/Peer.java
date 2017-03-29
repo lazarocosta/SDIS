@@ -3,25 +3,34 @@ package systems;
 import files.ChunkDatabase;
 import files.Disk;
 import files.FileDatabase;
-import protocols.MulticastBackup;
-import protocols.MulticastControl;
-import protocols.MulticastRestore;
+import channels.ChannelGroup;
+import protocol.SubProtocol;
+import rmi.Service;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.rmi.AlreadyBoundException;
 
 /**
  *
  */
-public class    Peer {
+public class Peer {
 
     private static PeerInfo info; // info that defines the peer
-    private static MulticastSocket mcSocket;    // socket through which the Peer will provide service
+    private static int senderId;
 
-    private static rmi.ServerInitiation rmiServer;
-    private static udp.Server udpServer;
+    // RMI interface
+    private static Service rmiService;
+    private static String accessPoint;
+
+    // UDP Channel Group
+    private static ChannelGroup udpChannelGroup;
+    private static String controlAddress;
+    private static int controlPort;
+    private static String dataBackupAddress;
+    private static int dataBackupPort;
+    private static String dataRestoreAddress;
+    private static int dataRestorePort;
 
     private static Disk disk;
     private static FileDatabase fileDB;
@@ -29,11 +38,28 @@ public class    Peer {
 
 
     // Main method for running a peer
+    // args = <version> <senderId> <accessPoint> <IP MC> <Port MC> <IP MDB> <Port MDB> <IP MDR> <Port MDR>
     // args = "1.0", 2, "accessPoint", "228.5.6.7", 3000, "228.5.6.6", 4000, "228.5.6.8", 5000
     public static void main(String[] args) throws IOException, AlreadyBoundException, InterruptedException {
 
-        rmiServer = new rmi.ServerInitiation(args[0], Integer.parseInt(args[1]), args[2], args[3], Integer.parseInt(args[4]), args[5], Integer.parseInt(args[6]), args[7], Integer.parseInt(args[8]),"backup");
-        udpServer = new udp.Server(args[0], Integer.parseInt(args[1]), args[2], args[3], Integer.parseInt(args[4]), args[5], Integer.parseInt(args[6]), args[7], Integer.parseInt(args[8]));
+        if(args.length != 9)
+        {
+            System.out.println("Wrong number of arguments.");
+            return;
+        }
+
+        SubProtocol.setVersion(args[0]);
+        senderId = Integer.parseInt(args[1]);
+        accessPoint = args[2];
+        controlAddress = args[3];
+        controlPort = Integer.parseInt(args[4]);
+        dataBackupAddress = args[5];
+        dataBackupPort = Integer.parseInt(args[6]);
+        dataRestoreAddress = args[7];
+        dataRestorePort = Integer.parseInt(args[8]);
+
+        rmiService = new Service(accessPoint);
+        udpChannelGroup = new ChannelGroup(senderId,controlAddress, controlPort, dataBackupAddress, dataBackupPort, dataRestoreAddress, dataRestorePort);
 
         createDisk();
         createFileDB();
@@ -50,5 +76,29 @@ public class    Peer {
 
     private static void createChunkDB(){
         chunkDB = new ChunkDatabase();
+    }
+
+    public static int getSenderId() {
+        return senderId;
+    }
+
+    public static Service getRmiService() {
+        return rmiService;
+    }
+
+    public static ChannelGroup getUdpChannelGroup() {
+        return udpChannelGroup;
+    }
+
+    public static Disk getDisk() {
+        return disk;
+    }
+
+    public static FileDatabase getFileDB() {
+        return fileDB;
+    }
+
+    public static ChunkDatabase getChunkDB() {
+        return chunkDB;
     }
 }

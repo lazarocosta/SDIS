@@ -1,41 +1,21 @@
-package protocols;
+package channels;
 
-import udp.Server;
+import protocol.Delete;
+import protocol.Message;
+
 import java.io.*;
 import java.net.*;
-import java.util.Arrays;
 
 /**
  * Created by Lazaro on 23/03/2017.
  */
 public class MulticastControl extends MulticastChannel {
 
-    public MulticastControl(int port, String address, int senderId, Server sender) {
+    public MulticastControl(int port, String address, int senderId, ChannelGroup sender) {
         super(port, address, senderId, sender);
     }
 
-    private void deleteFile(String fileId) {
 
-        String pathSenderId = "Sender" + senderId;
-        String pathFileId = pathSenderId + "/" + fileId;
-
-        File f = new File(pathFileId);
-        File fileSender = new File(pathSenderId);
-
-        if (f.exists()) {
-            for (File file : f.listFiles()) {
-                file.delete();
-                System.out.println("delete file into" + pathFileId);
-            }
-
-            for (File file : fileSender.listFiles()) {
-                if (file.compareTo(f) == 0) {//equals
-                    file.delete();
-                    System.out.println("delete diretory" + pathFileId);
-                }
-            }
-        }
-    }
 
     public String getChunkOfSender(String version, String fileId, int chunkNo) throws IOException {
 
@@ -90,7 +70,7 @@ public class MulticastControl extends MulticastChannel {
                         }
                         break;
                         case "DELETE": {
-                            this.deleteFile(msg.getFileId());
+                            Delete.deleteFile(msg.getFileId());
                             System.out.println("Delete");
                         }
                         break;

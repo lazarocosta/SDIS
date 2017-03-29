@@ -1,17 +1,16 @@
-package protocols;
+package channels;
 
-import udp.Server;
+import protocol.Message;
 
 import java.io.*;
 import java.net.*;
-import java.util.Arrays;
 
 /**
  * Created by Lazaro on 23/03/2017.
  */
 public class MulticastRestore extends MulticastChannel {
 
-    public MulticastRestore(int port, String address, int senderId, Server sender) {
+    public MulticastRestore(int port, String address, int senderId, ChannelGroup sender) {
         super(port, address, senderId, sender);
     }
 
