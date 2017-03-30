@@ -19,7 +19,7 @@ public class MulticastBackup extends MulticastChannel {
         super(port, address, senderId, sender);
     }
 
-    public void backupFile(String version, String fileId, int chunkNo, String body) {
+    public void backupFile(String version, String fileId, int chunkNo, byte[] body) {
 
         String pathSenderId = "Sender" + senderId;
         String pathFileId = pathSenderId + "/" + fileId;
@@ -37,13 +37,11 @@ public class MulticastBackup extends MulticastChannel {
         try {
 
             OutputStream is = new FileOutputStream(fChunk);
-            Peer.getDisk().saveFile(body.length());
+            System.out.println("criou path ");
 
-            for (int i = 0; i < body.length(); i++) {
-                System.out.print(body.charAt(i));
+            System.out.println("length" + body.length);
+            is.write(body);
 
-                is.write(body.charAt(i));
-            }
             is.close();
         } catch (IOException e) {
             e.printStackTrace();

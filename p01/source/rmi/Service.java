@@ -5,6 +5,7 @@ import files.MyFile;
 import channels.ChannelGroup;
 import protocol.Backup;
 import protocol.Delete;
+import protocol.Message;
 import protocol.SubProtocol;
 import systems.Peer;
 
@@ -16,6 +17,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,48 +60,54 @@ public class Service implements ServiceInterface {
     }
 
     @Override
-    public void backupFile(String filePath, int replicationDegree) throws RemoteException {
+    public void backupFile(String  path, int replicationDegree) throws RemoteException{
 
-        System.out.println("Backing up file '" + filePath + "' with replication degree '" + replicationDegree + "'.");
+        File file = new File(path);
+        ArrayList<Chunk> chunks = null;
+        MyFile myFile = new MyFile(replicationDegree);
+        String fileId = null;
+        try {
+            fileId = myFile.generateFileId(file);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        ArrayList<Chunk> chunks = MyFile.divideFileIntoChunks(new File (filePath), fileIdToFileName);
+        try {
+            chunks = myFile.divideFileIntoChunks(file, fileId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        Backup.sendBackupRequest(chunks);
+        System.out.println("chunks size " + chunks.size());
 
-      /*  for (int i = 0; i < chunks.size(); i++) {
-            System.out.println(chunks.get(i).getData());
+        for (int i = 0; i < chunks.size(); i++) {
 
-            try {
-                System.out.println(new String(chunks.get(i).getData(), "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        }*/
+            int timeout = 1000;
+            int chunkNo = chunks.get(i).getChunkNo();
+            Message message = new Message( Peer.getSenderId(), fileId, chunkNo, replicationDegree);
+            message.setBody(chunks.get(i).getData());
 
-//        for (int i = 0; i <chunks.size(); i++) {
-//            int timeout = 1000;
-//            for (int j = 0; j < 5; j++) {
-//
-//              /*  MC.count_reply = 0;
-//                chunk = new Chunk(file.getFileID(), i, file.cutDataForChunk(i));
-//                MDB.BackupRequest(peer_id, file.getFileID(), i, replication, chunk);
-//                try {
-//                    Thread.sleep(timeout);
-//                } catch (InterruptedException ex) {
-//                    Logger.getLogger(MulticastDataBackup.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//                if (MC.count_reply >= replication) {
-//                    break;
-//                }
-//                */
-//                timeout *= 2;
-//            }
-//        }
+            // System.out.println(chunks.get(i).getData());
+            String msg = message.msgPutChunk();
 
+          /*  for (int j = 0; j < 5; j++) {
+                this.MDB.sendsMessage(msg);
 
+                try {
+                    Thread.sleep(timeout);
+                } catch (InterruptedException ex) {
 
+                }
+              if (MC.count_reply >= replication) {
+                    break;
+                }
+
+               // timeout *= 2;
+            }*/
+        }
         System.out.println(fileIdToFileName);
-
     }
 
     @Override
@@ -110,7 +118,7 @@ public class Service implements ServiceInterface {
     @Override
     public void deleteFile(String filePath) throws RemoteException {
 
-        String fileId = Peer.getFileDB().getBackedUpFiles().get(filePath);  // gets fileId from filePath
+        String fileId = Peer.getDb().getBackedUpFiles().get(filePath);  // gets fileId from filePath
 
         Delete.deleteFile(fileId);
 
@@ -119,6 +127,7 @@ public class Service implements ServiceInterface {
         while (attempts > 0) {
 
             String msgDelete = Peer.getUdpChannelGroup().getMC().messageDelete(Peer.getSenderId(), fileId);
+            Peer.getUdpChannelGroup().getMC().sendsMessage(msgDelete);
 
             try {
                 Thread.sleep(SLEEP_ms);

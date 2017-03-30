@@ -1,10 +1,10 @@
 package channels;
 
-import protocol.Delete;
 import protocol.Message;
 
 import java.io.*;
 import java.net.*;
+import java.util.Arrays;
 
 /**
  * Created by Lazaro on 23/03/2017.
@@ -15,14 +15,35 @@ public class MulticastControl extends MulticastChannel {
         super(port, address, senderId, sender);
     }
 
+    private void deleteFile(String fileId) {
 
+        String pathSenderId = "Sender" + senderId;
+        String pathFileId = pathSenderId + "/" + fileId;
 
-    public String getChunkOfSender(String version, String fileId, int chunkNo) throws IOException {
+        File f = new File(pathFileId);
+        File fileSender = new File(pathSenderId);
+
+        if (f.exists()) {
+            for (File file : f.listFiles()) {
+                file.delete();
+                System.out.println("delete file into" + pathFileId);
+            }
+
+            for (File file : fileSender.listFiles()) {
+                if (file.compareTo(f) == 0) {//equals
+                    file.delete();
+                    System.out.println("delete diretory" + pathFileId);
+                }
+            }
+        }
+    }
+
+    public byte[] getChunkOfSender(String version, String fileId, int chunkNo) throws IOException {
 
         String pathSenderId = "Sender" + senderId;
         String pathChunkNo = pathSenderId + "/" + fileId + "/" + chunkNo + ".txt"; // TEMOS QUE VER AQUI A TERMINAÇAO
 
-        String body = "";
+        byte[] body;
 
         File f = new File(pathChunkNo);
 
@@ -32,11 +53,12 @@ public class MulticastControl extends MulticastChannel {
             InputStream is = new FileInputStream(pathChunkNo);
             int size = is.available();
 
-            for (int i = 0; i < size; i++) {
-                int re = is.read();
-                String read = Character.toString((char) re);
-                body += read;
-            }
+
+            body = new byte[size];
+
+            int re = is.read(body, 0, size);
+
+            System.out.println(body.toString());
         } else return null;
 
         return body;
@@ -52,17 +74,15 @@ public class MulticastControl extends MulticastChannel {
                 DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
                 socket.receive(datagramPacketReceive);
                 String messageComplete = new String(datagramPacketReceive.getData(), 0, datagramPacketReceive.getLength());
-
                 Message msg = new Message();
                 msg.separateMsg(messageComplete);
-                System.err.println(messageComplete);
 
-                System.out.println("Type" + msg.getMsgType());
+                System.out.println("Type " + msg.getMsgType());
                 if (msg.getSenderId() != this.senderId) {
                     switch (msg.getMsgType()) {
                         case "GETCHUNK": {
 
-                            String body = this.getChunkOfSender(msg.getVersion(), msg.getFileId(), msg.getChunkNo());
+                            byte[] body = this.getChunkOfSender(msg.getVersion(), msg.getFileId(), msg.getChunkNo());
                             System.out.println(body);
 
                             if (body != null) {
@@ -72,7 +92,7 @@ public class MulticastControl extends MulticastChannel {
                         }
                         break;
                         case "DELETE": {
-                            Delete.deleteFile(msg.getFileId());
+                            this.deleteFile(msg.getFileId());
                             System.out.println("Delete");
                         }
                         break;
@@ -81,7 +101,7 @@ public class MulticastControl extends MulticastChannel {
                         }
                         break;
                         case "STORED": {
-                            if(msg.getSenderId()!=senderId){
+                            if (msg.getSenderId() != senderId) {
                                 System.out.println("STORED");
                             }
                             //

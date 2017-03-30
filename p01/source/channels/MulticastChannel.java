@@ -46,7 +46,7 @@ public class MulticastChannel implements Runnable {
 
     }
 
-    public String messagePutChunk(int senderId, String fileId, int chunkNo, int replication, String body) {
+    public String messagePutChunk(int senderId, String fileId, int chunkNo, int replication, byte[] body) {
 
         Message messageLine = new Message(senderId, fileId, chunkNo, replication);
         messageLine.setBody(body);
@@ -81,7 +81,7 @@ public class MulticastChannel implements Runnable {
 
     }
 
-    public String messageChunk(String version, String fileId, int ChunkNo, String body) {
+    public String messageChunk(String version, String fileId, int ChunkNo, byte[] body) {
 
         Message messageLine = new Message(this.senderId, fileId, ChunkNo);
         messageLine.setBody(body);

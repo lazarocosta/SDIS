@@ -14,7 +14,7 @@ public class Backup extends SubProtocol{
 
         for(Chunk c: chunks)
         {
-            String message = Peer.getUdpChannelGroup().getMDB().messagePutChunk(Peer.getSenderId(), c.getFileId(), c.getChunkNo(), c.getReplicationDegree(), c.getData().toString());
+            String message = Peer.getUdpChannelGroup().getMDB().messagePutChunk(Peer.getSenderId(), c.getFileId(), c.getChunkNo(), c.getReplicationDegree(), c.getData());
             Peer.getUdpChannelGroup().getMDB().sendsMessage(message);
         }
 

@@ -11,7 +11,7 @@ public class Message {
     // TODO: Put Body on some messages and not on every single one.
 
     public String header;
-    public String body;
+    public byte[] body;
 
     private static final String SPACE = " ";
     private static final String CRLF = "\r\n";   // CarriageReturn == "\r", LineFeed == "\n"
@@ -80,7 +80,7 @@ public class Message {
         return generateHeaderLine("REMOVED", this.version, this.senderId, this.fileId, this.chunkNo, null);
     }
 
-    public void setBody(String body) {
+    public void setBody(byte[]body) {
         this.body = body;
     }
 
@@ -108,20 +108,11 @@ public class Message {
         return msgType;
     }
 
-    public String getBody() {
+    public byte[] getBody() {
         return body;
     }
 
 
-    /**
-     * @param version        This is the version of the PROTOCOL. It is a three ASCII char sequence with the format <n>'.'<m>, where <n> and <m> are the ASCII codes of digits.
-     *                       For example, version 1.0, the one specified in this document, should be encoded as the char sequence '1''.''0'.
-     * @param senderId       This is the id of the server that has sent the message. This field is useful in many subprotocols. This is encoded as a variable length sequence of ASCII digits.
-     * @param fileId         This is the file identifier for the backup service. As stated above, it is supposed to be obtained by using the SHA256 cryptographic hash function.
-     * @param chunkNo        This field together with the FileId specifies a chunk in the file. The chunk numbers are integers and should be assigned sequentially starting at 0.
-     * @param replicationDeg This field contains the desired replication degree of the chunk. This is a digit, thus allowing a replication degree of up to 9.
-     * @return Generated message in a String field.
-     */
     private String generateHeaderLine(String msgType, String version, Integer senderId, String fileId, Integer chunkNo, Integer replicationDeg) {
 
         /**
@@ -193,7 +184,7 @@ public class Message {
         // CHUNK <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF><Body>
         String[] tokens = message.split(CRLF + CRLF);
 
-        this.body = tokens[1];
+        this.body = tokens[1].getBytes();
         String[] header = tokens[0].split("\\s+");
 
         if (header.length >= 5) {

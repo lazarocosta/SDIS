@@ -1,7 +1,5 @@
 package systems;
 
-import files.ChunkInfo;
-
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Objects;

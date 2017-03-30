@@ -1,6 +1,5 @@
 package channels;
 
-import files.Disk;
 
 import java.io.IOException;
 
@@ -45,7 +44,7 @@ public class ChannelGroup implements Runnable {
             // String message = MC.messageGetChunk("1.0", idSender, "1", 1);
             //TER em atenção porque canais se manda a mensagem
 
-            String message = MDB.messagePutChunk(senderId, "putchunk", 99, 1, "1111111111");
+            String message = MDB.messagePutChunk(senderId, "putchunk", 99, 1, "1111111111".getBytes());
             MDB.sendsMessage(message);
         }
     }

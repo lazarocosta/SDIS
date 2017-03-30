@@ -30,10 +30,10 @@ public class MulticastRestore extends MulticastChannel {
 
             try {
                 OutputStream is = new FileOutputStream(fChunk);
-                String body = message.getBody();
+                byte[] body = message.getBody();
 
-                for (int i = 0; i < body.length(); i++) {
-                    is.write(body.charAt(i));
+                for (int i = 0; i < body.length; i++) {
+                    is.write(body[i]);
                 }
                 is.close();
             } catch (IOException e) {

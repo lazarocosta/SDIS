@@ -1,14 +1,11 @@
 package systems;
 
-import files.ChunkDatabase;
-import files.Disk;
-import files.FileDatabase;
+
+import files.Database;
 import channels.ChannelGroup;
 import protocol.SubProtocol;
 import rmi.Service;
-
 import java.io.IOException;
-import java.net.MulticastSocket;
 import java.rmi.AlreadyBoundException;
 
 /**
@@ -32,9 +29,8 @@ public class Peer {
     private static String dataRestoreAddress;
     private static int dataRestorePort;
 
-    private static Disk disk;
-    private static FileDatabase fileDB;
-    private static ChunkDatabase chunkDB;
+    private static Database db;
+
 
 
     // Main method for running a peer
@@ -61,21 +57,11 @@ public class Peer {
         rmiService = new Service(accessPoint);
         udpChannelGroup = new ChannelGroup(senderId,controlAddress, controlPort, dataBackupAddress, dataBackupPort, dataRestoreAddress, dataRestorePort);
 
-        createDisk();
-        createFileDB();
-        createChunkDB();
     }
 
-    private static void createDisk(){
-        disk = new Disk();
-    }
 
-    private static void createFileDB(){
-        fileDB = new FileDatabase();
-    }
-
-    private static void createChunkDB(){
-        chunkDB = new ChunkDatabase();
+    public static Database getDb() {
+        return db;
     }
 
     public static int getSenderId() {
@@ -90,15 +76,4 @@ public class Peer {
         return udpChannelGroup;
     }
 
-    public static Disk getDisk() {
-        return disk;
-    }
-
-    public static FileDatabase getFileDB() {
-        return fileDB;
-    }
-
-    public static ChunkDatabase getChunkDB() {
-        return chunkDB;
-    }
 }
