@@ -55,11 +55,6 @@ public class Service implements ServiceInterface {
     }
 
     @Override
-    public String sayHello() throws RemoteException {
-        return null;
-    }
-
-    @Override
     public void backupFile(String  path, int replicationDegree) throws RemoteException{
 
         File file = new File(path);
@@ -143,11 +138,6 @@ public class Service implements ServiceInterface {
 
     }
 
-    /**
-     * Unbinds server from registry, freeing it.
-     *
-     * @throws RemoteException
-     */
     @Override
     public void exit() throws RemoteException {
         try {
@@ -184,7 +174,7 @@ public class Service implements ServiceInterface {
             registry.bind(this.accessPoint, stub);
         }
         catch (ExportException e) {
-            registry = LocateRegistry.getRegistry(1099);
+            registry = LocateRegistry.getRegistry(port);
         }
         catch (AlreadyBoundException e) {
             e.printStackTrace();
@@ -213,7 +203,6 @@ public class Service implements ServiceInterface {
     }
 
     public static void main(String args[]) {
-
 
     }
 

@@ -13,8 +13,6 @@ import java.rmi.RemoteException;
 
 public interface ServiceInterface extends Remote {
 
-    // Test function
-    String sayHello() throws RemoteException;
 
     // ServiceInterface functions
     void backupFile(String filePath, int replicationDegree) throws RemoteException;

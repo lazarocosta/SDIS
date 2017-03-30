@@ -11,16 +11,18 @@ import java.rmi.registry.Registry;
 /**
  * Class to be run when testing the app.
  */
-public class  TestApp {
+public class TestApp {
 
     private static final String rmiHost = "localhost";
 
-    private enum operations {BACKUP, RESTORE, DELETE, RECLAIM};
+    private enum operations {BACKUP, RESTORE, DELETE, RECLAIM}
+
+    ;
 
     private static String peer_ap;
     private static String sub_protocol;
     private static String command;
-    private static String  filePath;
+    private static String filePath;
     private static Integer replication_degree, size;
 
     private static ServiceInterface stub;
@@ -28,9 +30,10 @@ public class  TestApp {
     // java app.TestApp
     public static void main(String[] args) throws RemoteException {
 
-        if(!verifyArgs(args))
-            return;
+        System.out.println("aqui");
+        if (!verifyArgs(args)) return;
 
+        System.out.println("aqui");
         switch (command) {
             case TestAppCommands.BACKUP:
                 stub.backupFile(filePath, replication_degree);
@@ -56,30 +59,31 @@ public class  TestApp {
 
     public static boolean verifyArgs(String[] args) {
 
-        if(args.length == 0)
-        {
+
+        if (args.length == 0) {
             TestAppCommands.printUsage();
             return false;
         }
 
-        if(args[0] == "help")
-        {
+
+        if (args[0].equals("help")) {
             TestAppCommands.printUsage();
             return false;
         }
 
-        if(args.length < 2)
-        {
+        if (args.length < 2) {
             System.out.println("Missing arguments");
             TestAppCommands.printUsage();
             return false;
         }
-
+        System.out.println("ASASAAA");
         peer_ap = args[0];
         sub_protocol = args[1];
+        System.out.println("ASASAAA");
 
         try {
             Registry registry = LocateRegistry.getRegistry(rmiHost);
+            System.out.println("ASASAAA");
 
             stub = (ServiceInterface) registry.lookup(peer_ap);
 
@@ -89,31 +93,26 @@ public class  TestApp {
             return false;
         }
 
-        if((command = TestAppCommands.getCommand(sub_protocol)) == null)
-        {
+        if ((command = TestAppCommands.getCommand(sub_protocol)) == null) {
             System.out.println("Unknown command.");
             TestAppCommands.printUsage();
             return false;
         }
-
-        switch (command)
-        {
+        System.out.println("ASASAAA");
+        switch (command) {
             case TestAppCommands.BACKUP:
-                if(args.length != 4)
-                {
+                if (args.length != 4) {
                     System.out.println("Wrong number of arguments.");
                     System.out.println(TestAppCommands.USAGE_BACKUP + "\n");
                     return false;
                 }
 
-                if((filePath = validPathArg(args[2])) == null)
-                {
+                if ((filePath = validPathArg(args[2])) == null) {
                     System.out.println(TestAppCommands.USAGE_BACKUP + "\n");
                     return false;
                 }
 
-                if((replication_degree = validIntegerArg(args[3])) == null)
-                {
+                if ((replication_degree = validIntegerArg(args[3])) == null) {
                     System.out.println(TestAppCommands.USAGE_BACKUP + "\n");
                     return false;
                 }
@@ -121,8 +120,7 @@ public class  TestApp {
                 break;
 
             case TestAppCommands.RESTORE:
-                if(args.length != 3)
-                {
+                if (args.length != 3) {
                     System.out.println("Wrong number of arguments.");
                     System.out.println(TestAppCommands.USAGE_RESTORE + "\n");
                     return false;
@@ -133,8 +131,7 @@ public class  TestApp {
                 break;
 
             case TestAppCommands.DELETE:
-                if(args.length != 3)
-                {
+                if (args.length != 3) {
                     System.out.println("Wrong number of arguments.");
                     System.out.println(TestAppCommands.USAGE_DELETE + "\n");
                     return false;
@@ -145,15 +142,13 @@ public class  TestApp {
                 break;
 
             case TestAppCommands.RECLAIM:
-                if(args.length != 3)
-                {
+                if (args.length != 3) {
                     System.out.println("Wrong number of arguments.");
                     System.out.println(TestAppCommands.USAGE_RECLAIM + "\n");
                     return false;
                 }
 
-                if((size = validIntegerArg(args[2]))== null)
-                {
+                if ((size = validIntegerArg(args[2])) == null) {
                     System.out.println(TestAppCommands.USAGE_DELETE + "\n");
                     return false;
                 }
@@ -171,9 +166,9 @@ public class  TestApp {
         return true;
     }
 
-    private static String validPathArg(String arg)
-    {
+    private static String validPathArg(String arg) {
         File file = new File(arg);
+        System.out.println("ASASAAA");
 
         if (!file.exists()) {
             System.err.println(file.getAbsolutePath() + " is not a valid path.");
@@ -188,15 +183,12 @@ public class  TestApp {
         return arg;
     }
 
-    private static Integer validIntegerArg(String arg)
-    {
+    private static Integer validIntegerArg(String arg) {
         Integer ret;
 
-        try{
+        try {
             ret = Integer.parseInt(arg);
-        }
-        catch (NumberFormatException e)
-        {
+        } catch (NumberFormatException e) {
             System.err.println("Argument must be a valid integer number.");
 
             e.printStackTrace();
