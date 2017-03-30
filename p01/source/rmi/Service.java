@@ -51,7 +51,7 @@ public class Service implements ServiceInterface {
     public Service(String accessPoint) throws AlreadyBoundException, IOException, InterruptedException {
 
         this.accessPoint = accessPoint;
-        this.createRegistry();
+        //this.createRegistry();
     }
 
     @Override
@@ -174,7 +174,15 @@ public class Service implements ServiceInterface {
             registry.bind(this.accessPoint, stub);
         }
         catch (ExportException e) {
-            registry = LocateRegistry.getRegistry(port);
+            System.out.println("Export exception when creating RMI port.");
+            try {
+                registry = LocateRegistry.getRegistry(port);
+            }
+            catch(ExportException e2)
+            {
+                System.out.println("Export exception when getting RMI port.");
+                return;
+            }
         }
         catch (AlreadyBoundException e) {
             e.printStackTrace();

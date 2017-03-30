@@ -1,9 +1,13 @@
 package channels;
 
 
+import rmi.Service;
+import rmi.ServiceInterface;
+
 import java.io.IOException;
 
 import java.net.*;
+import java.rmi.AlreadyBoundException;
 
 /**
  * Multicast addresses: 224.0.0.0 to 239.255.255.255. Best to use 224-238 which are not reserved for anything.
@@ -73,18 +77,9 @@ public class ChannelGroup implements Runnable {
         this.MC.sendsMessage(message);
     }
 
-    public static void main(String[] args) throws UnknownHostException, InterruptedException {
-//
-//        try {
-//            //java channels.ChannelGroup "1.0" 1 "acessPoint" "228.5.6.7" 3000 "228.5.6.6" 4000 "228.5.6.8" 5000
-//            //java channels.ChannelGroup "1.0" 2 "acessPoint" "228.5.6.7" 3000 "228.5.6.6" 4000 "228.5.6.8" 5000
-//
-//            ChannelGroup channelGroup = new ChannelGroup(args[0], Integer.parseInt(args[1]), args[2], args[3], Integer.parseInt(args[4]), args[5], Integer.parseInt(args[6]), args[7], Integer.parseInt(args[8]));
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public static void main(String[] args) throws IOException, InterruptedException, AlreadyBoundException {
+
+
     }
 }
 

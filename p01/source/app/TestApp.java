@@ -82,7 +82,8 @@ public class TestApp {
         System.out.println("ASASAAA");
 
         try {
-            Registry registry = LocateRegistry.getRegistry(rmiHost);
+            System.out.println("rmi " + rmiHost);
+            Registry registry = LocateRegistry.getRegistry();
             System.out.println("ASASAAA");
 
             stub = (ServiceInterface) registry.lookup(peer_ap);

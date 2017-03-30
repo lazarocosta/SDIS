@@ -57,6 +57,9 @@ public class Peer {
         rmiService = new Service(accessPoint);
         udpChannelGroup = new ChannelGroup(senderId,controlAddress, controlPort, dataBackupAddress, dataBackupPort, dataRestoreAddress, dataRestorePort);
 
+        // Testing
+
+        rmiService.backupFile("Database.txt", 1);
     }
 
 
