@@ -57,7 +57,7 @@ public class Service implements ServiceInterface {
     @Override
     public void backupFile(String path, int replicationDegree) throws RemoteException {
 
-        MyFile myFile = Backup.saveFileToBackedUpFiles(path, replicationDegree);
+        MyFile myFile = Backup.saveFileToBackedUpFiles(path, replicationDegree);    // create and save file in initiation server
         Backup.sendBackupRequest(myFile.getChunks());
 
     }

@@ -6,37 +6,54 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 public class Database implements Serializable {
-    private static final int DEFAULT_STORAGE_SPACE = 1024 * 1000; // 1024 kBytes
 
+    private static final int DEFAULT_STORAGE_SPACE = 1024 * 1000; // 1024 kBytes
     private final String SAVED_COPIES_DIRECTORY = "/tmp/";
 
-    private HashMap<String, String> filepathToFileId; // key = path, value = fileId
+    private BackedUpFilesDatabase backedUpFilesDb;
 
+    private HashMap<String, String> backedUpFiles; // key = path, value = fileId --> Ficheiros que este servidor pediu para guardar
     private HashMap<String, MyFile> files; // key = fileId, value = file
 
 
     private int storageSpace = DEFAULT_STORAGE_SPACE;
     private String path = "Database.txt";
 
+    public Database() {
+        this.backedUpFiles = new HashMap<>();
+        this.files = new HashMap<>();
+
+        this.backedUpFilesDb = new BackedUpFilesDatabase();
+    }
+
+    public String getFileId(String path){
+        return this.backedUpFiles.get(path);
+    }
+
     public int getStorageSpace() {
+
         return storageSpace;
     }
 
-    public Database() {
-        this.filepathToFileId = new HashMap<>();
-        this.files = new HashMap<>();
-    }
-    public String getFileId(String path){
-        return this.filepathToFileId.get(path);
-    }
-
     public String getSavedCopiesDirectory() {
+
         return SAVED_COPIES_DIRECTORY;
     }
 
+    public HashMap<String, String> getBackedUpFiles() {
+        return backedUpFiles;
+    }
 
-    /*
-        apenas servidor que recebe um chunk executa isto
+    /**
+     * Execute when a client asks for a file to be backed up.
+     */
+    public void saveBackedUpFile(MyFile myFile)
+    {
+        this.backedUpFilesDb.addFile(myFile);
+    }
+
+    /**
+     *  apenas servidor que recebe um chunk executa isto
      */
     public Boolean addFileToDatabase(String fileId, int replicationDegree, int chunkNo, int size) throws IOException, NoSuchAlgorithmException {
 
@@ -77,8 +94,8 @@ public class Database implements Serializable {
     }
 
     public boolean removeBackup(String path) {
-        if (this.filepathToFileId.remove(path) == null) {
-            System.out.println("Could not remove file '" + path + "' from filepathToFileId, because it didn't exist.");
+        if (this.backedUpFiles.remove(path) == null) {
+            System.out.println("Could not remove file '" + path + "' from backedUpFiles, because it didn't exist.");
             return false;
         } else {
 

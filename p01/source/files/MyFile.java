@@ -43,6 +43,10 @@ public class MyFile {
         return file;
     }
 
+    public String getFilepath() {
+        return filepath;
+    }
+
     public String getFileId() {
         return fileId;
     }
