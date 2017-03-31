@@ -15,9 +15,7 @@ public class TestApp {
 
     private static final String rmiHost = "localhost";
 
-    private enum operations {BACKUP, RESTORE, DELETE, RECLAIM}
-
-    ;
+    private enum operations {BACKUP, RESTORE, DELETE, RECLAIM};
 
     private static String peer_ap;
     private static String sub_protocol;

@@ -51,64 +51,15 @@ public class Service implements ServiceInterface {
     public Service(String accessPoint) throws AlreadyBoundException, IOException, InterruptedException {
 
         this.accessPoint = accessPoint;
-       // this.createRegistry();
+        this.createRegistry();
     }
 
     @Override
     public void backupFile(String path, int replicationDegree) throws RemoteException {
 
-        File file = new File(path);
-        MyFile myFile = new MyFile();
-        String fileId = "";
-        try {
-            fileId = myFile.generateFileId(path);
+        MyFile myFile = Backup.saveFileToBackedUpFiles(path, replicationDegree);
+        Backup.sendBackupRequest(myFile.getChunks());
 
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            myFile.divideFileIntoChunks(file, replicationDegree);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("chunks size " + myFile.getChunks().size());
-
-        for (int i = 1; i <= myFile.getChunks().size(); i++) {
-
-            System.out.println(myFile.getChunk(i));
-            Chunk chunk = myFile.getChunk(i);
-            int timeout = 1000;
-            int chunkNo = chunk.getChunkNo();
-
-            Message message = new Message(Peer.getSenderId(), fileId, chunkNo, replicationDegree);
-            message.setBody(chunk.getData());
-
-
-            String bodyStrin = new String(chunk.getData());
-
-            System.out.println("body" + bodyStrin);
-
-            String msg = message.msgPutChunk();
-
-
-            Peer.getUdpChannelGroup().getMDB().sendsMessage(msg);
-
-           /* try {
-                    Thread.sleep(timeout);
-                } catch (InterruptedException ex) {
-
-                }
-              if (MC.count_reply >= replication) {
-                    break;
-                }
-
-               // timeout *= 2;
-            }*/
-        }
     }
 
     @Override
@@ -181,13 +132,7 @@ public class Service implements ServiceInterface {
             registry = LocateRegistry.createRegistry(port);
             registry.bind(this.accessPoint, stub);
         } catch (ExportException e) {
-            System.out.println("Export exception when creating RMI port.");
-            try {
-                registry = LocateRegistry.getRegistry(port);
-            } catch (ExportException e2) {
-                System.out.println("Export exception when getting RMI port.");
-                return;
-            }
+            registry = LocateRegistry.getRegistry(port);
         } catch (AlreadyBoundException e) {
             e.printStackTrace();
         }

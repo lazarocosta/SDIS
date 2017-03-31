@@ -1,5 +1,7 @@
 package protocol;
 
+import files.Chunk;
+
 import javax.xml.bind.DatatypeConverter;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -25,20 +27,19 @@ public class Message {
 
     // Message constructors
     public Message(int senderId, String fileId, int chunkNo, int replicationDeg) {
-
-        new Message(senderId, fileId, chunkNo);
+        this(senderId, fileId, chunkNo);
         this.replicationDeg = replicationDeg;
     }
 
     public Message(int senderId, String fileId, int chunkNo) {
 
-        new Message(senderId, fileId);
+        this(senderId, fileId);
         this.chunkNo = chunkNo;
     }
 
     public Message(int senderId, String fileId) {
 
-        new Message();
+        this();
         this.senderId = senderId;
         this.fileId = fileId;
     }

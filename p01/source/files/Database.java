@@ -3,15 +3,14 @@ package files;
 import java.io.*;
 import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 public class Database implements Serializable {
     private static final int DEFAULT_STORAGE_SPACE = 1024 * 1000; // 1024 kBytes
 
-    private HashMap<String, String> backedUpFiles; // key = path, value = fileId
+    private final String SAVED_COPIES_DIRECTORY = "/tmp/";
+
+    private HashMap<String, String> filepathToFileId; // key = path, value = fileId
 
     private HashMap<String, MyFile> files; // key = fileId, value = file
 
@@ -24,21 +23,17 @@ public class Database implements Serializable {
     }
 
     public Database() {
-        this.backedUpFiles = new HashMap<>();
+        this.filepathToFileId = new HashMap<>();
         this.files = new HashMap<>();
     }
     public String getFileId(String path){
-        return this.backedUpFiles.get(path);
+        return this.filepathToFileId.get(path);
     }
 
-    /*
-    apenas servidor iniciador executa isto
-    */
-    public void addFileBackup(String path) throws IOException, NoSuchAlgorithmException {
-        MyFile myfile = new MyFile();
-        myfile.generateFileId(path);
-
+    public String getSavedCopiesDirectory() {
+        return SAVED_COPIES_DIRECTORY;
     }
+
 
     /*
         apenas servidor que recebe um chunk executa isto
@@ -82,8 +77,8 @@ public class Database implements Serializable {
     }
 
     public boolean removeBackup(String path) {
-        if (this.backedUpFiles.remove(path) == null) {
-            System.out.println("Could not remove file '" + path + "' from backedUpFiles, because it didn't exist.");
+        if (this.filepathToFileId.remove(path) == null) {
+            System.out.println("Could not remove file '" + path + "' from filepathToFileId, because it didn't exist.");
             return false;
         } else {
 

@@ -56,10 +56,13 @@ public class Peer {
 
         rmiService = new Service(accessPoint);
         udpChannelGroup = new ChannelGroup(senderId,controlAddress, controlPort, dataBackupAddress, dataBackupPort, dataRestoreAddress, dataRestorePort);
+        db = new Database();
+
+        System.out.println("Server with id=" + Peer.senderId+ " is up and running.");
 
         // Testing
 
-        rmiService.backupFile("Database.txt", 1);
+        //rmiService.backupFile("Database.txt", 1);
     }
 
 

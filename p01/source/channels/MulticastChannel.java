@@ -1,5 +1,6 @@
 package channels;
 
+import files.Chunk;
 import protocol.Message;
 
 import java.io.IOException;
@@ -46,10 +47,10 @@ public class MulticastChannel implements Runnable {
 
     }
 
-    public String messagePutChunk(int senderId, String fileId, int chunkNo, int replication, byte[] body) {
+    public String messagePutChunk(int senderId, Chunk c) {
 
-        Message messageLine = new Message(senderId, fileId, chunkNo, replication);
-        messageLine.setBody(body);
+        Message messageLine = new Message(senderId, c.getFileId(), c.getChunkNo(), c.getReplicationDegree());
+        messageLine.setBody(c.getData());
         String message = messageLine.msgPutChunk();
 
         return message;

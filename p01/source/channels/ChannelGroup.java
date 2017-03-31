@@ -28,8 +28,6 @@ public class ChannelGroup implements Runnable {
     }
 
     public ChannelGroup(int senderId, String MControl, int PortControl, String MBackup, int PortBackup, String MRestore, int PortRestore) throws InterruptedException, IOException {
-
-
         MDB = new MulticastBackup(PortBackup, MBackup, senderId, this);
         MC = new MulticastControl(PortControl, MControl, senderId, this);
         MDR = new MulticastRestore(PortRestore, MRestore, senderId, this);
@@ -42,15 +40,6 @@ public class ChannelGroup implements Runnable {
 
         Thread MDR_Thread = new Thread(MDR);
         MDR_Thread.start();
-
-        if (senderId == 1) {
-            // String message=MC.messageDelete("1.0",idSender,"1");
-            // String message = MC.messageGetChunk("1.0", idSender, "1", 1);
-            //TER em atenção porque canais se manda a mensagem
-
-            String message = MDB.messagePutChunk(senderId, "putchunk", 99, 1, "1111111111".getBytes());
-            MDB.sendsMessage(message);
-        }
     }
 
     public MulticastBackup getMDB() {

@@ -21,7 +21,7 @@ public class MulticastBackup extends MulticastChannel {
 
     public void backupFile(String version, String fileId, int chunkNo, byte[] body) {
 
-        String pathSenderId = "Sender" + senderId;
+        String pathSenderId = "sender" + Peer.getSenderId();
         String pathFileId = pathSenderId + "/" + fileId;
         String pathChunkNo = pathFileId + "/" + chunkNo + ".txt";
 
