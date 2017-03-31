@@ -37,9 +37,8 @@ public class MulticastBackup extends MulticastChannel {
         try {
 
             OutputStream is = new FileOutputStream(fChunk);
-            System.out.println("criou path ");
 
-            System.out.println("length" + body.length);
+            System.out.println("length " + body.length);
             is.write(body);
 
             is.close();

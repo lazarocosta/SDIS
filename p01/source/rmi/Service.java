@@ -51,18 +51,18 @@ public class Service implements ServiceInterface {
     public Service(String accessPoint) throws AlreadyBoundException, IOException, InterruptedException {
 
         this.accessPoint = accessPoint;
-        //this.createRegistry();
+       // this.createRegistry();
     }
 
     @Override
-    public void backupFile(String  path, int replicationDegree) throws RemoteException{
+    public void backupFile(String path, int replicationDegree) throws RemoteException {
 
         File file = new File(path);
-        ArrayList<Chunk> chunks = null;
-        MyFile myFile = new MyFile(replicationDegree);
-        String fileId = null;
+        MyFile myFile = new MyFile();
+        String fileId = "";
         try {
-            fileId = myFile.generateFileId(file);
+            fileId = myFile.generateFileId(path);
+
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -70,27 +70,34 @@ public class Service implements ServiceInterface {
         }
 
         try {
-            chunks = myFile.divideFileIntoChunks(file, fileId);
+            myFile.divideFileIntoChunks(file, replicationDegree);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        System.out.println("chunks size " + chunks.size());
+        System.out.println("chunks size " + myFile.getChunks().size());
 
-        for (int i = 0; i < chunks.size(); i++) {
+        for (int i = 1; i <= myFile.getChunks().size(); i++) {
 
+            System.out.println(myFile.getChunk(i));
+            Chunk chunk = myFile.getChunk(i);
             int timeout = 1000;
-            int chunkNo = chunks.get(i).getChunkNo();
-            Message message = new Message( Peer.getSenderId(), fileId, chunkNo, replicationDegree);
-            message.setBody(chunks.get(i).getData());
+            int chunkNo = chunk.getChunkNo();
 
-            // System.out.println(chunks.get(i).getData());
+            Message message = new Message(Peer.getSenderId(), fileId, chunkNo, replicationDegree);
+            message.setBody(chunk.getData());
+
+
+            String bodyStrin = new String(chunk.getData());
+
+            System.out.println("body" + bodyStrin);
+
             String msg = message.msgPutChunk();
 
-          /*  for (int j = 0; j < 5; j++) {
-                this.MDB.sendsMessage(msg);
 
-                try {
+            Peer.getUdpChannelGroup().getMDB().sendsMessage(msg);
+
+           /* try {
                     Thread.sleep(timeout);
                 } catch (InterruptedException ex) {
 
@@ -102,7 +109,6 @@ public class Service implements ServiceInterface {
                // timeout *= 2;
             }*/
         }
-        System.out.println(fileIdToFileName);
     }
 
     @Override
@@ -113,9 +119,10 @@ public class Service implements ServiceInterface {
     @Override
     public void deleteFile(String filePath) throws RemoteException {
 
-        String fileId = Peer.getDb().getBackedUpFiles().get(filePath);  // gets fileId from filePath
+        String fileId = Peer.getDb().getFileId(filePath);  // gets fileId from filePath
 
         Delete.deleteFile(fileId);
+
 
         int attempts = ATTEMPTS;
 
@@ -150,6 +157,7 @@ public class Service implements ServiceInterface {
             System.out.println("ChannelGroup exiting.");
         } catch (Exception e) {
 
+
         }
     }
 
@@ -172,19 +180,15 @@ public class Service implements ServiceInterface {
         try {
             registry = LocateRegistry.createRegistry(port);
             registry.bind(this.accessPoint, stub);
-        }
-        catch (ExportException e) {
+        } catch (ExportException e) {
             System.out.println("Export exception when creating RMI port.");
             try {
                 registry = LocateRegistry.getRegistry(port);
-            }
-            catch(ExportException e2)
-            {
+            } catch (ExportException e2) {
                 System.out.println("Export exception when getting RMI port.");
                 return;
             }
-        }
-        catch (AlreadyBoundException e) {
+        } catch (AlreadyBoundException e) {
             e.printStackTrace();
         }
 

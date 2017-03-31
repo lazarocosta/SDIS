@@ -2,14 +2,20 @@ package files;
 
 import java.io.*;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class Database {
+public class Database implements Serializable {
     private static final int DEFAULT_STORAGE_SPACE = 1024 * 1000; // 1024 kBytes
 
-    private Map<String, String> backedUpFiles; // key = filename, value = fileId
+    private HashMap<String, String> backedUpFiles; // key = path, value = fileId
+
+    private HashMap<String, MyFile> files; // key = fileId, value = file
+
+
     private int storageSpace = DEFAULT_STORAGE_SPACE;
     private String path = "Database.txt";
 
@@ -19,99 +25,80 @@ public class Database {
 
     public Database() {
         this.backedUpFiles = new HashMap<>();
+        this.files = new HashMap<>();
+    }
+    public String getFileId(String path){
+        return this.backedUpFiles.get(path);
     }
 
-    public Map<String, String> getBackedUpFiles() {
-        return backedUpFiles;
+    /*
+    apenas servidor iniciador executa isto
+    */
+    public void addFileBackup(String path) throws IOException, NoSuchAlgorithmException {
+        MyFile myfile = new MyFile();
+        myfile.generateFileId(path);
+
     }
 
-    public boolean addFileToDatabase(String filename, String fileId, int size) {
+    /*
+        apenas servidor que recebe um chunk executa isto
+     */
+    public Boolean addFileToDatabase(String fileId, int replicationDegree, int chunkNo, int size) throws IOException, NoSuchAlgorithmException {
 
-        if (this.storageSpace < size) return false;
+        if (!this.files.containsKey(fileId)) {
 
-        if (!this.backedUpFiles.containsKey(filename)) {
-            this.backedUpFiles.put(filename, fileId);
-            this.storageSpace -= size;
+            if (storageSpace < size) return false;
+
+            MyFile myFile = new MyFile();
+            Chunk chunk = new Chunk(fileId, chunkNo, replicationDegree, null);
+            myFile.addChunk(chunkNo, chunk);
+            this.files.put(fileId, myFile);
+            storageSpace -= size;
+
             return true;
+
+        } else {
+            MyFile myfile = this.files.get(fileId);
+            Chunk chunk = new Chunk(fileId, chunkNo, replicationDegree, null);
+
+            if (!myfile.exists(chunkNo)) {
+                if (storageSpace < size) {
+                    myfile.addChunk(chunkNo, chunk);
+                    storageSpace -= size;
+                    return true;
+                }
+            }
+            return false;
         }
-        return false;
     }
 
-    public boolean removeFileFromDatabase(String filename, int size) {
-        if (this.backedUpFiles.remove(filename) == null) {
-            System.out.println("Could not remove file '" + filename + "' from database, because it didn't exist.");
+    public boolean removeFileFromDatabase(String fileId) {
+        if (this.files.remove(fileId) == null) {
+            System.out.println("Could not remove file '" + fileId + "' from database, because it didn't exist.");
             return false;
         } else {
-            this.storageSpace += size;
             return true;
         }
     }
 
-    public void storeFile() {
+    public boolean removeBackup(String path) {
+        if (this.backedUpFiles.remove(path) == null) {
+            System.out.println("Could not remove file '" + path + "' from backedUpFiles, because it didn't exist.");
+            return false;
+        } else {
 
-        try {
-
-            FileWriter fstream = new FileWriter("Database.txt");
-            BufferedWriter out = new BufferedWriter(fstream);
-
-            out.write("size: " + storageSpace);
-
-            Set<String> chaves = backedUpFiles.keySet();
-            for (String chave : chaves) {
-                out.newLine();
-                out.write(chave + " = " + backedUpFiles.get(chave));
-
-            }
-
-            out.close();
-        } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
+            return true;
         }
-
     }
 
-    public void loadFile() {
-
-        File f = new File(path);
-
-        if (!f.exists()) {
-            System.out.println("Sem database ");
-            return;
-        }
-
-        try {
-            FileInputStream fstream = new FileInputStream("Database.txt");
-
-            DataInputStream in = new DataInputStream(fstream);
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            String strLine;
-
-            if ((strLine = br.readLine()) != null) {
-
-                String[] result = strLine.split("[a-z, :]+");
-                System.out.println("size in file" + result[1]);
-                storageSpace = Integer.parseInt(result[1]);
-            }
-
-            while ((strLine = br.readLine()) != null) {
-                String[] par = strLine.split(" = ");
-
-                this.addFileToDatabase(par[0], par[1], 0);
-                System.out.println(par[0] + "----" + par[1]);
-            }
-
-            in.close();
-        } catch (Exception e) {
-            System.err.println(e.getCause());
-        }
+    public MyFile getFile(int index){
+        return this.files.get(index);
     }
 
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
 
         Database data = new Database();
-        data.loadFile();
         System.out.println("muda");
-        data.storeFile();
         System.out.println(data.getStorageSpace());
 
     }
