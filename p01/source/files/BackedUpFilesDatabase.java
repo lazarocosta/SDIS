@@ -31,6 +31,11 @@ public class BackedUpFilesDatabase {
 
     }
 
+    public boolean canSaveChunksOfFile(String filepath)
+    {
+        return(!this.pathToFileIdMap.containsKey(filepath));
+    }
+
     public void addFile(String path, String fileId)
     {
         this.pathToFileIdMap.put(path, fileId);
