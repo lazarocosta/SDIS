@@ -1,15 +1,10 @@
 package rmi;
 
-import files.Chunk;
 import files.MyFile;
-import channels.ChannelGroup;
 import protocol.Backup;
 import protocol.Delete;
-import protocol.Message;
-import protocol.SubProtocol;
 import systems.Peer;
 
-import java.io.File;
 import java.io.IOException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.registry.Registry;
@@ -17,8 +12,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,6 +52,7 @@ public class Service implements ServiceInterface {
 
         MyFile myFile = Backup.saveFileToBackedUpFiles(path, replicationDegree);    // create and save file in initiation server
         Backup.sendBackupRequest(myFile.getChunks());
+
 
     }
 

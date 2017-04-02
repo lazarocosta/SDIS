@@ -1,5 +1,7 @@
 package files;
 
+import chunk.Chunk;
+
 import java.io.*;
 import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
@@ -11,6 +13,7 @@ public class Database implements Serializable {
     private final String SAVED_COPIES_DIRECTORY = "/tmp/";
 
     private BackedUpFilesDatabase backedUpFilesDb;
+    private StoredChunksDatabase storedChunksDb;
 
     private HashMap<String, String> backedUpFiles; // key = path, value = fileId --> Ficheiros que este servidor pediu para guardar
     private HashMap<String, MyFile> files; // key = fileId, value = file
@@ -24,6 +27,7 @@ public class Database implements Serializable {
         this.files = new HashMap<>();
 
         this.backedUpFilesDb = new BackedUpFilesDatabase();
+        this.storedChunksDb = new StoredChunksDatabase();
     }
 
     public String getFileId(String path){
@@ -42,6 +46,10 @@ public class Database implements Serializable {
 
     public HashMap<String, String> getBackedUpFiles() {
         return backedUpFiles;
+    }
+
+    public StoredChunksDatabase getStoredChunksDb() {
+        return storedChunksDb;
     }
 
     /**

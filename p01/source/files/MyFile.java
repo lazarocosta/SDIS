@@ -1,11 +1,11 @@
 package files;
 
+import chunk.Chunk;
 import systems.Peer;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
@@ -13,7 +13,6 @@ import java.security.NoSuchAlgorithmException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 public class MyFile {
 

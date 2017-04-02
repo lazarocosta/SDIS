@@ -1,6 +1,6 @@
 package channels;
 
-import files.Chunk;
+import chunk.Chunk;
 import protocol.Message;
 
 import java.io.IOException;

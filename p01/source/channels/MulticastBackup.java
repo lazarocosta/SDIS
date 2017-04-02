@@ -1,5 +1,6 @@
 package channels;
 
+import protocol.Backup;
 import protocol.Message;
 import systems.Peer;
 
@@ -63,13 +64,7 @@ public class MulticastBackup extends MulticastChannel {
 
                 switch (msg.getMsgType()) {
                     case "PUTCHUNK": {
-                        if (msg.getSenderId() != senderId) {
-                            this.backupFile(msg.getVersion(), msg.getFileId(), msg.getChunkNo(), msg.getBody());
-
-                            String sendToServer = this.messageStored(senderId, msg.getFileId(), msg.getChunkNo());
-                            //envia a resposta pelo Mcontrol
-                            this.sender.sendForControl(sendToServer);
-                        }
+                        Backup.handleBackupRequest(msg);
                     }
                     break;
                     default:

@@ -1,6 +1,6 @@
 package protocol;
 
-import files.Chunk;
+import chunk.Chunk;
 import files.MyFile;
 import systems.Peer;
 
@@ -35,5 +35,30 @@ public class Backup extends SubProtocol{
         }
 
     }
+
+    public static void storeChunk(Chunk c)
+    {
+        Peer.getDb().getStoredChunksDb().addChunk(c);
+    }
+
+    public static void sendStoredMessage(Chunk c){
+
+        Peer.getUdpChannelGroup().sendForControl(Peer.getUdpChannelGroup().getMC().messageStored(Peer.getSenderId(), c.getFileId(), c.getChunkNo()));
+
+    }
+
+    public static void handleBackupRequest(Message msg){
+
+        if (msg.getSenderId() != Peer.getSenderId()) {
+
+            Chunk c = new Chunk(msg.getFileId(), msg.getChunkNo(), msg.getReplicationDeg(), msg.getBody());
+            Backup.storeChunk(c);
+
+            sendStoredMessage(c);
+        }
+
+
+    }
+
 
 }

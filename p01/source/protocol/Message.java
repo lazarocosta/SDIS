@@ -1,7 +1,5 @@
 package protocol;
 
-import files.Chunk;
-
 import javax.xml.bind.DatatypeConverter;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
