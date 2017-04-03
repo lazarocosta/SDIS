@@ -1,5 +1,7 @@
 package protocol;
 
+import systems.Peer;
+
 import javax.xml.bind.DatatypeConverter;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -11,7 +13,7 @@ public class Message {
     // TODO: Put Body on some messages and not on every single one.
 
     public String header;
-    public byte[] body;
+    public String body;
 
     private static final String SPACE = " ";
     private static final String CRLF = "\r\n";   // CarriageReturn == "\r", LineFeed == "\n"
@@ -80,7 +82,7 @@ public class Message {
     }
 
     public void setBody(byte[]body) {
-        this.body = body;
+        this.body = new String(body);
     }
 
     public String getVersion() {
@@ -107,7 +109,7 @@ public class Message {
         return msgType;
     }
 
-    public byte[] getBody() {
+    public String  getBody() {
         return body;
     }
 
@@ -183,7 +185,7 @@ public class Message {
         // CHUNK <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF><Body>
         String[] tokens = message.split(CRLF + CRLF);
 
-        this.body = tokens[1].getBytes();
+        this.body = tokens[1];
         String[] header = tokens[0].split("\\s+");
 
         if (header.length >= 5) {
@@ -223,5 +225,8 @@ public class Message {
         }
     }
 
-
+    @Override
+    public String toString() {
+        return this.msgType.toString() + this.version.toString() + Peer.getSenderId() + this.fileId.toString() + this.body;
+    }
 }

@@ -48,7 +48,7 @@ public class Chunk {
 
     @Override
     public String toString() {
-        return "FileID: " +  chunkInfo.getFileId() + ", ChunkNo: " +  chunkInfo.getChunkNo();
+        return "FileID: " +  chunkInfo.getFileId() + ", ChunkNo: " +  chunkInfo.getChunkNo() + "Body: " + new String(data);
     }
 
     /**

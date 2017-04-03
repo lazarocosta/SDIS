@@ -13,19 +13,12 @@ import java.rmi.AlreadyBoundException;
  * Multicast addresses: 224.0.0.0 to 239.255.255.255. Best to use 224-238 which are not reserved for anything.
  */
 
-public class ChannelGroup implements Runnable {
-
-    protected int senderId;
+public class ChannelGroup{
 
     protected MulticastBackup MDB;
     protected MulticastControl MC;
     protected MulticastRestore MDR;
 
-
-    @Override
-    public void run() {
-
-    }
 
     public ChannelGroup(int senderId, String MControl, int PortControl, String MBackup, int PortBackup, String MRestore, int PortRestore) throws InterruptedException, IOException {
         MDB = new MulticastBackup(PortBackup, MBackup, senderId, this);
