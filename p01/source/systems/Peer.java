@@ -62,7 +62,9 @@ public class Peer {
 
         // Testing
 
-        //rmiService.backupFile("Database.txt", 1);
+        if(Peer.getSenderId()==1) {
+            rmiService.backupFile("test.txt", 1);
+        }
     }
 
 

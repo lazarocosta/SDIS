@@ -44,7 +44,7 @@ public class Service implements ServiceInterface {
     public Service(String accessPoint) throws AlreadyBoundException, IOException, InterruptedException {
 
         this.accessPoint = accessPoint;
-        this.createRegistry();
+        //this.createRegistry();
     }
 
     @Override
@@ -52,8 +52,6 @@ public class Service implements ServiceInterface {
 
         MyFile myFile = Backup.saveFileToBackedUpFiles(path, replicationDegree);    // create and save file in initiation server
         Backup.sendBackupRequest(myFile.getChunks());
-
-
     }
 
     @Override
@@ -64,24 +62,26 @@ public class Service implements ServiceInterface {
     @Override
     public void deleteFile(String filePath) throws RemoteException {
 
-        String fileId = Peer.getDb().getFileId(filePath);  // gets fileId from filePath
+        if (Peer.getDb().getBackedUpFilesDb().containsKey(filePath)) {
+            String fileId = Peer.getDb().getBackedUpFilesDb().getFileId(filePath);
 
-        Delete.deleteFile(fileId);
+            Delete.deleteFile(fileId);
 
 
-        int attempts = ATTEMPTS;
+            int attempts = ATTEMPTS;
 
-        while (attempts > 0) {
+            while (attempts > 0) {
 
-            String msgDelete = Peer.getUdpChannelGroup().getMC().messageDelete(Peer.getSenderId(), fileId);
-            Peer.getUdpChannelGroup().getMC().sendsMessage(msgDelete);
+                String msgDelete = Peer.getUdpChannelGroup().getMC().messageDelete(Peer.getSenderId(), fileId);
+                Peer.getUdpChannelGroup().getMC().sendsMessage(msgDelete);
 
-            try {
-                Thread.sleep(SLEEP_ms);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                try {
+                    Thread.sleep(SLEEP_ms);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                attempts--;
             }
-            attempts--;
         }
     }
 

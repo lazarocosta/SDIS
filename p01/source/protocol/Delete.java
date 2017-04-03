@@ -30,7 +30,9 @@ public class Delete extends SubProtocol{
                 }
             }
         }
+    }
 
-
+    public static void deleteBackupFile(String path){
+        Peer.getDb().removeBackup(path);
     }
 }
