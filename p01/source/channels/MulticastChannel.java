@@ -35,6 +35,14 @@ public class MulticastChannel implements Runnable {
         }
     }
 
+    public void sleep(int time_in_ms){
+        try {
+            Thread.sleep(time_in_ms);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void sendsMessage(String message) {
 
         try {

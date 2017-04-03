@@ -51,6 +51,11 @@ public class StoredChunksDatabase implements Serializable {
 
     }
 
+    public void resetReplicationObtained(ChunkInfo chunkInfo)
+    {
+        this.obtainedReplication.put(chunkInfo, 0);
+    }
+
     public Map<ChunkInfo, byte[]> getStoredChunks() {
         return storedChunks;
     }

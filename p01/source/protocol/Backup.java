@@ -9,7 +9,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Period;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by jazz on 29-03-2017.
@@ -24,6 +26,8 @@ public class Backup extends SubProtocol{
 
         sendBackupRequest(myFile.getChunks());
         System.out.println("Sent PUTCHUNK requests.");
+
+
     }
 
     public static void backupHandler(Message msg){
@@ -46,6 +50,11 @@ public class Backup extends SubProtocol{
 
         if(canPeerStoreChunk(c)) {
             storeChunk(c);
+
+            Random randomGenerator = new Random();
+
+            Peer.getUdpChannelGroup().getMC().sleep(randomGenerator.nextInt(400));
+
             sendStoredMessage(c);
         }
 
@@ -58,7 +67,7 @@ public class Backup extends SubProtocol{
         Peer.getDb().getStoredChunksDb().incrementReplicationObtained(chunkInfo);
 
         String filepath;
-        if((filepath = Peer.getDb().getBackedUpFilesDb().fileIdToFilePath(msg.getFileId())) != null){
+        if((filepath = Peer.getDb().getBackedUpFilesDb().fileIdToFilePath(msg.getFileId())) != null){   // if the Peer was the initiator in the backup of the Chunk
             System.out.println("Chunk from " +  filepath + " with number " + msg.getChunkNo() + " has been saved by server with id " + msg.getSenderId());
         }
     }
@@ -88,6 +97,9 @@ public class Backup extends SubProtocol{
             System.out.println("Message is: " + c.getFileId() + ";" + c.getChunkNo() + ";" + c.getReplicationDegree() + ";" + c.getData());
             Peer.getUdpChannelGroup().getMDB().sendsMessage(message);
             System.out.println("Sent to backup chunk: " + c.toString());
+
+            VerifyStoredConfirms verifyStoredConfirms = new VerifyStoredConfirms(c);
+            verifyStoredConfirms.run();
         }
 
     }
@@ -128,8 +140,6 @@ public class Backup extends SubProtocol{
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     private static boolean canPeerStoreChunk(Chunk c)
@@ -137,5 +147,57 @@ public class Backup extends SubProtocol{
         return (Peer.getDb().getBackedUpFilesDb().fileIdToFilePath(c.getFileId()) == null);
     }
 
+    public static class VerifyStoredConfirms implements Runnable{
+
+        private static final int INITIAL_INTERVAL = 1000; // 1 seg = 1000 ms
+        private static final int MAX_TRIES = 5;
+
+        private Chunk chunk;
+
+        public VerifyStoredConfirms(Chunk chunk) {
+            this.chunk = chunk;
+        }
+
+        @Override
+        public void run() {
+
+            int interval = INITIAL_INTERVAL;
+            int tries = 0;
+            boolean confirmed = false;
+
+            while(!confirmed && tries < MAX_TRIES)
+            {
+                try {
+                    System.out.println("Waited for " + interval + " ms");
+                    Thread.sleep(interval);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                int numberOfConfirms = Peer.getDb().getStoredChunksDb().getObtainedReplication().get(this.chunk.getChunkInfo());
+
+                System.out.println("Number of confirms during the interval: " + numberOfConfirms);
+
+                if(numberOfConfirms < this.chunk.getReplicationDegree())
+                {
+                    Peer.getDb().getStoredChunksDb().resetReplicationObtained(this.chunk.getChunkInfo());
+                    tries++;
+                    interval = interval*2;
+
+                    if(tries == MAX_TRIES)
+                    {
+                        System.out.println("Reached maximum tries to backup chunk with desired replication degree.");
+                    }
+                }
+                else
+                {
+                    confirmed = true;
+                    System.out.println("Desired replication reached for chunk.");
+                }
+
+            }
+
+        }
+    }
 
 }

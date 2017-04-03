@@ -37,7 +37,7 @@ public class MulticastBackup extends MulticastChannel {
                     }
                     break;
                     default:
-                        System.out.println("discard");
+                        System.out.println("Discard.");
                 }
 
             } catch (IOException A) {
