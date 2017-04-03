@@ -33,7 +33,6 @@ public class MulticastBackup extends MulticastChannel {
                 switch (msg.getMsgType()) {
                     case "PUTCHUNK": {
                         Backup.backupHandler(msg);
-                        Backup.saveChunk(msg.getVersion(),msg.getFileId(),msg.getChunkNo(), msg.getBody());
                         System.out.println("Saved chunk.");
                     }
                     break;

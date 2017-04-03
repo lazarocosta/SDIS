@@ -1,5 +1,6 @@
 package channels;
 
+import protocol.Backup;
 import protocol.Delete;
 import protocol.Message;
 
@@ -81,6 +82,7 @@ public class MulticastControl extends MulticastChannel {
                         break;
                         case "STORED": {
                             if (msg.getSenderId() != senderId) {
+                                Backup.storedHandler(msg);
                                 System.out.println("STORED");
                             }
                             //

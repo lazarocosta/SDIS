@@ -3,8 +3,9 @@ package files;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Map;
 
-public class BackedUpFilesDatabase {
+public class BackedUpFilesDatabase implements Serializable {
 
     private final String DATABASE_FILE = "backup.data";
     private HashMap<String, String> pathToFileIdMap; // key = path, value = fileId --> Ficheiros que este servidor pediu para guardar
@@ -30,6 +31,9 @@ public class BackedUpFilesDatabase {
 
     public boolean canSaveChunksOfFile(String filepath) {
         return (!this.pathToFileIdMap.containsKey(filepath));
+    }
+    public boolean containsFileId(String fileId) {
+        return (this.fileIdToFilePath(fileId) != null);
     }
 
     public void addFile(String path, String fileId) {
@@ -58,4 +62,15 @@ public class BackedUpFilesDatabase {
     public boolean containsKey(String key){
         return  pathToFileIdMap.containsKey(key);
     }
+
+
+    public String fileIdToFilePath(String fileId) {
+        for (String key : this.pathToFileIdMap.keySet()) {
+            if (this.pathToFileIdMap.get(key).equals(fileId)) {
+                return key;
+            }
+        }
+        return null;
+    }
 }
+

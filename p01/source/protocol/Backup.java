@@ -1,6 +1,7 @@
 package protocol;
 
 import chunk.Chunk;
+import chunk.ChunkInfo;
 import files.MyFile;
 import systems.Peer;
 
@@ -21,15 +22,15 @@ public class Backup extends SubProtocol{
         MyFile myFile = Backup.saveFileToBackedUpFiles(path, replicationDegree);    // create and save file in initiation server
         System.out.println("Created myFile.");
 
-        Backup.sendBackupRequest(myFile.getChunks());
+        sendBackupRequest(myFile.getChunks());
         System.out.println("Sent PUTCHUNK requests.");
     }
 
     public static void backupHandler(Message msg){
 
-        if (Peer.getDb().getBackedUpFilesDb().canSaveChunksOfFile(msg.getFileId())) {
+        if (!Peer.getDb().getBackedUpFilesDb().containsFileId(msg.getFileId())) {
             Chunk c = new Chunk(msg.getFileId(), msg.getChunkNo(), msg.getReplicationDeg(), msg.getBody());
-
+            saveChunk(msg.getVersion(),msg.getFileId(),msg.getChunkNo(), msg.getBody());
             storedInitiator(c);
         }
         else
@@ -41,20 +42,27 @@ public class Backup extends SubProtocol{
 
     public static void storedInitiator(Chunk c){
 
-        Backup.storeChunk(c);
-
-        sendStoredMessage(c);
+        if(canPeerStoreChunk(c)) {
+            storeChunk(c);
+            sendStoredMessage(c);
+        }
 
     }
 
     public static void storedHandler(Message msg){
 
+        ChunkInfo chunkInfo = new ChunkInfo(msg.getFileId(), msg.getChunkNo());
 
+        Peer.getDb().getStoredChunksDb().incrementReplicationObtained(chunkInfo);
 
+        String filepath;
+        if((filepath = Peer.getDb().getBackedUpFilesDb().fileIdToFilePath(msg.getFileId())) != null){
+            System.out.println("Chunk from " +  filepath + " with number " + msg.getChunkNo() + " has been saved by server with id " + msg.getSenderId());
+        }
     }
 
 
-    public static MyFile saveFileToBackedUpFiles(String filepath, int replicationDegree){
+    private static MyFile saveFileToBackedUpFiles(String filepath, int replicationDegree){
 
         MyFile myFile = new MyFile(filepath, replicationDegree);
         myFile.divideFileIntoChunks();  // create chunks and store them
@@ -68,7 +76,7 @@ public class Backup extends SubProtocol{
         return myFile;
     }
 
-    public static void sendBackupRequest(ArrayList<Chunk> chunks){
+    private static void sendBackupRequest(ArrayList<Chunk> chunks){
 
         for(Chunk c: chunks)
         {
@@ -80,18 +88,17 @@ public class Backup extends SubProtocol{
 
     }
 
-    public static void storeChunk(Chunk c)
-    {
+    private static void storeChunk(Chunk c) {
         Peer.getDb().getStoredChunksDb().addChunk(c);
     }
 
-    public static void sendStoredMessage(Chunk c){
+    private static void sendStoredMessage(Chunk c){
 
         Peer.getUdpChannelGroup().sendForControl(Peer.getUdpChannelGroup().getMC().messageStored(Peer.getSenderId(), c.getFileId(), c.getChunkNo()));
 
     }
 
-    public static void saveChunk(String version, String fileId, int chunkNo, byte[] body) {
+    private static void saveChunk(String version, String fileId, int chunkNo, byte[] body) {
 
         System.out.println("esttetete");
         String pathSenderId = "sender" + Peer.getSenderId();
@@ -122,6 +129,10 @@ public class Backup extends SubProtocol{
 
     }
 
+    private static boolean canPeerStoreChunk(Chunk c)
+    {
+        return (Peer.getDb().getBackedUpFilesDb().fileIdToFilePath(c.getFileId()) == null);
+    }
 
 
 }
