@@ -54,6 +54,8 @@ public class Database implements Serializable {
         return backedUpFilesDb;
     }
 
+    public String getFileId(String path) { return this.backedUpFilesDb.getFileId(path); }
+
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
 
         Database data = new Database();

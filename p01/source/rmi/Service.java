@@ -42,16 +42,14 @@ public class Service implements ServiceInterface {
 
     public Service(String accessPoint) throws AlreadyBoundException, IOException, InterruptedException {
         this.accessPoint = accessPoint;
-        //this.createRegistry();
+        this.createRegistry();
     }
 
     @Override
     public void backupFile(String path, int replicationDegree) throws RemoteException {
 
-        System.out.println("Peer is executing backup of file '" + path + "' with replication degree " + replicationDegree);
+        Backup.backupInitiator(path, replicationDegree);
 
-        MyFile myFile = Backup.saveFileToBackedUpFiles(path, replicationDegree);    // create and save file in initiation server
-        Backup.sendBackupRequest(myFile.getChunks());
     }
 
     @Override
@@ -62,26 +60,24 @@ public class Service implements ServiceInterface {
     @Override
     public void deleteFile(String filePath) throws RemoteException {
 
-        if (Peer.getDb().getBackedUpFilesDb().containsKey(filePath)) {
-            String fileId = Peer.getDb().getBackedUpFilesDb().getFileId(filePath);
+        String fileId = Peer.getDb().getFileId(filePath);  // gets fileId from filePath
 
-            Delete.deleteFile(fileId);
+        Delete.deleteFile(fileId);
 
 
-            int attempts = ATTEMPTS;
+        int attempts = ATTEMPTS;
 
-            while (attempts > 0) {
+        while (attempts > 0) {
 
-                String msgDelete = Peer.getUdpChannelGroup().getMC().messageDelete(Peer.getSenderId(), fileId);
-                Peer.getUdpChannelGroup().getMC().sendsMessage(msgDelete);
+            String msgDelete = Peer.getUdpChannelGroup().getMC().messageDelete(Peer.getSenderId(), fileId);
+            Peer.getUdpChannelGroup().getMC().sendsMessage(msgDelete);
 
-                try {
-                    Thread.sleep(SLEEP_ms);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                attempts--;
+            try {
+                Thread.sleep(SLEEP_ms);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            attempts--;
         }
     }
 

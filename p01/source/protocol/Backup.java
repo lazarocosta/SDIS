@@ -15,6 +15,45 @@ import java.util.ArrayList;
  */
 public class Backup extends SubProtocol{
 
+    public static void backupInitiator(String path, int replicationDegree){
+        System.out.println("Peer is executing backup of file '" + path + "' with replication degree " + replicationDegree);
+
+        MyFile myFile = Backup.saveFileToBackedUpFiles(path, replicationDegree);    // create and save file in initiation server
+        System.out.println("Created myFile.");
+
+        Backup.sendBackupRequest(myFile.getChunks());
+        System.out.println("Sent PUTCHUNK requests.");
+    }
+
+    public static void backupHandler(Message msg){
+
+        if (Peer.getDb().getBackedUpFilesDb().canSaveChunksOfFile(msg.getFileId())) {
+            Chunk c = new Chunk(msg.getFileId(), msg.getChunkNo(), msg.getReplicationDeg(), msg.getBody());
+
+            storedInitiator(c);
+        }
+        else
+        {
+            System.out.println("This server was the initiator in the backup of '" +  msg.getFileId() + "'.");
+        }
+
+    }
+
+    public static void storedInitiator(Chunk c){
+
+        Backup.storeChunk(c);
+
+        sendStoredMessage(c);
+
+    }
+
+    public static void storedHandler(Message msg){
+
+
+
+    }
+
+
     public static MyFile saveFileToBackedUpFiles(String filepath, int replicationDegree){
 
         MyFile myFile = new MyFile(filepath, replicationDegree);
@@ -52,23 +91,10 @@ public class Backup extends SubProtocol{
 
     }
 
-    public static void handleBackupRequest(Message msg){
-
-        if (msg.getSenderId() != Peer.getSenderId()) {
-
-            Chunk c = new Chunk(msg.getFileId(), msg.getChunkNo(), msg.getReplicationDeg(), msg.getBody());
-            Backup.storeChunk(c);
-
-            sendStoredMessage(c);
-        }
-
-
-    }
-
     public static void saveChunk(String version, String fileId, int chunkNo, byte[] body) {
 
         System.out.println("esttetete");
-       String pathSenderId = "sender" + Peer.getSenderId();
+        String pathSenderId = "sender" + Peer.getSenderId();
         String pathFileId = pathSenderId + "/" + fileId;
         String pathChunkNo = pathFileId + "/" + chunkNo + ".txt";
 
