@@ -20,34 +20,6 @@ public class MulticastBackup extends MulticastChannel {
         super(port, address, senderId, sender);
     }
 
-    public void backupFile(String version, String fileId, int chunkNo, byte[] body) {
-
-        String pathSenderId = "sender" + Peer.getSenderId();
-        String pathFileId = pathSenderId + "/" + fileId;
-        String pathChunkNo = pathFileId + "/" + chunkNo + ".txt";
-
-        File f = new File(pathFileId);
-
-        File fChunk = new File(pathChunkNo);
-
-        if (!f.exists()) {
-            f.mkdirs();
-            System.out.println("criou path ");
-        }
-
-        try {
-
-            OutputStream is = new FileOutputStream(fChunk);
-
-            System.out.println("length " + body.length);
-            is.write(body);
-
-            is.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void run() {
 
@@ -65,6 +37,7 @@ public class MulticastBackup extends MulticastChannel {
                 switch (msg.getMsgType()) {
                     case "PUTCHUNK": {
                         Backup.handleBackupRequest(msg);
+                        Backup.saveChunk(msg.getVersion(),msg.getFileId(),msg.getChunkNo(), msg.getBody());
                     }
                     break;
                     default:
