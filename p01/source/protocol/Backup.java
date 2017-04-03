@@ -21,7 +21,7 @@ public class Backup extends SubProtocol{
         myFile.divideFileIntoChunks();  // create chunks and store them
         Peer.getDb().saveBackedUpFile(myFile);    // TODO: ask whether the PATH or the FILENAME should be saved
 
-        System.out.println(Peer.getDb().getBackedUpFiles());
+      //  System.out.println(Peer.getDb().getBackedUpFiles());
         System.out.println("aqui");
 
         //myFile.saveCopy();
