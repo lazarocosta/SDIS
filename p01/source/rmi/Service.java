@@ -36,19 +36,19 @@ public class Service implements ServiceInterface {
     String accessPoint;
     Registry serverRegistry;
 
-    Map<String, String> fileIdToFileName = new HashMap<>();
     private int ATTEMPTS = 5;
     private long SLEEP_ms = 50;
 
 
     public Service(String accessPoint) throws AlreadyBoundException, IOException, InterruptedException {
-
         this.accessPoint = accessPoint;
         this.createRegistry();
     }
 
     @Override
     public void backupFile(String path, int replicationDegree) throws RemoteException {
+
+        System.out.println("Peer is executing backup of file '" + path + "' with replication degree " + replicationDegree);
 
         MyFile myFile = Backup.saveFileToBackedUpFiles(path, replicationDegree);    // create and save file in initiation server
         Backup.sendBackupRequest(myFile.getChunks());

@@ -6,7 +6,9 @@ import channels.ChannelGroup;
 import protocol.SubProtocol;
 import rmi.Service;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.rmi.AlreadyBoundException;
+import java.util.Arrays;
 
 /**
  *
@@ -58,11 +60,13 @@ public class Peer {
         udpChannelGroup = new ChannelGroup(senderId,controlAddress, controlPort, dataBackupAddress, dataBackupPort, dataRestoreAddress, dataRestorePort);
         db = new Database();
 
-        System.out.println("Server with id=" + Peer.senderId+ " is up and running.");
+        System.out.println("Server with id = " + Peer.senderId+ " is up and running.");
 
         // Testing
 
         //rmiService.backupFile("Database.txt", 1);
+
+        System.out.println(Arrays.toString("I am very strong".getBytes()));
     }
 
 

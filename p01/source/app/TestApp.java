@@ -28,25 +28,31 @@ public class TestApp {
     // java app.TestApp
     public static void main(String[] args) throws RemoteException {
 
-        System.out.println("aqui");
+        System.out.println("Test App running...");
+
         if (!verifyArgs(args)) return;
 
-        System.out.println("aqui");
+        System.out.println("Arguments accepted.");
+
         switch (command) {
             case TestAppCommands.BACKUP:
                 stub.backupFile(filePath, replication_degree);
+                System.out.println("Executing backup of file '" + filePath + "' with replication degree equal to " + replication_degree);
                 break;
 
             case TestAppCommands.RESTORE:
                 stub.restoreFile(filePath);
+                System.out.println("Executing restore of file '" + filePath);
                 break;
 
             case TestAppCommands.DELETE:
                 stub.deleteFile(filePath);
+                System.out.println("Executing deletion of file '" + filePath);
                 break;
 
             case TestAppCommands.RECLAIM:
                 stub.reclaim(size);
+                System.out.println("Reclaiming '" +  size + "' kBytes.");
                 break;
 
             default:
@@ -74,15 +80,13 @@ public class TestApp {
             TestAppCommands.printUsage();
             return false;
         }
-        System.out.println("ASASAAA");
+
         peer_ap = args[0];
         sub_protocol = args[1];
-        System.out.println("ASASAAA");
 
         try {
-            System.out.println("rmi " + rmiHost);
+            System.out.println("Connecting to RMI Host:  '" + rmiHost + "'.");
             Registry registry = LocateRegistry.getRegistry();
-            System.out.println("ASASAAA");
 
             stub = (ServiceInterface) registry.lookup(peer_ap);
 
@@ -97,7 +101,7 @@ public class TestApp {
             TestAppCommands.printUsage();
             return false;
         }
-        System.out.println("ASASAAA");
+
         switch (command) {
             case TestAppCommands.BACKUP:
                 if (args.length != 4) {
@@ -167,7 +171,6 @@ public class TestApp {
 
     private static String validPathArg(String arg) {
         File file = new File(arg);
-        System.out.println("ASASAAA");
 
         if (!file.exists()) {
             System.err.println(file.getAbsolutePath() + " is not a valid path.");

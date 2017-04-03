@@ -12,11 +12,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class MyFile {
-
-    private int MAX_SIZE_CHUNK = 200;  // 64 KByte
 
     private HashMap<Integer, Chunk> chunksFile; //chunkNo--->chunk
     private String fileId;
@@ -64,6 +63,7 @@ public class MyFile {
 
         return chunks;
     }
+
     public boolean exists(int chunkNo) {
         if (!this.chunksFile.containsKey(chunkNo)) return true;
         else return false;
@@ -83,14 +83,14 @@ public class MyFile {
 
         if (!f.exists()) {
             f.mkdirs();
-            System.out.println("Directory '" + pathSaveDirectory +"' created.");
+            System.out.println("Directory '" + pathSaveDirectory + "' created.");
         }
 
         try {
 
             OutputStream is = new FileOutputStream(pathSaveDirectory + "/" + this.file.getName());
 
-            System.out.println("Saved file '" +  this.filepath +"' in '" + pathSaveDirectory + "'.");
+            System.out.println("Saved file '" + this.filepath + "' in '" + pathSaveDirectory + "'.");
             is.write(Files.readAllBytes(Paths.get(this.filepath)));
 
             is.close();
@@ -122,25 +122,38 @@ public class MyFile {
         }
     }
 
-    public void divideFileIntoChunks(){
+    public void divideFileIntoChunks() {
+
+        System.out.println("Dividing chunks.");
 
         int currentByte = 0;
         int currentChunk = 1;
 
         try {
+
             InputStream is = new FileInputStream(this.filepath);
             int size = is.available();
-            System.out.println("size file " + size);
+            System.out.println("File size is " + size + " bytes.");
 
+            while (currentByte <= size) {
 
-            while (currentByte < size) {
-                byte[] body = new byte[MAX_SIZE_CHUNK];
-                is.read(body, 0, MAX_SIZE_CHUNK);
+                byte[] body;
+                int bytesLeft = size - currentByte;
+
+                if (bytesLeft < Chunk.MAX_SIZE) {
+                    body = new byte[bytesLeft];
+                    is.read(body, currentByte, bytesLeft);
+                } else {
+                    body = new byte[Chunk.MAX_SIZE];
+                    is.read(body, currentByte, Chunk.MAX_SIZE);
+                }
 
                 Chunk c = new Chunk(fileId, currentChunk, this.replicationDegree, body);
 
+                System.out.println("BODY:" + Arrays.toString(body));
+
                 chunksFile.put(currentChunk, c);
-                currentByte += MAX_SIZE_CHUNK;
+                currentByte += Chunk.MAX_SIZE;
                 currentChunk++;
             }
         } catch (FileNotFoundException e) {
