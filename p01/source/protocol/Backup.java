@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -31,6 +30,8 @@ public class Backup extends SubProtocol{
     }
 
     public static void backupHandler(Message msg){
+
+        System.out.println("Message received on backupHandler: " + msg.toString());
 
         if (!Peer.getDb().getBackedUpFilesDb().containsFileId(msg.getFileId())) {
             Chunk c = new Chunk(msg.getFileId(), msg.getChunkNo(), msg.getReplicationDeg(), msg.getBody());
@@ -77,7 +78,7 @@ public class Backup extends SubProtocol{
         myFile.divideFileIntoChunks();  // create chunks and store them
         Peer.getDb().saveBackedUpFile(myFile);    // TODO: ask whether the PATH or the FILENAME should be saved
 
-      //  System.out.println(Peer.getDb().getBackedUpFiles());
+        //  System.out.println(Peer.getDb().getBackedUpFiles());
         System.out.println("aqui");
 
         //myFile.saveCopy();
@@ -87,10 +88,12 @@ public class Backup extends SubProtocol{
 
     private static void sendBackupRequest(ArrayList<Chunk> chunks){
 
+        System.out.println("Send backup request.");
+
         for(Chunk c: chunks)
         {
             String message = Peer.getUdpChannelGroup().getMDB().messagePutChunk(Peer.getSenderId(),c);
-            System.out.println(c.getFileId() + ";" + c.getChunkNo() + ";" + c.getReplicationDegree() + ";" + c.getData());
+            System.out.println("Message is: " + c.getFileId() + ";" + c.getChunkNo() + ";" + c.getReplicationDegree() + ";" + c.getData());
             Peer.getUdpChannelGroup().getMDB().sendsMessage(message);
             System.out.println("Sent to backup chunk: " + c.toString());
 
@@ -112,10 +115,9 @@ public class Backup extends SubProtocol{
 
     private static void saveChunk(String version, String fileId, int chunkNo, byte[] body) {
 
-        System.out.println("esttetete");
         String pathSenderId = "sender" + Peer.getSenderId();
         String pathFileId = pathSenderId + "/" + fileId;
-        String pathChunkNo = pathFileId + "/" + chunkNo + ".txt";
+        String pathChunkNo = pathFileId + "/" + chunkNo;
 
         File f = new File(pathFileId);
 
@@ -123,17 +125,17 @@ public class Backup extends SubProtocol{
 
         if (!f.exists()) {
             f.mkdirs();
-            System.out.println("criou path ");
+            System.out.println("Foi criado o ficheiro '" + pathChunkNo + "'." );
         }
 
         try {
 
-            OutputStream is = new FileOutputStream(fChunk);
+            OutputStream os = new FileOutputStream(fChunk);
 
-            System.out.println("length " + body.length);
-            is.write(body);
+            System.out.println("Length of the chunk(bytes): " + body.length);
+            os.write(body);
 
-            is.close();
+            os.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

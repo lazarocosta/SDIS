@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 public class MyFile {
 
-    private HashMap<Integer, Chunk> chunksFile; //chunkNo--->chunk
+    private HashMap<Integer, Chunk> fileChunks; //chunkNo--->chunk
     private String fileId;
     private String filepath;
     private int replicationDegree;
@@ -29,12 +29,12 @@ public class MyFile {
         this.replicationDegree = replicationDegree;
         this.file = new File(this.filepath);
 
-        chunksFile = new HashMap<>();
+        fileChunks = new HashMap<>();
         this.generateFileId();
     }
 
     public MyFile() {
-        chunksFile = new HashMap<>();
+        fileChunks = new HashMap<>();
     }
 
     public File getFile() {
@@ -50,28 +50,28 @@ public class MyFile {
     }
 
     public Chunk getChunk(int chunkNo) {
-        return this.chunksFile.get(chunkNo);
+        return this.fileChunks.get(chunkNo);
     }
 
     public ArrayList<Chunk> getChunks() {
 
         ArrayList<Chunk> chunks = new ArrayList<>();
 
-        for (int i = 1; i <= chunksFile.size(); i++) {
-            chunks.add(chunksFile.get(i));
+        for (int i = 1; i <= fileChunks.size(); i++) {
+            chunks.add(fileChunks.get(i));
         }
 
         return chunks;
     }
 
     public boolean exists(int chunkNo) {
-        if (!this.chunksFile.containsKey(chunkNo)) return true;
+        if (!this.fileChunks.containsKey(chunkNo)) return true;
         else return false;
     }
 
     public void addChunk(int chunkNo, Chunk chunk) {
 
-        chunksFile.put(chunkNo, chunk);
+        fileChunks.put(chunkNo, chunk);
     }
 
     public void saveCopy() {
@@ -152,7 +152,7 @@ public class MyFile {
 
                 System.out.println("BODY:" + Arrays.toString(body));
 
-                chunksFile.put(currentChunk, c);
+                fileChunks.put(currentChunk, c);
                 currentByte += Chunk.MAX_SIZE;
                 currentChunk++;
             }
