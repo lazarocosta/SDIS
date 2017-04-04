@@ -42,7 +42,7 @@ public class Service implements ServiceInterface {
 
     public Service(String accessPoint) throws AlreadyBoundException, IOException, InterruptedException {
         this.accessPoint = accessPoint;
-        this.createRegistry();
+        // this.createRegistry();
     }
 
     @Override
@@ -60,25 +60,30 @@ public class Service implements ServiceInterface {
     @Override
     public void deleteFile(String filePath) throws RemoteException {
 
-        String fileId = Peer.getDb().getFileId(filePath);  // gets fileId from filePath
+       if (Peer.getDb().getBackedUpFilesDb().containsKey(filePath)) {
 
-        Delete.deleteFile(fileId);
+           System.err.println("tem ficheiro");
+            String fileId = Peer.getDb().getBackedUpFilesDb().getFileId(filePath);
 
+            Delete.deleteBackupFile(filePath);
 
-        int attempts = ATTEMPTS;
+            int attempts = ATTEMPTS;
 
-        while (attempts > 0) {
+            //  while (attempts > 0) {
 
             String msgDelete = Peer.getUdpChannelGroup().getMC().messageDelete(Peer.getSenderId(), fileId);
             Peer.getUdpChannelGroup().getMC().sendsMessage(msgDelete);
 
-            try {
-                Thread.sleep(SLEEP_ms);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            attempts--;
+            /*    try {
+                    Thread.sleep(SLEEP_ms);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                attempts--;
         }
+            */
+        }
+        else System.out.println("Does not have the file backup");
     }
 
     @Override
@@ -108,6 +113,7 @@ public class Service implements ServiceInterface {
      * @param port Port on which the remote object is.
      * @throws RemoteException
      */
+
     private void createRegistry(int port) throws RemoteException {
         /**
          * A stub, in this context, means a mock implementation.

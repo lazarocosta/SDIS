@@ -117,7 +117,7 @@ public class Backup extends SubProtocol{
 
         String pathSenderId = "sender" + Peer.getSenderId();
         String pathFileId = pathSenderId + "/" + fileId;
-        String pathChunkNo = pathFileId + "/" + chunkNo;
+        String pathChunkNo = pathFileId + "/" + chunkNo + ".txt";
 
         File f = new File(pathFileId);
 

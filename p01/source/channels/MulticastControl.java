@@ -72,7 +72,6 @@ public class MulticastControl extends MulticastChannel {
                         break;
                         case "DELETE": {
                             Delete.deleteFile(msg.getFileId());
-                            //this.deleteFile(msg.getFileId());
                             System.out.println("Delete");
                         }
                         break;

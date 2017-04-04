@@ -26,7 +26,20 @@ public class BackedUpFilesDatabase implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public void loadDatabase() {
+        File file = new File(this.DATABASE_FILE);
+        try {
+            FileInputStream f = new FileInputStream(file);
+            ObjectInputStream s = new ObjectInputStream(f);
+            this.pathToFileIdMap =(HashMap<String, String> ) s.readObject();
+
+            System.out.println("load Database");
+            s.close();
+        } catch (ClassNotFoundException| IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean canSaveChunksOfFile(String filepath) {

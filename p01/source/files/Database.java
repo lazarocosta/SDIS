@@ -47,7 +47,7 @@ public class Database implements Serializable {
 
     public void removeBackup(String path) {
 
-        this.removeBackup(path);
+        this.backedUpFilesDb.removeFileByPath(path);
     }
 
     public BackedUpFilesDatabase getBackedUpFilesDb() {

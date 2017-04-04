@@ -5,6 +5,7 @@ import files.Database;
 import channels.ChannelGroup;
 import protocol.SubProtocol;
 import rmi.Service;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.rmi.AlreadyBoundException;
@@ -34,14 +35,12 @@ public class Peer {
     private static Database db;
 
 
-
     // Main method for running a peer
     // args = <version> <senderId> <accessPoint> <IP MC> <Port MC> <IP MDB> <Port MDB> <IP MDR> <Port MDR>
     // args = 1.0 2 accessPoint 228.5.6.7 3000 228.5.6.6 4000 228.5.6.8 5000
     public static void main(String[] args) throws IOException, AlreadyBoundException, InterruptedException {
 
-        if(args.length != 9)
-        {
+        if (args.length != 9) {
             System.out.println("Wrong number of arguments.");
             return;
         }
@@ -57,16 +56,24 @@ public class Peer {
         dataRestorePort = Integer.parseInt(args[8]);
 
         rmiService = new Service(accessPoint);
-        udpChannelGroup = new ChannelGroup(senderId,controlAddress, controlPort, dataBackupAddress, dataBackupPort, dataRestoreAddress, dataRestorePort);
+        udpChannelGroup = new ChannelGroup(senderId, controlAddress, controlPort, dataBackupAddress, dataBackupPort, dataRestoreAddress, dataRestorePort);
         db = new Database();
 
-        System.out.println("Server with id = " + Peer.senderId+ " is up and running.");
+        System.out.println("Server with id = " + Peer.senderId + " is up and running.");
+
+
 
         // Testing
+        if (Peer.getSenderId() == 1) {
 
-        //rmiService.backupFile("Database.txt", 1);
+            // rmiService.backupFile("test.txt", 1);
 
-        System.out.println(Arrays.toString("I am very strong".getBytes()));
+            db.getBackedUpFilesDb().loadDatabase();
+
+            rmiService.deleteFile("test.txt");
+
+
+        }
     }
 
 
