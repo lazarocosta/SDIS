@@ -64,6 +64,10 @@ public class MyFile {
         return chunks;
     }
 
+    public int getChunksNum() {
+        return fileChunks.size();
+    }
+
     public boolean exists(int chunkNo) {
         if (!this.fileChunks.containsKey(chunkNo)) return true;
         else return false;
@@ -140,17 +144,24 @@ public class MyFile {
                 byte[] body;
                 int bytesLeft = size - currentByte;
 
+                System.out.println("Current Ckunk: " + currentChunk + " ---currentByte: " + currentByte);
+
                 if (bytesLeft < Chunk.MAX_SIZE) {
-                    body = new byte[bytesLeft];
-                    is.read(body, currentByte, bytesLeft);
-                } else {
+
                     body = new byte[Chunk.MAX_SIZE];
-                    is.read(body, currentByte, Chunk.MAX_SIZE);
+                    is.read(body, 0, bytesLeft);
+                    String str = new String(body);
+                    //System.out.println("BODY:" + str);
+                } else {
+
+                    body = new byte[Chunk.MAX_SIZE];
+                    is.read(body, 0, Chunk.MAX_SIZE);
+                    String str = new String(body);
+                   // System.out.println("BODY:" + str);
                 }
 
                 Chunk c = new Chunk(fileId, currentChunk, this.replicationDegree, body);
 
-                System.out.println("BODY:" + Arrays.toString(body));
 
                 fileChunks.put(currentChunk, c);
                 currentByte += Chunk.MAX_SIZE;

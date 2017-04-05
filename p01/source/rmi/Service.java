@@ -1,5 +1,6 @@
 package rmi;
 
+import chunk.ChunkInfo;
 import files.MyFile;
 import protocol.Backup;
 import protocol.Delete;
@@ -55,14 +56,31 @@ public class Service implements ServiceInterface {
     @Override
     public void restoreFile(String filePath) throws RemoteException {
 
+        if (Peer.getDb().getBackedUpFilesDb().containsKey(filePath)) {
+
+            ChunkInfo chunkInfo = Peer.getDb().getBackedUpFilesDb().getChunkInfo(filePath);
+
+            int numberChunks = chunkInfo.getChunkNo();
+            String fileId = chunkInfo.getFileId();
+
+            for(int i=1; i <=numberChunks; i++){
+                String message=Peer.getUdpChannelGroup().getMC().messageGetChunk(Peer.getSenderId(),fileId,i);
+
+                Peer.getUdpChannelGroup().getMC().sendsMessage(message);
+                System.out.println("send Restore");
+
+            }
+
+
+        }
+
     }
 
     @Override
     public void deleteFile(String filePath) throws RemoteException {
 
-       if (Peer.getDb().getBackedUpFilesDb().containsKey(filePath)) {
+        if (Peer.getDb().getBackedUpFilesDb().containsKey(filePath)) {
 
-           System.err.println("tem ficheiro");
             String fileId = Peer.getDb().getBackedUpFilesDb().getFileId(filePath);
 
             Delete.deleteBackupFile(filePath);
@@ -82,8 +100,7 @@ public class Service implements ServiceInterface {
                 attempts--;
         }
             */
-        }
-        else System.out.println("Does not have the file backup");
+        } else System.out.println("Does not have the file backup");
     }
 
     @Override

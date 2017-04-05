@@ -17,31 +17,6 @@ public class MulticastControl extends MulticastChannel {
         super(port, address, senderId, sender);
     }
 
-    public byte[] getChunkOfSender(String version, String fileId, int chunkNo) throws IOException {
-
-        String pathSenderId = "Sender" + senderId;
-        String pathChunkNo = pathSenderId + "/" + fileId + "/" + chunkNo + ".txt"; // TEMOS QUE VER AQUI A TERMINAÇAO
-
-        byte[] body;
-
-        File f = new File(pathChunkNo);
-
-        if (f.exists()) {
-
-            System.out.println("existe chunk");
-            InputStream is = new FileInputStream(pathChunkNo);
-            int size = is.available();
-
-
-            body = new byte[size];
-
-            int re = is.read(body, 0, size);
-
-            System.out.println(body.toString());
-        } else return null;
-
-        return body;
-    }
 
     @Override
     public void run() {
@@ -56,18 +31,19 @@ public class MulticastControl extends MulticastChannel {
                 Message msg = new Message();
                 msg.separateMsg(messageComplete);
 
+
                 System.out.println("Type " + msg.getMsgType());
                 if (msg.getSenderId() != this.senderId) {
                     switch (msg.getMsgType()) {
                         case "GETCHUNK": {
 
-                            byte[] body = this.getChunkOfSender(msg.getVersion(), msg.getFileId(), msg.getChunkNo());
+                            /*byte[] body = this.getChunkOfSender(msg.getVersion(), msg.getFileId(), msg.getChunkNo());
                             System.out.println(body);
 
                             if (body != null) {
                                 String sendToServer = this.messageChunk(msg.getVersion(), msg.getFileId(), msg.getChunkNo(), body);
                                 this.sender.sendForRestore(sendToServer);
-                            }
+                            }*/
                         }
                         break;
                         case "DELETE": {
@@ -81,6 +57,7 @@ public class MulticastControl extends MulticastChannel {
                         break;
                         case "STORED": {
                             if (msg.getSenderId() != senderId) {
+
                                 Backup.storedHandler(msg);
                                 System.out.println("STORED");
                             }

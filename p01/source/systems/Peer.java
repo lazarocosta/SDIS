@@ -62,15 +62,16 @@ public class Peer {
         System.out.println("Server with id = " + Peer.senderId + " is up and running.");
 
 
-
         // Testing
         if (Peer.getSenderId() == 1) {
 
-            // rmiService.backupFile("test.txt", 1);
+           // db.getBackedUpFilesDb().loadDatabase();
+             rmiService.backupFile("test.txt", 1);
+            // rmiService.deleteFile("test.txt");
+            //  rmiService.restoreFile("test.txt");
 
-            db.getBackedUpFilesDb().loadDatabase();
-
-            rmiService.deleteFile("test.txt");
+            //rmiService.backupFile("linha_aveiro.pdf", 1);
+            //rmiService.restoreFile("linha_aveiro.pdf");
 
 
         }
