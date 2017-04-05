@@ -56,6 +56,7 @@ public class Service implements ServiceInterface {
     @Override
     public void restoreFile(String filePath) throws RemoteException {
 
+
         if (Peer.getDb().getBackedUpFilesDb().containsKey(filePath)) {
 
             ChunkInfo chunkInfo = Peer.getDb().getBackedUpFilesDb().getChunkInfo(filePath);
@@ -63,16 +64,15 @@ public class Service implements ServiceInterface {
             int numberChunks = chunkInfo.getChunkNo();
             String fileId = chunkInfo.getFileId();
 
-            for(int i=1; i <=numberChunks; i++){
-                String message=Peer.getUdpChannelGroup().getMC().messageGetChunk(Peer.getSenderId(),fileId,i);
+            for (int i = 1; i <= numberChunks; i++) {
+                String message = Peer.getUdpChannelGroup().getMC().messageGetChunk(Peer.getSenderId(), fileId, i);
 
                 Peer.getUdpChannelGroup().getMC().sendsMessage(message);
                 System.out.println("send Restore");
 
             }
-
-
         }
+
 
     }
 
@@ -99,7 +99,7 @@ public class Service implements ServiceInterface {
                 }
                 attempts--;
         }
-            */
+*/
         } else System.out.println("Does not have the file backup");
     }
 
@@ -173,6 +173,7 @@ public class Service implements ServiceInterface {
     }
 
     public static void main(String args[]) {
+
 
     }
 

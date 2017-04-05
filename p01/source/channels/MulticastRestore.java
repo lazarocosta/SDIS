@@ -14,33 +14,6 @@ public class MulticastRestore extends MulticastChannel {
         super(port, address, senderId, sender);
     }
 
-    public void restoreFile(Message message) {
-
-        String pathSenderId = "Sender" + senderId;
-        String pathFileId = pathSenderId + "/" + message.getFileId();
-        String pathChunkNo = pathFileId + "/" + message.getChunkNo() + "copia.txt";
-
-        File f = new File(pathFileId);
-        File fChunk = new File(pathChunkNo);
-
-        if (!f.exists()) {
-            //  f.mkdir();
-            System.out.println("nao fez restore");
-        } else {
-
-            try {
-                OutputStream is = new FileOutputStream(fChunk);
-                byte[] body = message.getBody();
-
-                for (int i = 0; i < body.length; i++) {
-                    is.write(body[i]);
-                }
-                is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     @Override
     public void run() {
@@ -52,15 +25,16 @@ public class MulticastRestore extends MulticastChannel {
                 socket.receive(datagramPacketReceive);
                 String messageComplete = new String(datagramPacketReceive.getData(), 0, datagramPacketReceive.getLength());
 
+
+                System.out.println(messageComplete);
                 Message msg = new Message();
                 msg.separateFullMsg(messageComplete);
 
                 System.out.println(msg.getMsgType());
                 switch (msg.getMsgType()) {
                     case "CHUNK": {
-
-                        System.out.println(senderId);
-                        this.restoreFile(msg);
+                        System.out.println(msg.getBody());
+                       // Restore.restoreFile(msg);
                     }
 
                     break;

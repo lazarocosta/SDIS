@@ -56,7 +56,6 @@ public class Message {
     }
 
     public String msgGetChunk() {
-        System.out.println("mensagems" + senderId);
         return generateHeaderLine("GETCHUNK", this.version, this.senderId, this.fileId, this.chunkNo, null);
     }
 
@@ -177,13 +176,19 @@ public class Message {
         return sb.toString();
     }
 
-    public void separateFullMsg(String message) {
+    public void separateFullMsg(String message) throws UnsupportedEncodingException {
 
         // PUTCHUNK <Version> <SenderId> <FileId> <ChunkNo> <ReplicationDeg> <CRLF><CRLF><Body>
         // CHUNK <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF><Body>
-        String[] tokens = message.split(CRLF + CRLF);
+        String[] tokens = message.split(CRLF+CRLF);
+
+
+
 
         this.body = tokens[1].getBytes();
+
+        System.out.println("token[1]: " +tokens[1]);
+        System.out.println("token[1].getbytes(): " +body);
         String[] header = tokens[0].split("\\s+");
 
         if (header.length >= 5) {

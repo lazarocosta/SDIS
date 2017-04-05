@@ -60,6 +60,13 @@ public class StoredChunksDatabase implements Serializable {
         return storedChunks;
     }
 
+    public boolean existsChunkInfo(ChunkInfo chunkInfo){
+        return storedChunks.containsKey(chunkInfo);
+    }
+    public byte[] getBodyChunk(ChunkInfo chunkInfo){
+        return storedChunks.get(chunkInfo);
+    }
+
     public Map<ChunkInfo, Integer> getObtainedReplication() {
         return obtainedReplication;
     }

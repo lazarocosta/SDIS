@@ -3,6 +3,7 @@ package channels;
 import protocol.Backup;
 import protocol.Delete;
 import protocol.Message;
+import protocol.Restore;
 
 import java.io.*;
 import java.net.*;
@@ -32,10 +33,13 @@ public class MulticastControl extends MulticastChannel {
                 msg.separateMsg(messageComplete);
 
 
+               // System.out.println("_------------" + new String(messageComplete));
+
                 System.out.println("Type " + msg.getMsgType());
                 if (msg.getSenderId() != this.senderId) {
                     switch (msg.getMsgType()) {
                         case "GETCHUNK": {
+                            Restore.restoreChunk(msg.getFileId(),msg.getChunkNo());
 
                             /*byte[] body = this.getChunkOfSender(msg.getVersion(), msg.getFileId(), msg.getChunkNo());
                             System.out.println(body);

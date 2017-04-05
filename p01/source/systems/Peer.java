@@ -65,10 +65,11 @@ public class Peer {
         // Testing
         if (Peer.getSenderId() == 1) {
 
-           // db.getBackedUpFilesDb().loadDatabase();
+            db.getBackedUpFilesDb().loadDatabase();
              rmiService.backupFile("test.txt", 1);
             // rmiService.deleteFile("test.txt");
-            //  rmiService.restoreFile("test.txt");
+              rmiService.restoreFile("test.txt");
+           // rmiService.restoreFile("test.txt");
 
             //rmiService.backupFile("linha_aveiro.pdf", 1);
             //rmiService.restoreFile("linha_aveiro.pdf");

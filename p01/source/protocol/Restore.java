@@ -1,5 +1,7 @@
 package protocol;
 
+import chunk.Chunk;
+import chunk.ChunkInfo;
 import systems.Peer;
 
 import java.io.File;
@@ -13,29 +15,41 @@ import java.io.InputStream;
 public class Restore extends SubProtocol {
 
 
-    public byte[] getChunkOfSender(String fileId, int chunkNo) throws IOException {
 
-        String pathSenderId = "Sender" + Peer.getSenderId();
-        String pathChunkNo = pathSenderId + "/" + fileId + "/" + chunkNo + ".txt"; // TEMOS QUE VER AQUI A TERMINAÇAO
+
+    public static void restoreChunk(String fileId, int chunkNo) throws IOException {
+
+       // String pathSenderId = "Sender" + Peer.getSenderId();
+        //String pathChunkNo = pathSenderId + "/" + fileId + "/" + chunkNo + ".txt"; //
 
         byte[] body;
 
-        File f = new File(pathChunkNo);
+        //File f = new File(pathChunkNo);
 
-        if (f.exists()) {
-
-            System.out.println("existe chunk");
-            InputStream is = new FileInputStream(pathChunkNo);
-            int size = is.available();
+        ChunkInfo chunkInfo = new ChunkInfo(fileId, chunkNo);
 
 
-            body = new byte[size];
+        if ( Peer.getDb().getStoredChunksDb().existsChunkInfo(chunkInfo)) {
+          //  InputStream is = new FileInputStream(pathChunkNo);
+            //int size = is.available();
 
-            int re = is.read(body, 0, size);
+
+            body =  Peer.getDb().getStoredChunksDb().getBodyChunk(chunkInfo);
+          //  int re = is.read(body, 0, size);
 
             System.out.println(body.toString());
-        } else return null;
 
-        return body;
+            sendChunkMessage(chunkInfo,body);
+        } else{
+            System.out.println("Don't exists file");
+        }
+
+    }
+
+    private static void sendChunkMessage(ChunkInfo c, byte[] body){
+
+        System.out.println(body);
+        Peer.getUdpChannelGroup().sendForRestore(Peer.getUdpChannelGroup().getMDR().messageChunk( c.getFileId(), c.getChunkNo(),body ));
+
     }
 }

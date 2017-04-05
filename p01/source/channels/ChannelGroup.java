@@ -48,6 +48,7 @@ public class ChannelGroup {
     }
 
     public void sendForRestore(String message) {
+        System.out.println(message);
         this.MDR.sendsMessage(message);
     }
 

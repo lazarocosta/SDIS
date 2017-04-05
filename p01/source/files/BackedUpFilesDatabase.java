@@ -47,9 +47,6 @@ public class BackedUpFilesDatabase implements Serializable {
         }
     }
 
-    public boolean canSaveChunksOfFile(String filepath) {
-        return (!this.pathToFileIdMap.containsKey(filepath));
-    }
     public boolean containsFileId(String fileId) {
         return (this.fileIdToFilePath(fileId) != null);
     }
@@ -85,7 +82,6 @@ public class BackedUpFilesDatabase implements Serializable {
     }
 
     public boolean containsKey(String key){
-
         return  pathToFileIdMap.containsKey(key);
     }
 

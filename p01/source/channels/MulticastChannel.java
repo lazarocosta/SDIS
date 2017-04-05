@@ -90,7 +90,7 @@ public class MulticastChannel implements Runnable {
 
     }
 
-    public String messageChunk(String version, String fileId, int ChunkNo, byte[] body) {
+    public String messageChunk(String fileId, int ChunkNo, byte[] body) {
 
         Message messageLine = new Message(this.senderId, fileId, ChunkNo);
         messageLine.setBody(body);
@@ -101,7 +101,7 @@ public class MulticastChannel implements Runnable {
 
     }
 
-    public String messageRemoved(String version, int idSender, String fileId, int ChunkNo) {
+    public String messageRemoved(int idSender, String fileId, int ChunkNo) {
 
         Message messageLine = new Message(idSender, fileId, ChunkNo);
         String message = messageLine.msgRemoved();
