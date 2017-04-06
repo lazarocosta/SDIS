@@ -148,16 +148,12 @@ public class MyFile {
 
                 if (bytesLeft < Chunk.MAX_SIZE) {
 
-                    body = new byte[Chunk.MAX_SIZE];
+                    body = new byte[bytesLeft];
                     is.read(body, 0, bytesLeft);
-                    String str = new String(body);
-                    System.out.println("BODY:" + body);
                 } else {
 
                     body = new byte[Chunk.MAX_SIZE];
                     is.read(body, 0, Chunk.MAX_SIZE);
-                    String str = new String(body);
-                    System.out.println("BODY:" + body);
                 }
 
                 Chunk c = new Chunk(fileId, currentChunk, this.replicationDegree, body);
