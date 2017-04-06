@@ -66,9 +66,9 @@ public class Service implements ServiceInterface {
             String fileId = chunkInfo.getFileId();
 
             for (int i = 1; i <= numberChunks; i++) {
-                String message = Peer.getUdpChannelGroup().getMC().messageGetChunk(Peer.getSenderId(), fileId, i);
+                byte[] packet = Peer.getUdpChannelGroup().getMC().messageGetChunk(Peer.getSenderId(), fileId, i);
 
-                Peer.getUdpChannelGroup().getMC().sendsMessage(message);
+                Peer.getUdpChannelGroup().getMC().sendsMessage(packet);
                 System.out.println("send Restore");
 
             }
@@ -90,8 +90,8 @@ public class Service implements ServiceInterface {
 
             //  while (attempts > 0) {
 
-            String msgDelete = Peer.getUdpChannelGroup().getMC().messageDelete(Peer.getSenderId(), fileId);
-            Peer.getUdpChannelGroup().getMC().sendsMessage(msgDelete);
+            byte[] packetDelete = Peer.getUdpChannelGroup().getMC().messageDelete(Peer.getSenderId(), fileId);
+            Peer.getUdpChannelGroup().getMC().sendsMessage(packetDelete);
 
             /*    try {
                     Thread.sleep(SLEEP_ms);

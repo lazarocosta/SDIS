@@ -1,5 +1,7 @@
 package protocol;
 
+import utils.ArrayUtil;
+
 import javax.xml.bind.DatatypeConverter;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -9,6 +11,7 @@ import java.util.Arrays;
 public class Message {
 
     // TODO: Put Body on some messages and not on every single one.
+    // TODO: Transform messages from String to byte[]
 
     public String header;
     public byte[] body;
@@ -47,35 +50,41 @@ public class Message {
     }
 
 
-    public String msgPutChunk() {
+    public byte[] msgPutChunk() {
+
+        byte[] msgPacket;
 
         String header = generateHeaderLine("PUTCHUNK", this.version, this.senderId, this.fileId, this.chunkNo, this.replicationDeg);
-        header += this.body;
 
-        return header;
+        msgPacket = ArrayUtil.byteArrayConcat(header.getBytes(), this.body);
+
+        return msgPacket;
     }
 
-    public String msgGetChunk() {
-        return generateHeaderLine("GETCHUNK", this.version, this.senderId, this.fileId, this.chunkNo, null);
+    public byte[] msgGetChunk() {
+        return generateHeaderLine("GETCHUNK", this.version, this.senderId, this.fileId, this.chunkNo, null).getBytes();
     }
 
-    public String msgStored() {
-        return generateHeaderLine("STORED", this.version, this.senderId, this.fileId, this.chunkNo, null);
+    public byte[] msgStored() {
+        return generateHeaderLine("STORED", this.version, this.senderId, this.fileId, this.chunkNo, null).getBytes();
     }
 
-    public String msgChunk() {
+    public byte[] msgChunk() {
+        byte[] msgPacket;
+
         String header = generateHeaderLine("CHUNK", this.version, this.senderId, this.fileId, this.chunkNo, null);
-        header += this.body;
 
-        return header;
+        msgPacket = ArrayUtil.byteArrayConcat(header.getBytes(), this.body);
+
+        return msgPacket;
     }
 
-    public String msgDelete() {
-        return generateHeaderLine("DELETE", this.version, this.senderId, this.fileId, null, null);
+    public byte[] msgDelete() {
+        return generateHeaderLine("DELETE", this.version, this.senderId, this.fileId, null, null).getBytes();
     }
 
-    public String msgRemoved() {
-        return generateHeaderLine("REMOVED", this.version, this.senderId, this.fileId, this.chunkNo, null);
+    public byte[] msgRemoved() {
+        return generateHeaderLine("REMOVED", this.version, this.senderId, this.fileId, this.chunkNo, null).getBytes();
     }
 
     public void setBody(byte[]body) {

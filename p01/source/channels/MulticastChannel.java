@@ -43,10 +43,10 @@ public class MulticastChannel implements Runnable {
         }
     }
 
-    public void sendsMessage(String message) {
+    public void sendsMessage(byte[] packet) {
 
         try {
-            DatagramPacket datagramPacketSend = new DatagramPacket(message.getBytes(), message.getBytes().length, addr, port);
+            DatagramPacket datagramPacketSend = new DatagramPacket(packet, packet.length, addr, port);
             socket.send(datagramPacketSend);
             System.out.println("sends message");
         } catch (IOException A) {
@@ -55,56 +55,57 @@ public class MulticastChannel implements Runnable {
 
     }
 
-    public String messagePutChunk(int senderId, Chunk c) {
+    public byte[] messagePutChunk(int senderId, Chunk c) {
 
         Message messageLine = new Message(senderId, c.getFileId(), c.getChunkNo(), c.getReplicationDegree());
         messageLine.setBody(c.getData());
-        String message = messageLine.msgPutChunk();
+        byte[] message = messageLine.msgPutChunk();
 
         return message;
     }
 
-    public String messageStored(int idSender, String fileId, int ChunkNo) {
+    public byte[] messageStored(int idSender, String fileId, int ChunkNo) {
 
         Message messageLine = new Message(idSender, fileId, ChunkNo);
-        String message = messageLine.msgStored();
+        byte[] message = messageLine.msgStored();
 
         System.out.println(" message Stored");
         return message;
     }
 
-    public String messageDelete(int idSender, String fileId) {
+    public byte[] messageDelete(int idSender, String fileId) {
 
         Message messageLine = new Message(idSender, fileId);
-        String message = messageLine.msgDelete();
+        byte[] message = messageLine.msgDelete();
+
         return message;
     }
 
-    public String messageGetChunk(int idSender, String fileId, int ChunkNo) {
+    public byte[] messageGetChunk(int idSender, String fileId, int ChunkNo) {
 
         Message messageLine = new Message(idSender, fileId, ChunkNo);
-        String message = messageLine.msgGetChunk();
+        byte[] message = messageLine.msgGetChunk();
 
         System.out.println(" message GetChunk");
         return message;
 
     }
 
-    public String messageChunk(String fileId, int ChunkNo, byte[] body) {
+    public byte[] messageChunk(String fileId, int ChunkNo, byte[] body) {
 
         Message messageLine = new Message(this.senderId, fileId, ChunkNo);
         messageLine.setBody(body);
-        String message = messageLine.msgChunk();
+        byte[] message = messageLine.msgChunk();
 
         System.out.println(" message Chunk");
         return message;
 
     }
 
-    public String messageRemoved(int idSender, String fileId, int ChunkNo) {
+    public byte[] messageRemoved(int idSender, String fileId, int ChunkNo) {
 
         Message messageLine = new Message(idSender, fileId, ChunkNo);
-        String message = messageLine.msgRemoved();
+        byte[] message = messageLine.msgRemoved();
 
         System.out.println(" message GetChunk");
         return message;

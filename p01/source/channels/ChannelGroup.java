@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import java.net.*;
 import java.rmi.AlreadyBoundException;
+import java.util.Arrays;
 
 /**
  * Multicast addresses: 224.0.0.0 to 239.255.255.255. Best to use 224-238 which are not reserved for anything.
@@ -47,17 +48,17 @@ public class ChannelGroup {
         return MDR;
     }
 
-    public void sendForRestore(String message) {
-        System.out.println(message);
-        this.MDR.sendsMessage(message);
+    public void sendForRestore(byte[] packet) {
+        System.out.println("Sent packet:" + Arrays.toString(packet));
+        this.MDR.sendsMessage(packet);
     }
 
-    public void sendForBackup(String message) {
-        this.MDB.sendsMessage(message);
+    public void sendForBackup(byte[] packet) {
+        this.MDB.sendsMessage(packet);
     }
 
-    public void sendForControl(String message) {
-        this.MC.sendsMessage(message);
+    public void sendForControl(byte[] packet) {
+        this.MC.sendsMessage(packet);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException, AlreadyBoundException {
