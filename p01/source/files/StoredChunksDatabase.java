@@ -22,10 +22,14 @@ public class StoredChunksDatabase implements Serializable {
 
     public void addChunk(Chunk c) {
         this.storedChunks.put(c.getChunkInfo(), c.getData());
+
+        this.incrementReplicationObtained(c.getChunkInfo());
     }
 
     public void removeChunk(ChunkInfo chunkInfo) {
         this.storedChunks.remove(chunkInfo);
+
+        this.decrementReplicationObtained(chunkInfo);
     }
 
     public void incrementReplicationObtained(ChunkInfo chunkInfo) {

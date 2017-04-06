@@ -8,6 +8,6 @@
 xterm -hold -e java -cp production systems.Peer 1.0 1 accessPoint 228.5.6.7 3000 228.5.6.6 4000 228.5.6.8 5000 &
 xterm -hold -e java -cp production systems.Peer 1.0 3 accessPoint 228.5.6.7 3000 228.5.6.6 4000 228.5.6.8 5000 &
 sleep 1 &&
-xterm -hold -e java -cp production app.TestApp accessPoint BACKUP test/test.txt 2
+xterm -hold -e java -cp production app.TestApp accessPoint BACKUP test/test.txt 1
 
 # -cp is a flag standing for Class Path

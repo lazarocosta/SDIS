@@ -4,6 +4,7 @@ import chunk.ChunkInfo;
 import files.MyFile;
 import protocol.Backup;
 import protocol.Delete;
+import protocol.Reclaim;
 import systems.Peer;
 
 import java.io.IOException;
@@ -43,7 +44,7 @@ public class Service implements ServiceInterface {
 
     public Service(String accessPoint) throws AlreadyBoundException, IOException, InterruptedException {
         this.accessPoint = accessPoint;
-        // this.createRegistry();
+        this.createRegistry();
     }
 
     @Override
@@ -105,6 +106,8 @@ public class Service implements ServiceInterface {
 
     @Override
     public void reclaim(int amount) throws RemoteException {
+
+        Reclaim.reclaimInitiator(amount);
 
     }
 
@@ -173,7 +176,6 @@ public class Service implements ServiceInterface {
     }
 
     public static void main(String args[]) {
-
 
     }
 
