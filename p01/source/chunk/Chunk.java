@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class Chunk {
 
-    public static final int MAX_SIZE = 10;   // 64 KByte
+    public static final int MAX_SIZE = 64 * 1000;   // 64 KByte
 
     private ChunkInfo chunkInfo;
 

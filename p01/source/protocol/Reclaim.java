@@ -61,7 +61,9 @@ public class Reclaim extends SubProtocol{
 
         while(spaceFreed < spaceToReclaim){
 
-            // TODO: store chunk size somewhere in Peer
+            // TODO: VERIFY IF CHUNK CAN BE DELETED
+
+            spaceFreed += Peer.getDb().getStoredChunksDb().deleteChunkFromDisk(mostReplicatedChunks.get(0));
 
         }
 

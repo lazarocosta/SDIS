@@ -1,6 +1,7 @@
 package files;
 
 import chunk.Chunk;
+import systems.Peer;
 
 import java.io.*;
 import java.net.UnknownHostException;
@@ -9,33 +10,36 @@ import java.util.HashMap;
 
 public class Database implements Serializable {
 
-    private static final int DEFAULT_STORAGE_SPACE = 1024 * 1000; // 1024 kBytes
-    private final String SAVED_COPIES_DIRECTORY = "/tmp/";
+
+    private final String RESTORES_DIR = "RESTORES/peer" + Peer.getSenderId()+"/";
+    private final String FILES_DIR = "FILES/";
 
     private BackedUpFilesDatabase backedUpFilesDb;
     private StoredChunksDatabase storedChunksDb;
-
-
-    private int storageSpace = DEFAULT_STORAGE_SPACE;
+    private Disk disk;
 
     public Database() {
         this.backedUpFilesDb = new BackedUpFilesDatabase();
         this.storedChunksDb = new StoredChunksDatabase();
+        this.disk = new Disk();
     }
 
-    public int getStorageSpace() {
+    // GETTERS
 
-        return storageSpace;
+
+    public Disk getDisk() {
+        return disk;
     }
 
-    public String getSavedCopiesDirectory() {
-
-        return SAVED_COPIES_DIRECTORY;
+    public BackedUpFilesDatabase getBackedUpFilesDb() {
+        return backedUpFilesDb;
     }
 
     public StoredChunksDatabase getStoredChunksDb() {
         return storedChunksDb;
     }
+
+    // BACKED UP FILES FUNCTIONS
 
     /**
      * Execute when a client asks for a file to be backed up.
@@ -47,20 +51,17 @@ public class Database implements Serializable {
 
     public void removeBackup(String path) {
 
-        this.removeBackup(path);
-    }
-
-    public BackedUpFilesDatabase getBackedUpFilesDb() {
-        return backedUpFilesDb;
+        //this.removeBackup(path);
     }
 
     public String getFileId(String path) { return this.backedUpFilesDb.getFileId(path); }
 
+
+    // For testing
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
 
         Database data = new Database();
         System.out.println("muda");
-        System.out.println(data.getStorageSpace());
 
     }
 }

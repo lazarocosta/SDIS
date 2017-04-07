@@ -78,31 +78,6 @@ public class MyFile {
         fileChunks.put(chunkNo, chunk);
     }
 
-    public void saveCopy() {
-
-        String pathSenderId = Peer.getDb().getSavedCopiesDirectory() + "sender" + Peer.getSenderId();
-        String pathSaveDirectory = pathSenderId + "/" + this.file.getParent();
-
-        File f = new File(pathSaveDirectory);
-
-        if (!f.exists()) {
-            f.mkdirs();
-            System.out.println("Directory '" + pathSaveDirectory + "' created.");
-        }
-
-        try {
-
-            OutputStream is = new FileOutputStream(pathSaveDirectory + "/" + this.file.getName());
-
-            System.out.println("Saved file '" + this.filepath + "' in '" + pathSaveDirectory + "'.");
-            is.write(Files.readAllBytes(Paths.get(this.filepath)));
-
-            is.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
 
     public void generateFileId() {
 

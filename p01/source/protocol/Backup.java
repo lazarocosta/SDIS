@@ -35,7 +35,7 @@ public class Backup extends SubProtocol{
 
         if (!Peer.getDb().getBackedUpFilesDb().containsFileId(msg.getFileId())) {
             Chunk c = new Chunk(msg.getFileId(), msg.getChunkNo(), msg.getReplicationDeg(), msg.getBody());
-            saveChunk(msg.getVersion(),msg.getFileId(),msg.getChunkNo(), msg.getBody());
+            saveChunk(c);
             storedInitiator(c);
         }
         else
@@ -112,32 +112,8 @@ public class Backup extends SubProtocol{
 
     }
 
-    private static void saveChunk(String version, String fileId, int chunkNo, byte[] body) {
-
-        String pathSenderId = "sender" + Peer.getSenderId();
-        String pathFileId = pathSenderId + "/" + fileId;
-        String pathChunkNo = pathFileId + "/" + chunkNo + ".txt";
-
-        File f = new File(pathFileId);
-
-        File fChunk = new File(pathChunkNo);
-
-        if (!f.exists()) {
-            f.mkdirs();
-            System.out.println("Foi criado o ficheiro '" + pathChunkNo + "'." );
-        }
-
-        try {
-
-            OutputStream os = new FileOutputStream(fChunk);
-
-            System.out.println("Length of the chunk(bytes): " + body.length);
-            os.write(body);
-
-            os.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private static void saveChunk(Chunk c) {
+        Peer.getDb().getStoredChunksDb().saveChunkToDisk(c);
     }
 
     private static boolean canPeerStoreChunk(Chunk c)
