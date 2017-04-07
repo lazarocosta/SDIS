@@ -20,7 +20,6 @@ public class Reclaim extends SubProtocol{
 
         System.out.println("Peer is reclaiming " + size_in_kb + "kB of Disk.");
 
-        Map<ChunkInfo, Integer> orderedReplications = MapUtil.sortByValue(Peer.getDb().getStoredChunksDb().getObtainedReplication());
 
 
 
@@ -30,23 +29,46 @@ public class Reclaim extends SubProtocol{
 
         Map<ChunkInfo, Integer> result = new HashMap<>();
 
-        for (Map.Entry<ChunkInfo, Integer> entry : Peer.getDb().getStoredChunksDb().getObtainedReplication().entrySet())
+        for (Map.Entry<ChunkInfo, byte[]> entry : Peer.getDb().getStoredChunksDb().getStoredChunks().entrySet())
         {
             ChunkInfo info =  entry.getKey();
 
-            // TODO: continue
+            int desiredReplication = Peer.getDb().getStoredChunksDb().getDesiredReplication().get(info);
+            int obtainedReplication = Peer.getDb().getStoredChunksDb().getObtainedReplication().get(info);
 
-            //Chunk c = Peer.getDb().getStoredChunksDb().getStoredChunks().get(info);
+            result.put(info, obtainedReplication - desiredReplication);
         }
 
         return result;
     }
 
-    private static ArrayList<ChunkInfo> getMostReplicatedChunks(){
+    private static ArrayList<ChunkInfo> getMostReplicatedChunks(Map<ChunkInfo, Integer> deltaReplication){
+
+        Map<ChunkInfo, Integer> orderedByDeltaReplication = MapUtil.sortByValue(deltaReplication);
+
         ArrayList<ChunkInfo> result = new ArrayList<>();
 
-        // TODO CONTINUE
+        for (Map.Entry<ChunkInfo, Integer> entry : orderedByDeltaReplication.entrySet()) {
+            result.add(entry.getKey());
+        }
 
         return result;
+    }
+
+    private static void deleteChunks (int spaceToReclaim, ArrayList<ChunkInfo> mostReplicatedChunks){
+
+        int spaceFreed = 0;
+
+        while(spaceFreed < spaceToReclaim){
+
+            // TODO: store chunk size somewhere in Peer
+
+        }
+
+    }
+
+    // FOR TESTING
+    public static void main(String[] args) {
+
     }
 }

@@ -13,21 +13,25 @@ import java.util.Map;
 public class StoredChunksDatabase implements Serializable {
 
     private Map<ChunkInfo, byte[]> storedChunks;
+    private Map<ChunkInfo, Integer> desiredReplication;
     private Map<ChunkInfo, Integer> obtainedReplication;
 
     StoredChunksDatabase() {
         this.storedChunks = new HashMap<>();
+        this.desiredReplication = new HashMap<>();
         this.obtainedReplication = new HashMap<>();
     }
 
     public void addChunk(Chunk c) {
         this.storedChunks.put(c.getChunkInfo(), c.getData());
+        this.desiredReplication.put(c.getChunkInfo(), c.getReplicationDegree());
 
         this.incrementReplicationObtained(c.getChunkInfo());
     }
 
     public void removeChunk(ChunkInfo chunkInfo) {
         this.storedChunks.remove(chunkInfo);
+        this.desiredReplication.remove(chunkInfo);
 
         this.decrementReplicationObtained(chunkInfo);
     }
@@ -67,8 +71,13 @@ public class StoredChunksDatabase implements Serializable {
     public boolean existsChunkInfo(ChunkInfo chunkInfo){
         return storedChunks.containsKey(chunkInfo);
     }
+
     public byte[] getBodyChunk(ChunkInfo chunkInfo){
         return storedChunks.get(chunkInfo);
+    }
+
+    public Map<ChunkInfo, Integer> getDesiredReplication() {
+        return desiredReplication;
     }
 
     public Map<ChunkInfo, Integer> getObtainedReplication() {

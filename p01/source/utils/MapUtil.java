@@ -13,7 +13,7 @@ public class MapUtil
         {
             public int compare( Map.Entry<K, V> o1, Map.Entry<K, V> o2 )
             {
-                return (o1.getValue()).compareTo( o2.getValue() );
+                return (o2.getValue()).compareTo( o1.getValue() );  // switch o1 and o2 to alternate between ascending and descending order
             }
         } );
 
