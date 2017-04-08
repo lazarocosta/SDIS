@@ -66,14 +66,17 @@ public class Peer {
         if (Peer.getSenderId() == 1) {
 
             db.getBackedUpFilesDb().loadDatabase();
-             rmiService.backupFile("test.txt", 1);
-            rmiService.restoreFile("test.txt");
-            // rmiService.deleteFile("test.txt");
+           //  rmiService.backupFile("test.txt", 1);
+            //rmiService.restoreFile("test.txt");
+             //rmiService.deleteFile("test.txt");
             //  rmiService.restoreFile("test.txt");
            // rmiService.restoreFile("test.txt");
 
-           // rmiService.backupFile("linha_aveiro.pdf", 1);
-            //rmiService.restoreFile("linha_aveiro.pdf");
+           // rmiService.backupFile("transferir.jpg", 1);
+            //rmiService.restoreFile("transferir.jpg");
+
+            rmiService.backupFile("linha_aveiro.pdf", 1);
+            rmiService.restoreFile("linha_aveiro.pdf");
         }
         else db.getStoredChunksDb().loadDatabase();
     }
