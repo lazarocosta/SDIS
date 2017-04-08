@@ -112,6 +112,11 @@ public class StoredChunksDatabase implements Serializable {
         Peer.getDb().getDisk().saveFile(fChunk.length());
     }
 
+    /**
+     * Returns the size of the deleted chunk in BYTES
+     * @param info
+     * @return
+     */
     public long deleteChunkFromDisk(ChunkInfo info) {
 
         File file = new File(CHUNKS_DIR + "/" + info.getFileId() + "/" + info.getChunkNo() + "txt");

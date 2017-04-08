@@ -120,6 +120,12 @@ public class Backup extends SubProtocol {
         private static final int INITIAL_INTERVAL = 1000; // 1 seg = 1000 ms
         private static final int MAX_TRIES = 5;
 
+        boolean confirmed = false;
+
+        public boolean isConfirmed() {
+            return confirmed;
+        }
+
         private Chunk chunk;
 
         public VerifyStoredConfirms(Chunk chunk) {
@@ -131,7 +137,6 @@ public class Backup extends SubProtocol {
 
             int interval = INITIAL_INTERVAL;
             int tries = 0;
-            boolean confirmed = false;
 
             while (!confirmed && tries < MAX_TRIES) {
                 try {
@@ -161,6 +166,7 @@ public class Backup extends SubProtocol {
             }
 
         }
+
     }
 
 }
