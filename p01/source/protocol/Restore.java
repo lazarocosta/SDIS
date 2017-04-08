@@ -85,7 +85,7 @@ public class Restore extends SubProtocol {
 
         if (!Peer.getDb().getResponseRestore().contains(c)) {
 
-            byte[] data = Peer.getDb().getStoredChunksDb().getStoredChunks().get(c);
+            byte[] data = Peer.getDb().getStoredChunksDb().getStoredChunks().get(c).getData();
             Peer.getUdpChannelGroup().sendForRestore(Peer.getUdpChannelGroup().getMDR().messageChunk(c.getFileId(), c.getChunkNo(), data));
 
         } else {

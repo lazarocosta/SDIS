@@ -26,7 +26,7 @@ public class Reclaim extends SubProtocol{
 
         Map<ChunkInfo, Integer> result = new HashMap<>();
 
-        for (Map.Entry<ChunkInfo, byte[]> entry : Peer.getDb().getStoredChunksDb().getStoredChunks().entrySet())
+        for (Map.Entry<ChunkInfo, Chunk> entry : Peer.getDb().getStoredChunksDb().getStoredChunks().entrySet())
         {
             ChunkInfo info =  entry.getKey();
 
@@ -55,16 +55,20 @@ public class Reclaim extends SubProtocol{
     private static void deleteChunks (int spaceToReclaim, ArrayList<ChunkInfo> mostReplicatedChunks){
 
         int spaceFreed = 0;
+        int i = 0;
 
         while(spaceFreed < spaceToReclaim){
 
-            // TODO: VERIFY IF CHUNK CAN BE DELETED
+            // Chunk currentChunk = Peer.getDb().getStoredChunksDb().get().get(mostReplicatedChunks.get(i));
+
+
 
             spaceFreed += Peer.getDb().getStoredChunksDb().deleteChunkFromDisk(mostReplicatedChunks.get(0));
 
         }
 
     }
+
 
     // FOR TESTING
     public static void main(String[] args) {

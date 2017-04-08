@@ -75,19 +75,25 @@ public class Backup extends SubProtocol {
         return myFile;
     }
 
-    private static void sendBackupRequest(ArrayList<Chunk> chunks) {
+    public static void sendBackupRequest(ArrayList<Chunk> chunks) {
 
         System.out.println("Send backup request.");
 
         for (Chunk c : chunks) {
-            byte[] message = Peer.getUdpChannelGroup().getMDB().messagePutChunk(Peer.getSenderId(), c);
-            System.out.println("Message is: " + c.getFileId() + ";" + c.getChunkNo() + ";" + c.getReplicationDegree() + ";" + c.getData());
-            Peer.getUdpChannelGroup().getMDB().sendsMessage(message);
-            System.out.println("Sent to backup chunk: " + c.toString());
-
-            VerifyStoredConfirms verifyStoredConfirms = new VerifyStoredConfirms(c);
-            verifyStoredConfirms.run();
+            sendBackupRequest(c);
         }
+
+    }
+
+    public static void sendBackupRequest(Chunk c){
+
+        byte[] message = Peer.getUdpChannelGroup().getMDB().messagePutChunk(Peer.getSenderId(), c);
+        System.out.println("Message is: " + c.getFileId() + ";" + c.getChunkNo() + ";" + c.getReplicationDegree() + ";" + c.getData());
+        Peer.getUdpChannelGroup().getMDB().sendsMessage(message);
+        System.out.println("Sent to backup chunk: " + c.toString());
+
+        VerifyStoredConfirms verifyStoredConfirms = new VerifyStoredConfirms(c);
+        verifyStoredConfirms.run();
 
     }
 
