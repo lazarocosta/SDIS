@@ -11,7 +11,7 @@ import java.util.Map;
 public class BackedUpFilesDatabase implements Serializable {
 
     private final String DATABASE_FILE = "backup.data";
-    private HashMap<String, ChunkInfo> pathToFileIdMap; // key = path, value = fileId --> Ficheiros que este servidor pediu para guardar
+    private HashMap<String, ChunkInfo> pathToFileIdMap; // key = path, value = fileId --> Numero de chunks do fichiro no chunkInfo
 
     BackedUpFilesDatabase() {
         this.pathToFileIdMap = new HashMap<>();
@@ -73,7 +73,6 @@ public class BackedUpFilesDatabase implements Serializable {
     }
 
     public String getFileId(String path){
-
         ChunkInfo chunkInfo =pathToFileIdMap.get(path);
         return chunkInfo.getFileId();
     }
@@ -81,8 +80,8 @@ public class BackedUpFilesDatabase implements Serializable {
         return this.pathToFileIdMap.get(path);
     }
 
-    public boolean containsKey(String key){
-        return  pathToFileIdMap.containsKey(key);
+    public boolean containsPath(String path){
+        return  pathToFileIdMap.containsKey(path);
     }
 
 

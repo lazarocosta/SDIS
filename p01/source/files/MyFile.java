@@ -119,7 +119,6 @@ public class MyFile {
                 byte[] body;
                 int bytesLeft = size - currentByte;
 
-                System.out.println("Current Ckunk: " + currentChunk + " ---currentByte: " + currentByte);
 
                 if (bytesLeft < Chunk.MAX_SIZE) {
 

@@ -1,18 +1,23 @@
 package files;
 
 import chunk.Chunk;
+import chunk.ChunkInfo;
 import systems.Peer;
 
 import java.io.*;
 import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Database implements Serializable {
 
 
-    private final String RESTORES_DIR = "RESTORES/peer" + Peer.getSenderId()+"/";
+    private final String RESTORES_DIR = "RESTORES/peer" + Peer.getSenderId() + "/";
     private final String FILES_DIR = "FILES/";
+    private  Map<ChunkInfo, byte[]> restoredChunkDd;
+    private final ArrayList<ChunkInfo> responseRestore;
 
     private BackedUpFilesDatabase backedUpFilesDb;
     private StoredChunksDatabase storedChunksDb;
@@ -21,11 +26,21 @@ public class Database implements Serializable {
     public Database() {
         this.backedUpFilesDb = new BackedUpFilesDatabase();
         this.storedChunksDb = new StoredChunksDatabase();
+        this.restoredChunkDd = new HashMap<>();
+        this.responseRestore = new ArrayList<>();
         this.disk = new Disk();
     }
 
     // GETTERS
 
+
+    public Map<ChunkInfo, byte[]> getRestoredChunkDd() {
+        return restoredChunkDd;
+    }
+
+    public ArrayList<ChunkInfo> getResponseRestore() {
+        return responseRestore;
+    }
 
     public Disk getDisk() {
         return disk;
@@ -54,7 +69,9 @@ public class Database implements Serializable {
         //this.removeBackup(path);
     }
 
-    public String getFileId(String path) { return this.backedUpFilesDb.getFileId(path); }
+    public String getFileId(String path) {
+        return this.backedUpFilesDb.getFileId(path);
+    }
 
 
     // For testing

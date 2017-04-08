@@ -67,15 +67,15 @@ public class Peer {
 
             db.getBackedUpFilesDb().loadDatabase();
              rmiService.backupFile("test.txt", 1);
+            rmiService.restoreFile("test.txt");
             // rmiService.deleteFile("test.txt");
-              rmiService.restoreFile("test.txt");
+            //  rmiService.restoreFile("test.txt");
            // rmiService.restoreFile("test.txt");
 
-            //rmiService.backupFile("linha_aveiro.pdf", 1);
+           // rmiService.backupFile("linha_aveiro.pdf", 1);
             //rmiService.restoreFile("linha_aveiro.pdf");
-
-
         }
+        else db.getStoredChunksDb().loadDatabase();
     }
 
 

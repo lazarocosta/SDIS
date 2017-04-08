@@ -1,6 +1,7 @@
 package channels;
 
 import protocol.Message;
+import protocol.Restore;
 
 import java.io.*;
 import java.net.*;
@@ -30,11 +31,10 @@ public class MulticastRestore extends MulticastChannel {
                 Message msg = new Message();
                 msg.separateFullMsg(messageComplete);
 
-                System.out.println(msg.getMsgType());
+                System.out.println("Type receive: "+ msg.getMsgType());
                 switch (msg.getMsgType()) {
                     case "CHUNK": {
-                        System.out.println(msg.getBody());
-                       // Restore.restoreFile(msg);
+                            Restore.chunkHandler(msg);
                     }
 
                     break;

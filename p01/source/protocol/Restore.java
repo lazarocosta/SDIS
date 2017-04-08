@@ -1,55 +1,151 @@
 package protocol;
-
-import chunk.Chunk;
 import chunk.ChunkInfo;
 import systems.Peer;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.Random;
 
 /**
  * Created by jazz on 29-03-2017.
  */
 public class Restore extends SubProtocol {
 
+    public static void restoreInitiator(String path) {
+
+        if (Peer.getDb().getBackedUpFilesDb().containsPath(path)) {
+
+            System.out.println("Peer is executing restore of file '" + path);
+
+            ChunkInfo chunkInfo = Peer.getDb().getBackedUpFilesDb().getChunkInfo(path);
+            String fileId = chunkInfo.getFileId();
+            int numberChunks = chunkInfo.getChunkNo();
+
+            sendRestoreRequest(fileId, numberChunks);
+        } else
+            System.out.println("Peer without file");
 
 
+    }
 
-    public static void restoreChunk(String fileId, int chunkNo) throws IOException {
+    private static void sendRestoreRequest(String fileId, int numberChunks) {
 
-       // String pathSenderId = "Sender" + Peer.getSenderId();
-        //String pathChunkNo = pathSenderId + "/" + fileId + "/" + chunkNo + ".txt"; //
+        System.out.println("Send Restore Request.");
+        for (int i = 1; i <= numberChunks; i++) {
+            System.out.println("Message is: " + Peer.getSenderId() + ";" + fileId + ";" + "ChunkNo: " + i + ";");
 
-        byte[] body;
+            byte[] message = Peer.getUdpChannelGroup().getMC().messageGetChunk(Peer.getSenderId(), fileId, i);
+            Peer.getUdpChannelGroup().getMC().sendsMessage(message);
 
-        //File f = new File(pathChunkNo);
+            ChunkInfo chunkInfo = new ChunkInfo(fileId, i);
 
-        ChunkInfo chunkInfo = new ChunkInfo(fileId, chunkNo);
+           // VerifyRestoreConfirms verifyRestoreConfirms = new VerifyRestoreConfirms(chunkInfo);
+         //   verifyRestoreConfirms.run();
+        }
+    }
 
+    //__________________________________
+    public static void getChunkHandler(Message msg) {
 
-        if ( Peer.getDb().getStoredChunksDb().existsChunkInfo(chunkInfo)) {
-          //  InputStream is = new FileInputStream(pathChunkNo);
-            //int size = is.available();
+        System.out.println("Message received on getChunkHandler: " + msg.toString());
+        ChunkInfo chunkInfo = new ChunkInfo(msg.getFileId(), msg.getChunkNo());
 
+        if (Peer.getDb().getStoredChunksDb().existsChunkInfo(chunkInfo)) {
 
-            body =  Peer.getDb().getStoredChunksDb().getBodyChunk(chunkInfo);
-          //  int re = is.read(body, 0, size);
+            Random randomGenerator = new Random();
 
-            System.out.println(body.toString());
+            Peer.getUdpChannelGroup().getMDR().sleep(randomGenerator.nextInt(400));
+            sendChunkMessage(chunkInfo);
 
-            sendChunkMessage(chunkInfo,body);
-        } else{
-            System.out.println("Don't exists file");
+        } else {
+            System.out.println("This server did'not restore the file" + msg.getFileId() + "'.");
+        }
+    }
+
+    private static void sendChunkMessage(ChunkInfo c) {
+
+        if (!Peer.getDb().getResponseRestore().contains(c)) {
+
+            byte[] data = Peer.getDb().getStoredChunksDb().getStoredChunks().get(c);
+            Peer.getUdpChannelGroup().sendForRestore(Peer.getUdpChannelGroup().getMDR().messageChunk(c.getFileId(), c.getChunkNo(), data));
+
+        } else {
+            Peer.getDb().getResponseRestore().remove(c);
+            System.out.println("Answered by another");
+        }
+    }
+
+    //______________________________
+    public static void chunkHandler(Message msg) {
+
+        System.out.println("Message received on chunkHandler: " + msg.toString());
+        ChunkInfo chunkInfo = new ChunkInfo(msg.getFileId(), msg.getChunkNo());
+
+        if (Peer.getDb().getStoredChunksDb().existsChunkInfo(chunkInfo)) {
+            if (!Peer.getDb().getResponseRestore().contains(chunkInfo)) {
+                Peer.getDb().getResponseRestore().add(chunkInfo);
+                System.out.println("This server receive response");
+            }
+        } else if (Peer.getDb().getBackedUpFilesDb().containsFileId(chunkInfo.getFileId())) {
+            Peer.getDb().getRestoredChunkDd().put(chunkInfo, msg.getBody());
+            System.out.println("This server initiator receive chunk");
+
+        } else {
+            System.out.println("This server did not make any interaction in this file" + msg.getFileId() + "'.");
+        }
+        //Para teste do erro
+        if(Peer.getSenderId()==1){
+         System.out.println(Peer.getDb().getStoredChunksDb().getStoredChunks());
+            System.out.println(Peer.getDb().getBackedUpFilesDb().containsFileId(chunkInfo.getFileId()));
         }
 
     }
 
-    private static void sendChunkMessage(ChunkInfo c, byte[] body){
 
-        System.out.println(body);
-        Peer.getUdpChannelGroup().sendForRestore(Peer.getUdpChannelGroup().getMDR().messageChunk( c.getFileId(), c.getChunkNo(),body ));
+    public static class VerifyRestoreConfirms implements Runnable {
 
+        private static final int INITIAL_INTERVAL = 1000; // 1 seg = 1000 ms
+        private static final int MAX_TRIES = 5;
+
+        private ChunkInfo chunk;
+
+        public VerifyRestoreConfirms(ChunkInfo chunk) {
+            this.chunk = chunk;
+        }
+
+        @Override
+        public void run() {
+
+            int interval = INITIAL_INTERVAL;
+            int tries = 0;
+            boolean confirmed = false;
+
+            while (!confirmed && tries < MAX_TRIES) {
+                try {
+                    System.out.println("Waited for " + interval + " ms");
+                    Thread.sleep(interval);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                /*int numberOfConfirms = Peer.getDb().getStoredChunksDb().getObtainedReplication().get(this.chunk.getChunkInfo());
+
+                System.out.println("Number of confirms during the interval: " + numberOfConfirms);
+
+                if (numberOfConfirms < this.chunk.getReplicationDegree()) {
+                    Peer.getDb().getStoredChunksDb().resetReplicationObtained(this.chunk.getChunkInfo());
+                    tries++;
+                    interval = interval * 2;
+
+                    if (tries == MAX_TRIES) {
+                        System.out.println("Reached maximum tries to backup chunk with desired replication degree.");
+                    }
+                } else {
+                    confirmed = true;
+                    System.out.println("Desired replication reached for chunk.");
+                }*/
+
+            }
+
+        }
     }
 }
+

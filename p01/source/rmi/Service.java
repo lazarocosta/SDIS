@@ -5,6 +5,7 @@ import files.MyFile;
 import protocol.Backup;
 import protocol.Delete;
 import protocol.Reclaim;
+import protocol.Restore;
 import systems.Peer;
 
 import java.io.IOException;
@@ -58,7 +59,9 @@ public class Service implements ServiceInterface {
     public void restoreFile(String filePath) throws RemoteException {
 
 
-        if (Peer.getDb().getBackedUpFilesDb().containsKey(filePath)) {
+
+        Restore.restoreInitiator(filePath);
+      /*  if (Peer.getDb().getBackedUpFilesDb().containsKey(filePath)) {
 
             ChunkInfo chunkInfo = Peer.getDb().getBackedUpFilesDb().getChunkInfo(filePath);
 
@@ -72,7 +75,7 @@ public class Service implements ServiceInterface {
                 System.out.println("send Restore");
 
             }
-        }
+        }*/
 
 
     }
@@ -80,7 +83,7 @@ public class Service implements ServiceInterface {
     @Override
     public void deleteFile(String filePath) throws RemoteException {
 
-        if (Peer.getDb().getBackedUpFilesDb().containsKey(filePath)) {
+        if (Peer.getDb().getBackedUpFilesDb().containsPath(filePath)) {
 
             String fileId = Peer.getDb().getBackedUpFilesDb().getFileId(filePath);
 
@@ -172,7 +175,7 @@ public class Service implements ServiceInterface {
      * @throws RemoteException
      */
     private void createRegistry() throws RemoteException {
-        this.createRegistry(DEFAULT_REGISTRY_PORT);
+       // this.createRegistry(DEFAULT_REGISTRY_PORT);
     }
 
     public static void main(String args[]) {

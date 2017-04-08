@@ -13,7 +13,8 @@ import java.util.Map;
  */
 public class StoredChunksDatabase implements Serializable {
 
-    private final String CHUNKS_DIR = "CHUNKS/peer" + Peer.getSenderId()+"/";
+    private final String DATABASE_FILE = "restore.data";
+    private final String CHUNKS_DIR = "CHUNKS/peer" + Peer.getSenderId() + "/";
 
     private Map<ChunkInfo, byte[]> storedChunks;
     private Map<ChunkInfo, Integer> desiredReplication;
@@ -23,10 +24,44 @@ public class StoredChunksDatabase implements Serializable {
         this.storedChunks = new HashMap<>();
         this.desiredReplication = new HashMap<>();
         this.obtainedReplication = new HashMap<>();
+
+
     }
+
+    public void saveDatabase() {
+        File file = new File(this.DATABASE_FILE);
+        try {
+            FileOutputStream f = new FileOutputStream(file);
+            ObjectOutputStream s = new ObjectOutputStream(f);
+            s.writeObject(this.storedChunks);
+            s.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadDatabase() {
+        File file = new File(this.DATABASE_FILE);
+        if(file.exists()) {
+            try {
+                FileInputStream f = new FileInputStream(file);
+                ObjectInputStream s = new ObjectInputStream(f);
+                this.storedChunks = (HashMap<ChunkInfo, byte[]> ) s.readObject();
+
+                System.out.println("load Database");
+                s.close();
+            } catch (ClassNotFoundException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     /**
      * Adds a chunk to the volatile memory (hashmap) and also saves its current replication and desired replication.
+     *
      * @param c Chunk
      */
     public void addChunk(Chunk c) {
@@ -34,10 +69,13 @@ public class StoredChunksDatabase implements Serializable {
         this.desiredReplication.put(c.getChunkInfo(), c.getReplicationDegree());
 
         this.incrementReplicationObtained(c.getChunkInfo());
+
+        saveDatabase();
     }
 
     /**
      * Opposite of addChunk.
+     *
      * @param chunkInfo
      */
     public void removeChunk(ChunkInfo chunkInfo) {
@@ -45,9 +83,10 @@ public class StoredChunksDatabase implements Serializable {
         this.desiredReplication.remove(chunkInfo);
 
         this.decrementReplicationObtained(chunkInfo);
+        saveDatabase();
     }
 
-    public void saveChunkToDisk(Chunk c){
+    public void saveChunkToDisk(Chunk c) {
         String pathFileId = CHUNKS_DIR + "/" + c.getFileId();
         String pathChunkNo = pathFileId + "/" + c.getChunkNo() + ".txt";
 
@@ -57,7 +96,7 @@ public class StoredChunksDatabase implements Serializable {
 
         if (!f.exists()) {
             f.mkdirs();
-            System.out.println("Foi criado o ficheiro '" + pathChunkNo + "'." );
+            System.out.println("Foi criado o ficheiro '" + pathChunkNo + "'.");
         }
 
         try {
@@ -75,7 +114,7 @@ public class StoredChunksDatabase implements Serializable {
         Peer.getDb().getDisk().saveFile(fChunk.length());
     }
 
-    public long deleteChunkFromDisk(ChunkInfo info){
+    public long deleteChunkFromDisk(ChunkInfo info) {
 
         File file = new File(CHUNKS_DIR + "/" + info.getFileId() + "/" + info.getChunkNo() + "txt");
         long fileLength = file.length();
@@ -90,11 +129,9 @@ public class StoredChunksDatabase implements Serializable {
     }
 
     public void incrementReplicationObtained(ChunkInfo chunkInfo) {
-        if(this.obtainedReplication.containsKey(chunkInfo)) {
+        if (this.obtainedReplication.containsKey(chunkInfo)) {
             this.obtainedReplication.put(chunkInfo, this.obtainedReplication.get(chunkInfo) + 1);
-        }
-        else
-        {
+        } else {
             this.obtainedReplication.put(chunkInfo, 1);
         }
 
@@ -102,18 +139,15 @@ public class StoredChunksDatabase implements Serializable {
 
     public void decrementReplicationObtained(ChunkInfo chunkInfo) {
 
-        if(this.obtainedReplication.containsKey(chunkInfo)) {
+        if (this.obtainedReplication.containsKey(chunkInfo)) {
             this.obtainedReplication.put(chunkInfo, this.obtainedReplication.get(chunkInfo) - 1);
-        }
-        else
-        {
+        } else {
             this.obtainedReplication.put(chunkInfo, -1);
         }
 
     }
 
-    public void resetReplicationObtained(ChunkInfo chunkInfo)
-    {
+    public void resetReplicationObtained(ChunkInfo chunkInfo) {
         this.obtainedReplication.put(chunkInfo, 0);
     }
 
@@ -121,11 +155,11 @@ public class StoredChunksDatabase implements Serializable {
         return storedChunks;
     }
 
-    public boolean existsChunkInfo(ChunkInfo chunkInfo){
+    public boolean existsChunkInfo(ChunkInfo chunkInfo) {
         return storedChunks.containsKey(chunkInfo);
     }
 
-    public byte[] getBodyChunk(ChunkInfo chunkInfo){
+    public byte[] getBodyChunk(ChunkInfo chunkInfo) {
         return storedChunks.get(chunkInfo);
     }
 

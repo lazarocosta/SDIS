@@ -11,9 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-/**
- * Created by jazz on 29-03-2017.
- */
 public class Reclaim extends SubProtocol{
 
     public static void reclaimInitiator(int size_in_kb){

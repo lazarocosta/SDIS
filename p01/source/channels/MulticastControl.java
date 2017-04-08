@@ -39,20 +39,11 @@ public class MulticastControl extends MulticastChannel {
                 if (msg.getSenderId() != this.senderId) {
                     switch (msg.getMsgType()) {
                         case "GETCHUNK": {
-                            Restore.restoreChunk(msg.getFileId(),msg.getChunkNo());
-
-                            /*byte[] body = this.getChunkOfSender(msg.getVersion(), msg.getFileId(), msg.getChunkNo());
-                            System.out.println(body);
-
-                            if (body != null) {
-                                String sendToServer = this.messageChunk(msg.getVersion(), msg.getFileId(), msg.getChunkNo(), body);
-                                this.sender.sendForRestore(sendToServer);
-                            }*/
+                            Restore.getChunkHandler(msg);
                         }
                         break;
                         case "DELETE": {
                             Delete.deleteFile(msg.getFileId());
-                            System.out.println("Delete");
                         }
                         break;
                         case "REMOVED": {
@@ -63,7 +54,6 @@ public class MulticastControl extends MulticastChannel {
                             if (msg.getSenderId() != senderId) {
 
                                 Backup.storedHandler(msg);
-                                System.out.println("STORED");
                             }
                             //
                         }

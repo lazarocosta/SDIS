@@ -69,7 +69,6 @@ public class MulticastChannel implements Runnable {
         Message messageLine = new Message(idSender, fileId, ChunkNo);
         byte[] message = messageLine.msgStored();
 
-        System.out.println(" message Stored");
         return message;
     }
 
@@ -86,7 +85,6 @@ public class MulticastChannel implements Runnable {
         Message messageLine = new Message(idSender, fileId, ChunkNo);
         byte[] message = messageLine.msgGetChunk();
 
-        System.out.println(" message GetChunk");
         return message;
 
     }
@@ -97,7 +95,7 @@ public class MulticastChannel implements Runnable {
         messageLine.setBody(body);
         byte[] message = messageLine.msgChunk();
 
-        System.out.println(" message Chunk");
+
         return message;
 
     }
@@ -107,7 +105,6 @@ public class MulticastChannel implements Runnable {
         Message messageLine = new Message(idSender, fileId, ChunkNo);
         byte[] message = messageLine.msgRemoved();
 
-        System.out.println(" message GetChunk");
         return message;
 
     }

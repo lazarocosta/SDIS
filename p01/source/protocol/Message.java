@@ -192,12 +192,8 @@ public class Message {
         String[] tokens = message.split(CRLF+CRLF);
 
 
-
-
         this.body = tokens[1].getBytes();
 
-        System.out.println("token[1]: " +tokens[1]);
-        System.out.println("token[1].getbytes(): " +body);
         String[] header = tokens[0].split("\\s+");
 
         if (header.length >= 5) {

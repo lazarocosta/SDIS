@@ -47,6 +47,7 @@ public class ChunkInfo implements Serializable {
 
         ChunkInfo c = (ChunkInfo) obj;
 
+
         return chunkNo == c.chunkNo &&
                 Objects.equals(fileId, c.fileId);
     }
