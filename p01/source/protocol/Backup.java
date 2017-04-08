@@ -43,17 +43,22 @@ public class Backup extends SubProtocol {
     public static void storedInitiator(Chunk c) {
 
         if (canPeerStoreChunk(c)) {
-            storeChunk(c);
 
             Random randomGenerator = new Random();
 
             Peer.getUdpChannelGroup().getMC().sleep(randomGenerator.nextInt(400));
 
             if (SubProtocol.enhancements == true) {
-                if (Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()) < c.getReplicationDegree())
+                System.out.println("Current obtained replication:" +Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()));
+                System.out.println("Chunk replication");
+
+                if (Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()) == null ||
+                        Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()) < c.getReplicationDegree()) {
+                    storeChunk(c);
                     sendStoredMessage(c);
-                else
-                    Peer.getDb().getStoredChunksDb().deleteChunkFromDisk(c.getChunkInfo());
+                }
+                // else
+                    // do nothing
 
             }
             else
