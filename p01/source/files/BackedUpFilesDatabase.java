@@ -33,7 +33,7 @@ public class BackedUpFilesDatabase implements Serializable {
 
     public void loadDatabase() {
         File file = new File(this.DATABASE_FILE);
-        if(file.exists()) {
+        if (file.exists()) {
             try {
                 FileInputStream f = new FileInputStream(file);
                 ObjectInputStream s = new ObjectInputStream(f);
@@ -59,8 +59,8 @@ public class BackedUpFilesDatabase implements Serializable {
     }
 
     public void addFile(MyFile myFile) {
-        ChunkInfo chunkInfo= new ChunkInfo(myFile.getFileId(),myFile.getChunksNum()); //--> numero total de chunks do file
-        this.addFile(myFile.getFilepath(),chunkInfo);
+        ChunkInfo chunkInfo = new ChunkInfo(myFile.getFileId(), myFile.getChunksNum()); //--> numero total de chunks do file
+        this.addFile(myFile.getFilepath(), chunkInfo);
     }
 
     public void removeFileByPath(String path) {
@@ -72,25 +72,30 @@ public class BackedUpFilesDatabase implements Serializable {
         }
     }
 
-    public String getFileId(String path){
-        ChunkInfo chunkInfo =pathToFileIdMap.get(path);
+    public String getFileId(String path) {
+        ChunkInfo chunkInfo = pathToFileIdMap.get(path);
         return chunkInfo.getFileId();
     }
-    public ChunkInfo getChunkInfo(String path){
+
+    public ChunkInfo getChunkInfo(String path) {
         return this.pathToFileIdMap.get(path);
     }
 
-    public boolean containsPath(String path){
-        return  pathToFileIdMap.containsKey(path);
+    public boolean containsPath(String path) {
+        return pathToFileIdMap.containsKey(path);
     }
 
 
     public String fileIdToFilePath(String fileId) {
+
+
         for (String key : this.pathToFileIdMap.keySet()) {
-            if (this.pathToFileIdMap.get(key).equals(fileId)) {
+            ChunkInfo chunkInfo = pathToFileIdMap.get(key);
+            if (chunkInfo.getFileId().equals(fileId))
                 return key;
-            }
         }
+
+
         return null;
     }
 }

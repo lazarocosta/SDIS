@@ -35,7 +35,7 @@ public class MulticastChannel implements Runnable {
         }
     }
 
-    public void sleep(int time_in_ms){
+    public void sleep(int time_in_ms) {
         try {
             Thread.sleep(time_in_ms);
         } catch (InterruptedException e) {
@@ -52,7 +52,6 @@ public class MulticastChannel implements Runnable {
         } catch (IOException A) {
             A.printStackTrace();
         }
-
     }
 
     public byte[] messagePutChunk(int senderId, Chunk c) {
@@ -106,12 +105,10 @@ public class MulticastChannel implements Runnable {
         byte[] message = messageLine.msgRemoved();
 
         return message;
-
     }
 
     @Override
     public void run() {
-
     }
 
 }

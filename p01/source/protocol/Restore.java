@@ -1,13 +1,14 @@
 package protocol;
+import chunk.Chunk;
 import chunk.ChunkInfo;
 import systems.Peer;
 
+import java.io.File;
 import java.util.Random;
 
-/**
- * Created by jazz on 29-03-2017.
- */
 public class Restore extends SubProtocol {
+
+    private final String FILE_RESTORE_DIR = "CHUNKS/peer" + Peer.getSenderId() + "/";
 
     public static void restoreInitiator(String path) {
 
@@ -20,8 +21,27 @@ public class Restore extends SubProtocol {
             int numberChunks = chunkInfo.getChunkNo();
 
             sendRestoreRequest(fileId, numberChunks);
+
+            endsRestore(path,fileId, numberChunks);
         } else
             System.out.println("Peer without file");
+
+
+    }
+
+    private static void endsRestore(String path,String fileId, int numberChunks) {
+
+        File file = new File(path);
+
+
+        for(int i =1; i < numberChunks; i++){
+            ChunkInfo chunkInfo = new ChunkInfo(fileId, i);
+            if(Peer.getDb().getRestoredChunkDd().containsKey(chunkInfo)){
+
+            }
+        }
+
+      //  ChunkInfo chunkInfo = new ChunkInfo(fileId, i);
 
 
     }
@@ -40,6 +60,7 @@ public class Restore extends SubProtocol {
            // VerifyRestoreConfirms verifyRestoreConfirms = new VerifyRestoreConfirms(chunkInfo);
          //   verifyRestoreConfirms.run();
         }
+
     }
 
     //__________________________________
