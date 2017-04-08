@@ -14,9 +14,8 @@ import java.util.Map;
 public class Database implements Serializable {
 
 
-    private final String RESTORES_DIR = "RESTORES/peer" + Peer.getSenderId() + "/";
-    private final String FILES_DIR = "FILES/";
-    private  Map<ChunkInfo, byte[]> restoredChunkDd;
+    public String RESTORES_DIR = "RESTORES/peer" + Peer.getSenderId() + "/";
+    private Map<ChunkInfo, byte[]> restoredChunkDd;
     private final ArrayList<ChunkInfo> responseRestore;
 
     private BackedUpFilesDatabase backedUpFilesDb;
@@ -61,12 +60,6 @@ public class Database implements Serializable {
      */
     public void saveBackedUpFile(MyFile myFile) {
         this.backedUpFilesDb.addFile(myFile);
-    }
-
-
-    public void removeBackup(String path) {
-
-        //this.removeBackup(path);
     }
 
     public String getFileId(String path) {

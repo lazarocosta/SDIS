@@ -33,34 +33,32 @@ public class MulticastControl extends MulticastChannel {
                 msg.separateMsg(messageComplete);
 
 
-               // System.out.println("_------------" + new String(messageComplete));
+                // System.out.println("_------------" + new String(messageComplete));
 
                 System.out.println("Type " + msg.getMsgType());
-                if (msg.getSenderId() != this.senderId) {
-                    switch (msg.getMsgType()) {
-                        case "GETCHUNK": {
-                            Restore.getChunkHandler(msg);
-                        }
-                        break;
-                        case "DELETE": {
-                            Delete.deleteFile(msg.getFileId());
-                        }
-                        break;
-                        case "REMOVED": {
-                            //
-                        }
-                        break;
-                        case "STORED": {
-                            if (msg.getSenderId() != senderId) {
-
-                                Backup.storedHandler(msg);
-                            }
-                            //
-                        }
-                        break;
-                        default:
-                            System.out.println("discard");
+                switch (msg.getMsgType()) {
+                    case "GETCHUNK": {
+                        Restore.getChunkHandler(msg);
                     }
+                    break;
+                    case "DELETE": {
+                        Delete.deleteFile(msg);
+                    }
+                    break;
+                    case "REMOVED": {
+                        //
+                    }
+                    break;
+                    case "STORED": {
+                        if (msg.getSenderId() != senderId) {
+
+                            Backup.storedHandler(msg);
+                        }
+                        //
+                    }
+                    break;
+                    default:
+                        System.out.println("discard");
                 }
             } catch (IOException e) {
                 e.printStackTrace();

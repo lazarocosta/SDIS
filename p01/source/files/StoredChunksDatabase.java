@@ -16,7 +16,7 @@ public class StoredChunksDatabase implements Serializable {
     private final String DATABASE_FILE = "restore.data";
     private final String CHUNKS_DIR = "CHUNKS/peer" + Peer.getSenderId() + "/";
 
-    private Map<ChunkInfo, Chunk> storedChunks;
+    private Map<ChunkInfo, byte[]> storedChunks;
     private Map<ChunkInfo, Integer> desiredReplication;
     private Map<ChunkInfo, Integer> obtainedReplication;
 
@@ -24,6 +24,8 @@ public class StoredChunksDatabase implements Serializable {
         this.storedChunks = new HashMap<>();
         this.desiredReplication = new HashMap<>();
         this.obtainedReplication = new HashMap<>();
+
+
     }
 
     public void saveDatabase() {
@@ -46,7 +48,7 @@ public class StoredChunksDatabase implements Serializable {
             try {
                 FileInputStream f = new FileInputStream(file);
                 ObjectInputStream s = new ObjectInputStream(f);
-                this.storedChunks = (HashMap<ChunkInfo, Chunk> ) s.readObject();
+                this.storedChunks = (HashMap<ChunkInfo, byte[]>) s.readObject();
 
                 System.out.println("load Database");
                 s.close();
@@ -63,7 +65,7 @@ public class StoredChunksDatabase implements Serializable {
      * @param c Chunk
      */
     public void addChunk(Chunk c) {
-        this.storedChunks.put(c.getChunkInfo(), c);
+        this.storedChunks.put(c.getChunkInfo(), c.getData());
         this.desiredReplication.put(c.getChunkInfo(), c.getReplicationDegree());
 
         this.incrementReplicationObtained(c.getChunkInfo());
@@ -119,11 +121,12 @@ public class StoredChunksDatabase implements Serializable {
      */
     public long deleteChunkFromDisk(ChunkInfo info) {
 
-        File file = new File(CHUNKS_DIR + "/" + info.getFileId() + "/" + info.getChunkNo() + "txt");
+        File file = new File(CHUNKS_DIR + "/" + info.getFileId() + "/" + info.getChunkNo() + ".txt");
         long fileLength = file.length();
 
 
         file.delete();
+        System.out.println("delete diretory" + file.toPath());
 
         Peer.getDb().getStoredChunksDb().removeChunk(info);
         Peer.getDb().getDisk().removeFile(fileLength);
@@ -154,7 +157,7 @@ public class StoredChunksDatabase implements Serializable {
         this.obtainedReplication.put(chunkInfo, 0);
     }
 
-    public Map<ChunkInfo, Chunk> getStoredChunks() {
+    public Map<ChunkInfo, byte[]> getStoredChunks() {
         return storedChunks;
     }
 
@@ -162,7 +165,7 @@ public class StoredChunksDatabase implements Serializable {
         return storedChunks.containsKey(chunkInfo);
     }
 
-    public Chunk getChunk(ChunkInfo chunkInfo) {
+    public byte[] getBodyChunk(ChunkInfo chunkInfo) {
         return storedChunks.get(chunkInfo);
     }
 
