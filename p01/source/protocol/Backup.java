@@ -8,6 +8,10 @@ import systems.Peer;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * ENHANCEMENT: Do not store unless desiredReplication degree is not met
+ */
+
 public class Backup extends SubProtocol {
 
     public static void backupInitiator(String path, int replicationDegree) {
@@ -45,7 +49,17 @@ public class Backup extends SubProtocol {
 
             Peer.getUdpChannelGroup().getMC().sleep(randomGenerator.nextInt(400));
 
-            sendStoredMessage(c);
+            if (SubProtocol.enhancements == true) {
+                if (Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()) < c.getReplicationDegree())
+                    sendStoredMessage(c);
+                else
+                    Peer.getDb().getStoredChunksDb().deleteChunkFromDisk(c.getChunkInfo());
+
+            }
+            else
+            {
+                sendStoredMessage(c);
+            }
         }
 
     }

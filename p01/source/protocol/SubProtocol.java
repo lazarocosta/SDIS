@@ -6,6 +6,7 @@ package protocol;
 public class SubProtocol {
 
     private static String version;
+    protected static boolean enhancements = true;
 
     public static String getVersion() {
         return version;
