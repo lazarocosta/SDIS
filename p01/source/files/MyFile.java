@@ -123,6 +123,7 @@ public class MyFile {
                 if (bytesLeft < Chunk.MAX_SIZE) {
 
                     body = new byte[bytesLeft];
+
                     is.read(body, 0, bytesLeft);
                 } else {
 

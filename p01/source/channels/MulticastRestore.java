@@ -26,8 +26,6 @@ public class MulticastRestore extends MulticastChannel {
                 socket.receive(datagramPacketReceive);
                 String messageComplete = new String(datagramPacketReceive.getData(), 0, datagramPacketReceive.getLength());
 
-
-                System.out.println(messageComplete);
                 Message msg = new Message();
                 msg.separateFullMsg(messageComplete);
 

@@ -24,7 +24,7 @@ public class Backup extends SubProtocol {
 
     public static void backupHandler(Message msg) {
 
-        System.out.println("Message received on backupHandler: " + msg.toString());
+        System.out.println("Message received on backupHandler: ");
 
         if (!Peer.getDb().getBackedUpFilesDb().containsFileId(msg.getFileId())) {
             Chunk c = new Chunk(msg.getFileId(), msg.getChunkNo(), msg.getReplicationDeg(), msg.getBody());

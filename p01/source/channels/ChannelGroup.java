@@ -49,7 +49,7 @@ public class ChannelGroup {
     }
 
     public void sendForRestore(byte[] packet) {
-        System.out.println("Sent packet:" + Arrays.toString(packet));
+      //  System.out.println("Sent packet:" + Arrays.toString(packet));
         this.MDR.sendsMessage(packet);
     }
 
