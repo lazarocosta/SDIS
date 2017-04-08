@@ -3,7 +3,7 @@ package chunk;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class Chunk {
+public class Chunk implements Serializable {
 
     public static final int MAX_SIZE = 64 * 1000;   // 64 KByte
 

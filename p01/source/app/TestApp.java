@@ -85,14 +85,14 @@ public class TestApp {
         sub_protocol = args[1];
 
         try {
-            System.out.println("Connecting to RMI Host:  '" + rmiHost + "'.");
+            System.out.println("Connecting to RMI Host:  '" + rmiHost + "' on AP '" + peer_ap +"'.");
             Registry registry = LocateRegistry.getRegistry();
 
             stub = (ServiceInterface) registry.lookup(peer_ap);
 
         } catch (RemoteException | NotBoundException e) {
-            System.err.println("Invalid RMI object name");
-
+            System.err.println("Invalid RMI object name.");
+            e.printStackTrace();
             return false;
         }
 

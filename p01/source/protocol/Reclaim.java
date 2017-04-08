@@ -2,7 +2,6 @@ package protocol;
 
 import chunk.Chunk;
 import chunk.ChunkInfo;
-import files.MyFile;
 import systems.Peer;
 import utils.MapUtil;
 
@@ -27,7 +26,7 @@ public class Reclaim extends SubProtocol{
 
         Map<ChunkInfo, Integer> result = new HashMap<>();
 
-        for (Map.Entry<ChunkInfo, Chunk> entry : Peer.getDb().getStoredChunksDb().getStoredChunks().entrySet())
+        for (Map.Entry<ChunkInfo, byte[]> entry : Peer.getDb().getStoredChunksDb().getStoredData().entrySet())
         {
             ChunkInfo info =  entry.getKey();
 
@@ -60,7 +59,11 @@ public class Reclaim extends SubProtocol{
 
         while((spaceFreed < spaceToReclaim) && (i < mostReplicatedChunks.size())){
 
-            Chunk currentChunk = Peer.getDb().getStoredChunksDb().getStoredChunks().get(mostReplicatedChunks.get(i));
+            ChunkInfo info = mostReplicatedChunks.get(i);
+
+            byte[] currentChunkData = Peer.getDb().getStoredChunksDb().getStoredData().get(mostReplicatedChunks.get(i));
+
+            Chunk currentChunk = new Chunk(info.getFileId(), info.getChunkNo(), Peer.getDb().getStoredChunksDb().getDesiredReplication().get(info), currentChunkData);
 
             Backup.VerifyStoredConfirms verifyStoredConfirms = new Backup.VerifyStoredConfirms(currentChunk);
             verifyStoredConfirms.run();

@@ -146,7 +146,10 @@ public class Backup extends SubProtocol {
                     e.printStackTrace();
                 }
 
-                int numberOfConfirms = Peer.getDb().getStoredChunksDb().getObtainedReplication().get(this.chunk.getChunkInfo());
+                int numberOfConfirms = 0;
+
+                if(Peer.getDb().getStoredChunksDb().getObtainedReplication().get(this.chunk.getChunkInfo()) != null)
+                    numberOfConfirms = Peer.getDb().getStoredChunksDb().getObtainedReplication().get(this.chunk.getChunkInfo());
 
                 System.out.println("Number of confirms during the interval: " + numberOfConfirms);
 

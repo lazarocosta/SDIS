@@ -60,7 +60,7 @@ public class Delete extends SubProtocol {
 
     private static void deleteFilesDatabase(String fileId) {
 
-        for (ChunkInfo chunkInfo : Peer.getDb().getStoredChunksDb().getStoredChunks().keySet()) {
+        for (ChunkInfo chunkInfo : Peer.getDb().getStoredChunksDb().getStoredData().keySet()) {
             if (chunkInfo.getFileId().equals(fileId)) {
                 Peer.getDb().getStoredChunksDb().deleteChunkFromDisk(chunkInfo);
             }
@@ -68,7 +68,7 @@ public class Delete extends SubProtocol {
     }
 
     private static boolean storedFile(String fileId) {
-        for (ChunkInfo chunkInfo : Peer.getDb().getStoredChunksDb().getStoredChunks().keySet())
+        for (ChunkInfo chunkInfo : Peer.getDb().getStoredChunksDb().getStoredData().keySet())
             if (chunkInfo.getFileId().equals(fileId))
                 return true;
 
