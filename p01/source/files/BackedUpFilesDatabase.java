@@ -65,6 +65,8 @@ public class BackedUpFilesDatabase implements Serializable {
 
     public void removeFileByPath(String path) {
 
+        System.out.println(pathToFileIdMap);
+
         if (this.pathToFileIdMap.containsKey(path)) {
             this.pathToFileIdMap.remove(path);
             this.saveDatabase();

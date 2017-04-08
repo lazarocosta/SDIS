@@ -14,7 +14,7 @@ import java.util.Map;
 public class StoredChunksDatabase implements Serializable {
 
     private final String DATABASE_FILE = "restore.data";
-    private final String CHUNKS_DIR = "CHUNKS/peer" + Peer.getSenderId() + "/";
+    public static final String CHUNKS_DIR = "CHUNKS/peer" + Peer.getSenderId();
 
     private Map<ChunkInfo, byte[]> storedChunks;
     private Map<ChunkInfo, Integer> desiredReplication;
@@ -27,6 +27,7 @@ public class StoredChunksDatabase implements Serializable {
 
 
     }
+
 
     public void saveDatabase() {
         File file = new File(this.DATABASE_FILE);
@@ -44,11 +45,11 @@ public class StoredChunksDatabase implements Serializable {
 
     public void loadDatabase() {
         File file = new File(this.DATABASE_FILE);
-        if(file.exists()) {
+        if (file.exists()) {
             try {
                 FileInputStream f = new FileInputStream(file);
                 ObjectInputStream s = new ObjectInputStream(f);
-                this.storedChunks = (HashMap<ChunkInfo, byte[]> ) s.readObject();
+                this.storedChunks = (HashMap<ChunkInfo, byte[]>) s.readObject();
 
                 System.out.println("load Database");
                 s.close();
@@ -116,11 +117,12 @@ public class StoredChunksDatabase implements Serializable {
 
     public long deleteChunkFromDisk(ChunkInfo info) {
 
-        File file = new File(CHUNKS_DIR + "/" + info.getFileId() + "/" + info.getChunkNo() + "txt");
+        File file = new File(CHUNKS_DIR + "/" + info.getFileId() + "/" + info.getChunkNo() + ".txt");
         long fileLength = file.length();
 
 
         file.delete();
+        System.out.println("delete diretory" + file.toPath());
 
         Peer.getDb().getStoredChunksDb().removeChunk(info);
         Peer.getDb().getDisk().removeFile(fileLength);

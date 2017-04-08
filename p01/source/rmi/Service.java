@@ -39,8 +39,7 @@ public class Service implements ServiceInterface {
     String accessPoint;
     Registry serverRegistry;
 
-    private int ATTEMPTS = 5;
-    private long SLEEP_ms = 50;
+
 
 
     public Service(String accessPoint) throws AlreadyBoundException, IOException, InterruptedException {
@@ -83,28 +82,9 @@ public class Service implements ServiceInterface {
     @Override
     public void deleteFile(String filePath) throws RemoteException {
 
-        if (Peer.getDb().getBackedUpFilesDb().containsPath(filePath)) {
+        Delete.initiator(filePath);
 
-            String fileId = Peer.getDb().getBackedUpFilesDb().getFileId(filePath);
 
-            Delete.deleteBackupFile(filePath);
-
-            int attempts = ATTEMPTS;
-
-            //  while (attempts > 0) {
-
-            byte[] packetDelete = Peer.getUdpChannelGroup().getMC().messageDelete(Peer.getSenderId(), fileId);
-            Peer.getUdpChannelGroup().getMC().sendsMessage(packetDelete);
-
-            /*    try {
-                    Thread.sleep(SLEEP_ms);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                attempts--;
-        }
-*/
-        } else System.out.println("Does not have the file backup");
     }
 
     @Override

@@ -1,5 +1,8 @@
 package protocol;
 
+import chunk.Chunk;
+import chunk.ChunkInfo;
+import files.StoredChunksDatabase;
 import systems.Peer;
 
 import java.io.File;
@@ -7,32 +10,72 @@ import java.io.File;
 /**
  * Created by jazz on 29-03-2017.
  */
-public class Delete extends SubProtocol{
+public class Delete extends SubProtocol {
+    private static int ATTEMPTS = 5;
+    private static long SLEEP_ms = 100;
 
-    public static void deleteFile(String fileId) {
+    public static void initiator(String filePath) {
 
-        String pathSenderId = "Sender" + Peer.getSenderId();
-        String pathFileId = pathSenderId + "/" + fileId;
+        if (Peer.getDb().getBackedUpFilesDb().containsPath(filePath)) {
 
-        File f = new File(pathFileId);
-        File fileSender = new File(pathSenderId);
+            String fileId = Peer.getDb().getBackedUpFilesDb().getFileId(filePath);
 
-        if (f.exists()) {
-            for (File file : f.listFiles()) {
-                file.delete();
-                System.out.println("delete file into" + pathFileId);
+            //   Delete.deleteBackupFile(filePath);
+
+            int attempts = ATTEMPTS;
+
+            while (attempts > 0) {
+
+                byte[] packetDelete = Peer.getUdpChannelGroup().getMC().messageDelete(Peer.getSenderId(), fileId);
+                Peer.getUdpChannelGroup().getMC().sendsMessage(packetDelete);
+
+                try {
+                    Thread.sleep(SLEEP_ms);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                attempts--;
             }
 
-            for (File file : fileSender.listFiles()) {
-                if (file.compareTo(f) == 0) {//equals
-                    file.delete();
-                    System.out.println("delete diretory" + pathFileId);
-                }
+        } else System.out.println("Does not have the file backup");
+    }
+
+    public static void deleteFile(Message msg) {
+        String fileId = msg.getFileId();
+
+        if (Peer.getDb().getBackedUpFilesDb().containsFileId(fileId)) {
+            System.out.println("Peer will eliminate the file into backedUpFilesDatabase");
+
+            String path = Peer.getDb().getBackedUpFilesDb().fileIdToFilePath(fileId);
+            deleteFilesBackup(path);
+
+        } else if (storedFile(fileId)) {
+            System.out.println("Peer will eliminate the file into StoredChunksDatabase");
+            deleteFilesDatabase(fileId);
+        } else {
+            System.out.println("This server did'not restore the file" + fileId + "'.");
+        }
+    }
+
+
+    private static void deleteFilesDatabase(String fileId) {
+
+        for (ChunkInfo chunkInfo : Peer.getDb().getStoredChunksDb().getStoredChunks().keySet()) {
+            if (chunkInfo.getFileId().equals(fileId)) {
+                Peer.getDb().getStoredChunksDb().deleteChunkFromDisk(chunkInfo);
             }
         }
     }
 
-    public static void deleteBackupFile(String path){
-        Peer.getDb().removeBackup(path);
+    private static boolean storedFile(String fileId) {
+        for (ChunkInfo chunkInfo : Peer.getDb().getStoredChunksDb().getStoredChunks().keySet())
+            if (chunkInfo.getFileId().equals(fileId))
+                return true;
+
+        return false;
+    }
+
+    public static void deleteFilesBackup(String path) {
+        Peer.getDb().getBackedUpFilesDb().removeFileByPath(path);
     }
 }

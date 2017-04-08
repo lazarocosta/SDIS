@@ -1,21 +1,20 @@
 package protocol;
 
-import chunk.Chunk;
 import chunk.ChunkInfo;
 import systems.Peer;
+import utils.ArrayUtil;
 
-import java.awt.*;
 import java.io.*;
 import java.util.Random;
 
-import static java.lang.System.exit;
 
 public class Restore extends SubProtocol {
 
     private static String FILE_RESTORE_DIR = "Restore_Files/peer" + Peer.getSenderId();
 
-    public static void restoreInitiator(String path) {
+    public static byte[] restoreInitiator(String path) {
 
+        byte[] b;
         if (Peer.getDb().getBackedUpFilesDb().containsPath(path)) {
 
             System.out.println("Peer is executing restore of file '" + path);
@@ -26,55 +25,62 @@ public class Restore extends SubProtocol {
 
             sendRestoreRequest(fileId, numberChunks);
 
-            endsRestore(path, fileId, numberChunks);
-        } else
+            b = endsRestore(path, fileId, numberChunks);
+        } else {
+            b = new byte[0];
             System.out.println("Peer without file");
+        }
 
-
+        return b;
     }
 
-    private static void endsRestore(String fileName, String fileId, int numberChunks) {
-
+    private static byte[] endsRestore(String fileName, String fileId, int numberChunks) {
 
         try {
-            System.out.println("Waited for " + 1500 + " ms");
-            Thread.sleep(3000);
+            Thread.sleep(4000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         System.out.println("Peer initiate the restore");
+        System.out.println("number Chunks: " + numberChunks);
+
+        byte[] file = new byte[0];
+
+        for (int i = 1; i <= numberChunks; i++) {
+            ChunkInfo chunkInfo = new ChunkInfo(fileId, i);
+            System.out.println(chunkInfo.getChunkNo() + "_________");
+            if (Peer.getDb().getRestoredChunkDd().containsKey(chunkInfo)) {
+                System.out.println(chunkInfo.getChunkNo() + "______+++++++++++___");
+                byte[] data = Peer.getDb().getRestoredChunkDd().get(chunkInfo);
+
+                file = ArrayUtil.byteArrayConcat(file, data);
+            }
+        }
+        //TODO: Só para testar
+        saveRestoredFile(fileName, file);
+
+        return file;
+    }
+
+    public static void saveRestoredFile(String fileName, byte[] data) {
+
         File path = new File(FILE_RESTORE_DIR);
         String dir = path + "/" + fileName;
 
         if (!path.exists()) {
             path.mkdirs();
         }
+
+        FileOutputStream out = null;
         try {
+            out = new FileOutputStream(dir);
+            out.write(data);
+            out.close();
 
-            OutputStream os = new FileOutputStream(dir);
-            System.out.println("number Chunks: " + numberChunks);
-
-            for (int i = 1; i <= numberChunks; i++) {
-                ChunkInfo chunkInfo = new ChunkInfo(fileId, i);
-                if (Peer.getDb().getRestoredChunkDd().containsKey(chunkInfo)) {
-                    System.out.println("contains ChunkInfo" + chunkInfo);
-                    byte[] data = Peer.getDb().getRestoredChunkDd().get(chunkInfo);
-                    os.write(data);
-                    System.out.println("write chunk: " + chunkInfo + " into file");
-                } else {
-                    System.out.println("Restore not terminated");
-                    os.close();
-                    exit(-1);
-                }
-            }
-
-            os.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
 
     private static void sendRestoreRequest(String fileId, int numberChunks) {
 
