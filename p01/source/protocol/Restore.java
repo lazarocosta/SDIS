@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class Restore extends SubProtocol {
 
-    private static String FILE_RESTORE_DIR = "Restore_Files/peer" + Peer.getSenderId();
+    private static String FILE_RESTORE_DIR = "RESTORED/peer" + Peer.getSenderId();
 
     public static byte[] restoreInitiator(String path) {
 
@@ -99,7 +99,7 @@ public class Restore extends SubProtocol {
 
     }
 
-    //__________________________________
+    //
     public static void getChunkHandler(Message msg) {
 
         System.out.println("Message received on getChunkHandler: " + msg.toString());
@@ -130,7 +130,7 @@ public class Restore extends SubProtocol {
         }
     }
 
-    //______________________________
+    //
     public static void chunkHandler(Message msg) {
 
         System.out.println("Message received on chunkHandler: " + msg.toString());

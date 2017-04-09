@@ -24,10 +24,11 @@ public class MulticastRestore extends MulticastChannel {
                 byte[] receive = new byte[BUF_LENGTH];
                 DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
                 socket.receive(datagramPacketReceive);
-                String messageComplete = new String(datagramPacketReceive.getData(), 0, datagramPacketReceive.getLength());
 
                 Message msg = new Message();
-                msg.separateFullMsg(messageComplete);
+                msg.separateFullMsg(datagramPacketReceive.getData());
+
+                System.out.println("Received getData:" + new String(datagramPacketReceive.getData()));
 
                 System.out.println("Type receive: "+ msg.getMsgType());
                 switch (msg.getMsgType()) {
