@@ -56,6 +56,8 @@ public class BackedUpFilesDatabase implements Serializable {
         this.pathToFileIdMap.put(path, chunkInfo);
 
         this.saveDatabase();
+
+        System.out.println(this.pathToFileIdMap);
     }
 
     public void addFile(MyFile myFile) {

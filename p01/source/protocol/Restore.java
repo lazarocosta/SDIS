@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class Restore extends SubProtocol {
 
-    private static String FILE_RESTORE_DIR = "Restore_Files/peer" + Peer.getSenderId();
+    private static String FILE_RESTORE_DIR = "RESTORED/peer" + Peer.getSenderId();
 
     public static byte[] restoreInitiator(String path) {
 
@@ -28,7 +28,7 @@ public class Restore extends SubProtocol {
             b = endsRestore(path, fileId, numberChunks);
         } else {
             b = new byte[0];
-            System.out.println("Peer without file");
+            System.out.println("Peer did not backup file'" + path + "'.");
         }
 
         return b;
@@ -99,7 +99,7 @@ public class Restore extends SubProtocol {
 
     }
 
-    //__________________________________
+    //
     public static void getChunkHandler(Message msg) {
 
         System.out.println("Message received on getChunkHandler: " + msg.toString());
@@ -116,7 +116,7 @@ public class Restore extends SubProtocol {
     }
 
 
-    //______________________________
+    //
     public static void chunkHandler(Message msg) {
 
         System.out.println("Message received on chunkHandler: " + msg.toString());

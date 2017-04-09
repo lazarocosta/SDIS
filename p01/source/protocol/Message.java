@@ -201,10 +201,10 @@ public class Message {
         {
             if(message[i] == CR && message[i+1] == LF && message[i+2] == CR && message [i+3] == LF)
             {
-                header = new byte[i-1];
+                header = new byte[i];
                 body = new byte[message.length - i - 4];
 
-                System.arraycopy(message, 0, header, 0, i - 1);
+                System.arraycopy(message, 0, header, 0, i);
                 System.arraycopy(message, i + 4, body, 0, message.length - i - 4);
 
                 break;
@@ -223,7 +223,7 @@ public class Message {
 
         System.out.println(new String(header));
         String[] headerString = new String(header).split("\\s+");
-        System.out.println("headerString:" + headerString);
+        System.out.println("headerString[0]:" + headerString[0]);
 
         if (headerString.length >= 5) {
             this.msgType = headerString[0];
