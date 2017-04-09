@@ -155,7 +155,7 @@ public class Service implements ServiceInterface {
      * @throws RemoteException
      */
     private void createRegistry() throws RemoteException {
-        this.createRegistry(DEFAULT_REGISTRY_PORT);
+       // this.createRegistry(DEFAULT_REGISTRY_PORT);
     }
 
     public static void main(String args[]) {

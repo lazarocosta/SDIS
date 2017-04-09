@@ -49,9 +49,9 @@ public class Restore extends SubProtocol {
         for (int i = 1; i <= numberChunks; i++) {
             ChunkInfo chunkInfo = new ChunkInfo(fileId, i);
             System.out.println(chunkInfo.getChunkNo() + "_________");
-            if (Peer.getDb().getRestoredChunkDd().containsKey(chunkInfo)) {
+            if (Peer.getDb().getRestoreUpFilesDb().getRestoredChunkDd().containsKey(chunkInfo)) {
                 System.out.println(chunkInfo.getChunkNo() + "______+++++++++++___");
-                byte[] data = Peer.getDb().getRestoredChunkDd().get(chunkInfo);
+                byte[] data = Peer.getDb().getRestoreUpFilesDb().getRestoredChunkDd().get(chunkInfo);
 
                 file = ArrayUtil.byteArrayConcat(file, data);
             }
@@ -107,28 +107,14 @@ public class Restore extends SubProtocol {
 
         if (Peer.getDb().getStoredChunksDb().existsChunkInfo(chunkInfo)) {
 
-            Random randomGenerator = new Random();
-
-            Peer.getUdpChannelGroup().getMDR().sleep(randomGenerator.nextInt(400));
-            sendChunkMessage(chunkInfo);
+            SendChunkMessage sendChunkMessage = new SendChunkMessage(chunkInfo);
+            sendChunkMessage.run();
 
         } else {
             System.out.println("This server did'not restore the file" + msg.getFileId() + "'.");
         }
     }
 
-    private static void sendChunkMessage(ChunkInfo c) {
-
-        if (!Peer.getDb().getResponseRestore().contains(c)) {
-
-            byte[] data = Peer.getDb().getStoredChunksDb().getStoredData().get(c);
-            Peer.getUdpChannelGroup().sendForRestore(Peer.getUdpChannelGroup().getMDR().messageChunk(c.getFileId(), c.getChunkNo(), data));
-
-        } else {
-            Peer.getDb().getResponseRestore().remove(c);
-            System.out.println("Answered by another");
-        }
-    }
 
     //______________________________
     public static void chunkHandler(Message msg) {
@@ -137,12 +123,12 @@ public class Restore extends SubProtocol {
         ChunkInfo chunkInfo = new ChunkInfo(msg.getFileId(), msg.getChunkNo());
 
         if (Peer.getDb().getStoredChunksDb().existsChunkInfo(chunkInfo)) {
-            if (!Peer.getDb().getResponseRestore().contains(chunkInfo)) {
-                Peer.getDb().getResponseRestore().add(chunkInfo);
+            if (!Peer.getDb().getRestoreUpFilesDb().getResponseRestore().contains(chunkInfo)) {
+                Peer.getDb().getRestoreUpFilesDb().getResponseRestore().add(chunkInfo);
                 System.out.println("This server receive response");
             }
         } else if (Peer.getDb().getBackedUpFilesDb().containsFileId(chunkInfo.getFileId())) {
-            Peer.getDb().getRestoredChunkDd().put(chunkInfo, msg.getBody());
+            Peer.getDb().getRestoreUpFilesDb().getRestoredChunkDd().put(chunkInfo, msg.getBody());
             System.out.println("This server initiator receive chunk");
 
         } else {
@@ -195,6 +181,36 @@ public class Restore extends SubProtocol {
 
             }
 
+        }
+    }
+
+    public static class SendChunkMessage implements Runnable {
+        private ChunkInfo chunkInfo;
+
+        public SendChunkMessage(ChunkInfo chunkInfo) {
+            this.chunkInfo = chunkInfo;
+        }
+
+        @Override
+        public void run() {
+
+            if (!Peer.getDb().getRestoreUpFilesDb().getResponseRestore().contains(chunkInfo)) {
+
+                Random randomGenerator = new Random();
+
+                try {
+                    Thread.sleep(randomGenerator.nextInt(400));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                byte[] data = Peer.getDb().getStoredChunksDb().getStoredData().get(chunkInfo);
+                Peer.getUdpChannelGroup().sendForRestore(Peer.getUdpChannelGroup().getMDR().messageChunk(chunkInfo.getFileId(), chunkInfo.getChunkNo(), data));
+
+            } else {
+                Peer.getDb().getRestoreUpFilesDb().getResponseRestore().remove(chunkInfo);
+                System.out.println("Answered by another");
+            }
         }
     }
 }

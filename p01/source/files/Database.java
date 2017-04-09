@@ -15,30 +15,28 @@ public class Database implements Serializable {
 
 
     public String RESTORES_DIR = "RESTORES/peer" + Peer.getSenderId() + "/";
-    private Map<ChunkInfo, byte[]> restoredChunkDd;
-    private final ArrayList<ChunkInfo> responseRestore;
+
 
     private BackedUpFilesDatabase backedUpFilesDb;
     private StoredChunksDatabase storedChunksDb;
+    private RestoreUpFilesDatabase restoreUpFilesDb;
+
+
     private Disk disk;
 
     public Database() {
         this.backedUpFilesDb = new BackedUpFilesDatabase();
         this.storedChunksDb = new StoredChunksDatabase();
-        this.restoredChunkDd = new HashMap<>();
-        this.responseRestore = new ArrayList<>();
+        this.restoreUpFilesDb = new RestoreUpFilesDatabase();
+
         this.disk = new Disk();
     }
 
     // GETTERS
 
 
-    public Map<ChunkInfo, byte[]> getRestoredChunkDd() {
-        return restoredChunkDd;
-    }
-
-    public ArrayList<ChunkInfo> getResponseRestore() {
-        return responseRestore;
+    public RestoreUpFilesDatabase getRestoreUpFilesDb() {
+        return restoreUpFilesDb;
     }
 
     public Disk getDisk() {

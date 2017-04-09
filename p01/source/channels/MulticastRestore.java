@@ -27,7 +27,8 @@ public class MulticastRestore extends MulticastChannel {
                 String messageComplete = new String(datagramPacketReceive.getData(), 0, datagramPacketReceive.getLength());
 
                 Message msg = new Message();
-                msg.separateFullMsg(messageComplete);
+
+                msg.separateFullMsg(datagramPacketReceive.getData());
 
                 System.out.println("Type receive: "+ msg.getMsgType());
                 switch (msg.getMsgType()) {
