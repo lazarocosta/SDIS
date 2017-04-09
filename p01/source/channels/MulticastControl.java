@@ -8,17 +8,12 @@ import systems.Peer;
 
 import java.io.*;
 import java.net.*;
-import java.util.Arrays;
 
-/**
- * Created by Lazaro on 23/03/2017.
- */
 public class MulticastControl extends MulticastChannel {
 
     public MulticastControl(int port, String address, int senderId, ChannelGroup sender) {
         super(port, address, senderId, sender);
     }
-
 
     @Override
     public void run() {
@@ -33,13 +28,10 @@ public class MulticastControl extends MulticastChannel {
                 Message msg = new Message();
                 msg.separateMsg(messageComplete);
 
-
-                // System.out.println("_------------" + new String(messageComplete));
-
                 System.out.println("Type " + msg.getMsgType());
                 switch (msg.getMsgType()) {
                     case "GETCHUNK": {
-                        if(Peer.enhancements == true)
+                        if (Peer.enhancements == true)
                             Restore.getChunkHandler(msg);
                         else
                             Restore.getChunkHandler(msg, datagramPacketReceive.getAddress(), datagramPacketReceive.getPort());
@@ -55,10 +47,8 @@ public class MulticastControl extends MulticastChannel {
                     break;
                     case "STORED": {
                         if (msg.getSenderId() != senderId) {
-
                             Backup.storedHandler(msg);
                         }
-                        //
                     }
                     break;
                     default:
@@ -69,6 +59,4 @@ public class MulticastControl extends MulticastChannel {
             }
         }
     }
-
-
 }

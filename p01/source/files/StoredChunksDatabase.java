@@ -3,14 +3,10 @@ package files;
 import chunk.Chunk;
 import chunk.ChunkInfo;
 import systems.Peer;
-
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by jazz on 02-04-2017.
- */
 public class StoredChunksDatabase implements Serializable {
 
     private final String DATABASE_FILE = "restore.data";
@@ -42,11 +38,11 @@ public class StoredChunksDatabase implements Serializable {
 
     public void loadDatabase() {
         File file = new File(this.DATABASE_FILE);
-        if(file.exists()) {
+        if (file.exists()) {
             try {
                 FileInputStream f = new FileInputStream(file);
                 ObjectInputStream s = new ObjectInputStream(f);
-                this.storedData = (HashMap<ChunkInfo, byte[]> ) s.readObject();
+                this.storedData = (HashMap<ChunkInfo, byte[]>) s.readObject();
 
                 System.out.println("load Database");
                 s.close();
@@ -55,7 +51,6 @@ public class StoredChunksDatabase implements Serializable {
             }
         }
     }
-
 
     /**
      * Adds a chunk to the volatile memory (hashmap) and also saves its current replication and desired replication.
@@ -89,12 +84,10 @@ public class StoredChunksDatabase implements Serializable {
         String pathChunkNo = pathFileId + "/" + c.getChunkNo() + ".txt";
 
         File f = new File(pathFileId);
-
         File fChunk = new File(pathChunkNo);
 
         if (!f.exists()) {
             f.mkdirs();
-            System.out.println("Foi criado o ficheiro '" + pathChunkNo + "'.");
         }
 
         try {
@@ -114,6 +107,7 @@ public class StoredChunksDatabase implements Serializable {
 
     /**
      * Returns the size of the deleted chunk in BYTES
+     *
      * @param info
      * @return
      */
@@ -121,7 +115,6 @@ public class StoredChunksDatabase implements Serializable {
 
         File file = new File(CHUNKS_DIR + "/" + info.getFileId() + "/" + info.getChunkNo() + ".txt");
         long fileLength = file.length();
-
 
         file.delete();
         System.out.println("delete diretory" + file.toPath());
@@ -138,7 +131,6 @@ public class StoredChunksDatabase implements Serializable {
         } else {
             this.obtainedReplication.put(chunkInfo, 1);
         }
-
     }
 
     public void decrementReplicationObtained(ChunkInfo chunkInfo) {
@@ -174,11 +166,4 @@ public class StoredChunksDatabase implements Serializable {
     public Map<ChunkInfo, Integer> getObtainedReplication() {
         return obtainedReplication;
     }
-
-    // Testing
-    public static void main(String[] args) {
-
-    }
-
-
 }

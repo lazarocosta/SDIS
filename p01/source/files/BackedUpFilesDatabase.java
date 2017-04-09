@@ -1,12 +1,8 @@
 package files;
 
-
-import chunk.Chunk;
 import chunk.ChunkInfo;
-
 import java.io.*;
 import java.util.HashMap;
-import java.util.Map;
 
 public class BackedUpFilesDatabase implements Serializable {
 
@@ -88,7 +84,6 @@ public class BackedUpFilesDatabase implements Serializable {
     public boolean containsPath(String path) {
         return pathToFileIdMap.containsKey(path);
     }
-
 
     public String fileIdToFilePath(String fileId) {
 

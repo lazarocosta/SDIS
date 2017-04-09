@@ -7,7 +7,7 @@ import java.util.Objects;
 /**
  * Class containing the information that defines a Peer. It is serializable so it can be easily exchanged.
  */
-public class PeerInfo implements Serializable{
+public class PeerInfo implements Serializable {
 
     /**
      * However, it is strongly recommended that all serializable classes explicitly declare serialVersionUID values,
@@ -15,7 +15,6 @@ public class PeerInfo implements Serializable{
      * compiler implementations, and can thus result in unexpected InvalidClassExceptions during deserialization.
      */
     private static final long serialVersionUID = 1L;
-
     private InetAddress ip;
     private int port;
 
@@ -36,10 +35,10 @@ public class PeerInfo implements Serializable{
     public boolean equals(Object obj) {
 
         if (obj == this)
-            return true;    // if it is the same reference, it is the same object
+            return true;
 
         if (!(obj instanceof PeerInfo))
-            return false;   // if it is not a Chunk object, it can't be the same object
+            return false;
 
         PeerInfo p = (PeerInfo) obj;
 
@@ -55,10 +54,5 @@ public class PeerInfo implements Serializable{
     @Override
     public String toString() {
         return "PeerInfo[ip: " + this.ip.toString() + ", port: " + this.port + "]";
-    }
-
-    // For testing
-    public static void main(String[] args) {
-
     }
 }

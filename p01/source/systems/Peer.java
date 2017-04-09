@@ -7,13 +7,8 @@ import protocol.SubProtocol;
 import rmi.Service;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.rmi.AlreadyBoundException;
-import java.util.Arrays;
 
-/**
- *
- */
 public class Peer {
 
     private static PeerInfo info; // info that defines the peer
@@ -64,7 +59,7 @@ public class Peer {
         System.out.println("Server with id = " + Peer.senderId + " is up and running.");
 
 
-        /*// Testing
+        // Testing
         if (Peer.getSenderId() == 1) {
 
             db.getBackedUpFilesDb().loadDatabase();
@@ -77,10 +72,11 @@ public class Peer {
             //rmiService.restoreFile("transferir.jpg");
 
             rmiService.backupFile("linha_aveiro.pdf", 1);
-            rmiService.restoreFile("linha_aveiro.pdf");
+           // rmiService.restoreFile("linha_aveiro.pdf");
+
 
         } else
-            db.getStoredChunksDb().loadDatabase();*/
+            db.getStoredChunksDb().loadDatabase();
     }
 
 
@@ -99,5 +95,4 @@ public class Peer {
     public static ChannelGroup getUdpChannelGroup() {
         return udpChannelGroup;
     }
-
 }

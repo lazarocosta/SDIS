@@ -5,9 +5,6 @@ import chunk.ChunkInfo;
 import files.MyFile;
 import systems.Peer;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -24,9 +21,6 @@ public class Backup extends SubProtocol {
         System.out.println("Created myFile.");
 
         sendBackupRequest(myFile.getChunks());
-        System.out.println("Sent PUTCHUNK requests.");
-
-
     }
 
     public static void backupHandler(Message msg) {
@@ -35,8 +29,6 @@ public class Backup extends SubProtocol {
 
         if (!Peer.getDb().getBackedUpFilesDb().containsFileId(msg.getFileId())) {
             Chunk c = new Chunk(msg.getFileId(), msg.getChunkNo(), msg.getReplicationDeg(), msg.getBody());
-
-
 
             storedInitiator(c);
         } else {
@@ -54,7 +46,7 @@ public class Backup extends SubProtocol {
             Peer.getUdpChannelGroup().getMC().sleep(randomGenerator.nextInt(400));
 
             if (Peer.enhancements == true) {
-                System.out.println("Current obtained replication:" +Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()));
+                System.out.println("Current obtained replication:" + Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()));
                 System.out.println("Chunk replication");
 
                 if (Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()) == null ||
@@ -64,17 +56,13 @@ public class Backup extends SubProtocol {
                     sendStoredMessage(c);
                 }
                 // else
-                    // do nothing
-
-            }
-            else
-            {
+                // do nothing
+            } else {
                 saveChunk(c);
                 storeChunk(c);
                 sendStoredMessage(c);
             }
         }
-
     }
 
     public static void storedHandler(Message msg) {
@@ -107,21 +95,9 @@ public class Backup extends SubProtocol {
         System.out.println("Send backup request.");
 
         for (Chunk c : chunks) {
-            sendBackupRequest(c);
+            VerifyStoredConfirms verifyStoredConfirms = new VerifyStoredConfirms(c);
+            verifyStoredConfirms.run();
         }
-
-    }
-
-    public static void sendBackupRequest(Chunk c){
-
-        byte[] message = Peer.getUdpChannelGroup().getMDB().messagePutChunk(Peer.getSenderId(), c);
-        System.out.println("Message is: " + c.getFileId() + ";" + c.getChunkNo() + ";" + c.getReplicationDegree() + ";" + c.getData());
-        Peer.getUdpChannelGroup().getMDB().sendsMessage(message);
-        System.out.println("Sent to backup chunk: " + c.toString());
-
-        VerifyStoredConfirms verifyStoredConfirms = new VerifyStoredConfirms(c);
-        verifyStoredConfirms.run();
-
     }
 
     private static void storeChunk(Chunk c) {
@@ -165,7 +141,13 @@ public class Backup extends SubProtocol {
             int interval = INITIAL_INTERVAL;
             int tries = 0;
 
+            byte[] message = Peer.getUdpChannelGroup().getMDB().messagePutChunk(Peer.getSenderId(), chunk);
+
+
             while (!confirmed && tries < MAX_TRIES) {
+                System.out.println("Message is: " + chunk.getFileId() + ";" + chunk.getChunkNo() + ";" + chunk.getReplicationDegree() + ";" + chunk.getData());
+                Peer.getUdpChannelGroup().getMDB().sendsMessage(message);
+
                 try {
                     System.out.println("Waited for " + interval + " ms");
                     Thread.sleep(interval);
@@ -175,7 +157,7 @@ public class Backup extends SubProtocol {
 
                 int numberOfConfirms = 0;
 
-                if(Peer.getDb().getStoredChunksDb().getObtainedReplication().get(this.chunk.getChunkInfo()) != null)
+                if (Peer.getDb().getStoredChunksDb().getObtainedReplication().get(this.chunk.getChunkInfo()) != null)
                     numberOfConfirms = Peer.getDb().getStoredChunksDb().getObtainedReplication().get(this.chunk.getChunkInfo());
 
                 System.out.println("Number of confirms during the interval: " + numberOfConfirms);

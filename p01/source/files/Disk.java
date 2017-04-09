@@ -2,61 +2,45 @@ package files;
 
 import java.io.Serializable;
 
-/**
- *
- */
-public class Disk implements Serializable{
+public class Disk implements Serializable {
 
-    private static final int DEFAULT_STORAGE_SPACE = 1024*1000; // 1024 kBytes
-
+    private static final int DEFAULT_STORAGE_SPACE = 1024 * 1000; // 1024 kBytes
     private int storageSpace;
     private long usedBytes;
-
 
     public Disk() {
         this(DEFAULT_STORAGE_SPACE);
     }
 
-    public Disk(int storageSpace)
-    {
+    public Disk(int storageSpace) {
         this.storageSpace = storageSpace;
         this.usedBytes = 0;
     }
 
-    public synchronized boolean saveFile(long fileByteSize){
-        try{
-            if(fileByteSize > this.getFreeBytes())
-            {
+    public synchronized boolean saveFile(long fileByteSize) {
+        try {
+            if (fileByteSize > this.getFreeBytes()) {
                 throw new Exception("Cannot save file with size larger than available space in disk .");
-            }
-            else
-            {
+            } else {
                 this.usedBytes = this.usedBytes + fileByteSize;
                 return true;
             }
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
 
     }
 
-    public synchronized boolean removeFile(long fileByteSize){
-        try{
-            if(fileByteSize > this.getFreeBytes())
-            {
+    public synchronized boolean removeFile(long fileByteSize) {
+        try {
+            if (fileByteSize > this.getFreeBytes()) {
                 throw new Exception("Cannot remove file with size larger than occupied space in disk.");
-            }
-            else
-            {
+            } else {
                 this.usedBytes = this.usedBytes - fileByteSize;
                 return true;
             }
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -70,21 +54,19 @@ public class Disk implements Serializable{
         return usedBytes;
     }
 
-    public long getFreeBytes(){
+    private long getFreeBytes() {
         return storageSpace - usedBytes;
     }
 
-    public void setStorageSpace(int bytes)
-    {
+    private void setStorageSpace(int bytes) {
         this.storageSpace = bytes;
     }
 
-    public void addStorageSpace(int bytes){
+    public void addStorageSpace(int bytes) {
         this.storageSpace = this.storageSpace + bytes;
     }
 
-
-    public void removeStorageSpace(int bytes){
+    public void removeStorageSpace(int bytes) {
         this.storageSpace = this.storageSpace - bytes;
     }
 
@@ -100,7 +82,6 @@ public class Disk implements Serializable{
 
         System.out.println(d1);
         System.out.println(d2);
-
 
 
         d2.saveFile(1000);

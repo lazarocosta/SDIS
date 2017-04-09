@@ -1,14 +1,9 @@
 package protocol;
 
-import chunk.Chunk;
-import utils.ArrayUtil;
 
+import utils.ArrayUtil;
 import javax.xml.bind.DatatypeConverter;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -56,13 +51,11 @@ public class Message {
         this.version = SubProtocol.getVersion();
     }
 
-
     public byte[] msgPutChunk() {
 
         byte[] msgPacket;
 
         String header = generateHeaderLine("PUTCHUNK", this.version, this.senderId, this.fileId, this.chunkNo, this.replicationDeg);
-
         msgPacket = ArrayUtil.byteArrayConcat(header.getBytes(), this.body);
 
         return msgPacket;
@@ -80,7 +73,6 @@ public class Message {
         byte[] msgPacket;
 
         String header = generateHeaderLine("CHUNK", this.version, this.senderId, this.fileId, this.chunkNo, null);
-
         msgPacket = ArrayUtil.byteArrayConcat(header.getBytes(), this.body);
 
         return msgPacket;
@@ -237,8 +229,6 @@ public class Message {
         }
     }
 
-
-
     public void separateMsg(String message) {
 
         // <msgType> <Version> <SenderId> <FileId> <ChunkNo> <ReplicationDeg> <CRLF><CRLF>
@@ -263,6 +253,4 @@ public class Message {
             }
         }
     }
-
-
 }

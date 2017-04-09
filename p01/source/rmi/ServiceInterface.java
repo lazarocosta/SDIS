@@ -1,6 +1,6 @@
 package rmi;
 
-import java.io.File;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 

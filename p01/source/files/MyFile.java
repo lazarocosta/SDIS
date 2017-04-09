@@ -1,18 +1,13 @@
 package files;
 
 import chunk.Chunk;
-import systems.Peer;
-
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class MyFile {
@@ -22,7 +17,6 @@ public class MyFile {
     private String filepath;
     private int replicationDegree;
     private File file;
-
 
     public MyFile(String filepath, int replicationDegree) {
         this.filepath = filepath;
@@ -77,7 +71,6 @@ public class MyFile {
 
         fileChunks.put(chunkNo, chunk);
     }
-
 
     public void generateFileId() {
 

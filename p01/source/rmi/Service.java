@@ -151,11 +151,11 @@ public class Service implements ServiceInterface {
 
     /**
      * Default bindRegistry which binds to default port 1099.
-     *
+     *x
      * @throws RemoteException
      */
     private void createRegistry() throws RemoteException {
-        this.createRegistry(DEFAULT_REGISTRY_PORT);
+        //this.createRegistry(DEFAULT_REGISTRY_PORT);
     }
 
     public static void main(String args[]) {
