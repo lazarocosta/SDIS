@@ -6,10 +6,8 @@ import channels.ChannelGroup;
 import protocol.SubProtocol;
 import rmi.Service;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.*;
 import java.rmi.AlreadyBoundException;
-import java.util.Arrays;
 
 /**
  *
@@ -57,9 +55,11 @@ public class Peer {
         dataRestoreAddress = args[7];
         dataRestorePort = Integer.parseInt(args[8]);
 
+        loadDatabase();
+
         rmiService = new Service(accessPoint);
         udpChannelGroup = new ChannelGroup(senderId, controlAddress, controlPort, dataBackupAddress, dataBackupPort, dataRestoreAddress, dataRestorePort);
-        db = new Database();
+
 
         System.out.println("Server with id = " + Peer.senderId + " is up and running.");
 
@@ -98,6 +98,67 @@ public class Peer {
 
     public static ChannelGroup getUdpChannelGroup() {
         return udpChannelGroup;
+    }
+
+    private static void createDatabase() {
+
+        File f = new File(Database.DATA_FILE);
+        if (!f.getParentFile().exists())
+            f.getParentFile().mkdirs();
+        if (!f.exists())
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        db = new Database();
+
+        saveDatabase();
+
+    }
+
+    private static void saveDatabase(){
+
+        try {
+
+            FileOutputStream fos = new FileOutputStream(Database.DATA_FILE);
+
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            oos.writeObject(db);
+
+            fos.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private static void loadDatabase(){
+
+        try {
+            FileInputStream fis = new FileInputStream(Database.DATA_FILE);
+
+            ObjectInputStream ois = new ObjectInputStream(fis);
+
+            db = (Database) ois.readObject();
+
+            fis.close();
+
+        } catch (FileNotFoundException e) {
+
+            System.out.println("Peer database not found");
+
+            createDatabase();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

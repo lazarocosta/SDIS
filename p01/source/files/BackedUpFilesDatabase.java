@@ -1,16 +1,16 @@
 package files;
 
 
-import chunk.Chunk;
 import chunk.ChunkInfo;
 
 import java.io.*;
 import java.util.HashMap;
-import java.util.Map;
 
 public class BackedUpFilesDatabase implements Serializable {
 
-    private final String DATABASE_FILE = "backup.data";
+    private static final long serialVersionUID = 1L;
+
+    private final String DATABASE_FILE = Database.DATA_FILE + "backed_up_files.data";
     private HashMap<String, ChunkInfo> pathToFileIdMap; // key = path, value = fileId --> Numero de chunks do fichiro no chunkInfo
 
     BackedUpFilesDatabase() {
@@ -92,13 +92,11 @@ public class BackedUpFilesDatabase implements Serializable {
 
     public String fileIdToFilePath(String fileId) {
 
-
         for (String key : this.pathToFileIdMap.keySet()) {
             ChunkInfo chunkInfo = pathToFileIdMap.get(key);
             if (chunkInfo.getFileId().equals(fileId))
                 return key;
         }
-
 
         return null;
     }

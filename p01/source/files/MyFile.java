@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class MyFile {
+public class MyFile implements Serializable{
+
+    private static final long serialVersionUID = 1L;
 
     private HashMap<Integer, Chunk> fileChunks; //chunkNo--->chunk
     private String fileId;

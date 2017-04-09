@@ -5,6 +5,8 @@ import java.util.Objects;
 
 public class Chunk implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     public static final int MAX_SIZE = 64 * 1000;   // 64 KByte
 
     private ChunkInfo chunkInfo;

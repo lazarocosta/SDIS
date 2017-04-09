@@ -2,10 +2,7 @@ package rmi;
 
 import chunk.ChunkInfo;
 import files.MyFile;
-import protocol.Backup;
-import protocol.Delete;
-import protocol.Reclaim;
-import protocol.Restore;
+import protocol.*;
 import systems.Peer;
 
 import java.io.IOException;
@@ -91,6 +88,13 @@ public class Service implements ServiceInterface {
     public void reclaim(int amount) throws RemoteException {
 
         Reclaim.reclaimInitiator(amount);
+
+    }
+
+    @Override
+    public void state() throws RemoteException {
+
+        State.show();
 
     }
 

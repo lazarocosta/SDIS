@@ -13,7 +13,9 @@ import java.util.Map;
  */
 public class StoredChunksDatabase implements Serializable {
 
-    private final String DATABASE_FILE = "restore.data";
+    private static final long serialVersionUID = 1L;
+
+    private final String DATABASE_FILE = Database.DATA_FILE + "chunks.data";
     private final String CHUNKS_DIR = "CHUNKS/peer" + Peer.getSenderId() + "/";
 
     private Map<ChunkInfo, byte[]> storedData;

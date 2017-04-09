@@ -2,11 +2,14 @@ package files;
 
 import chunk.ChunkInfo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RestoreUpFilesDatabase {
+public class RestoreUpFilesDatabase implements Serializable{
+
+    private static final long serialVersionUID = 1L;
 
     private Map<String, Integer> confirmationFile; // fileId e chunks recebidos desse ficheiro
     private Map<ChunkInfo, byte[]> restoredChunkDd; // chunks restore recebidos para fazer restore do ficheiro

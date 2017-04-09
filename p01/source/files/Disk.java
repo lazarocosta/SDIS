@@ -7,6 +7,8 @@ import java.io.Serializable;
  */
 public class Disk implements Serializable{
 
+    private static final long serialVersionUID = 1L;
+
     private static final int DEFAULT_STORAGE_SPACE = 1024*1000; // 1024 kBytes
 
     private int storageSpace;

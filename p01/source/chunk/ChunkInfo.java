@@ -10,6 +10,8 @@ import java.util.Objects;
  */
 public class ChunkInfo implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private String fileId;
     private int chunkNo;
 

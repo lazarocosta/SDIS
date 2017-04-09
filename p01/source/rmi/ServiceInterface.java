@@ -23,6 +23,8 @@ public interface ServiceInterface extends Remote {
 
     void reclaim(int amount) throws RemoteException;
 
+    void state() throws RemoteException;
+
 
     // Exits the server
     void exit() throws RemoteException;
