@@ -1,9 +1,14 @@
 package protocol;
 
+import chunk.Chunk;
 import utils.ArrayUtil;
 
 import javax.xml.bind.DatatypeConverter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -17,6 +22,8 @@ public class Message {
     public byte[] body;
 
     private static final String SPACE = " ";
+    private static final char CR = '\r';
+    private static final char LF = '\n';
     private static final String CRLF = "\r\n";   // CarriageReturn == "\r", LineFeed == "\n"
 
     private String version;
@@ -185,28 +192,52 @@ public class Message {
         return sb.toString();
     }
 
-    public void separateFullMsg(String message) throws UnsupportedEncodingException {
+    public void separateFullMsg(byte[] message) throws UnsupportedEncodingException {
 
-        // PUTCHUNK <Version> <SenderId> <FileId> <ChunkNo> <ReplicationDeg> <CRLF><CRLF><Body>
-        // CHUNK <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF><Body>
-        String[] tokens = message.split(CRLF+CRLF);
+        byte[] header = null;
+        byte[] body = null;
 
+        for(int i = 0; i < message.length - 3; i++)
+        {
+            if(message[i] == CR && message[i+1] == LF && message[i+2] == CR && message [i+3] == LF)
+            {
+                header = new byte[i-1];
+                body = new byte[message.length - i - 4];
 
-        this.body = tokens[1].getBytes();
+                System.arraycopy(message, 0, header, 0, i - 1);
+                System.arraycopy(message, i + 4, body, 0, message.length - i - 4);
 
-        String[] header = tokens[0].split("\\s+");
-
-        if (header.length >= 5) {
-            this.msgType = header[0];
-            this.version = header[1];
-            this.senderId = Integer.parseInt(header[2]);
-            this.fileId = header[3];
-            this.chunkNo = Integer.parseInt(header[4]);
+                break;
+            }
         }
-        if (header.length >= 6) {
-            this.replicationDeg = Integer.parseInt(header[5]);
+
+        if(header == null || body == null)
+        {
+            System.err.println("ERROR: Either the header or the body of a message is null.");
+            return;
+        }
+
+        this.body = body;
+
+        System.out.println("Byte body size: " + body.length);
+
+        System.out.println(new String(header));
+        String[] headerString = new String(header).split("\\s+");
+        System.out.println("headerString:" + headerString);
+
+        if (headerString.length >= 5) {
+            this.msgType = headerString[0];
+            this.version = headerString[1];
+            this.senderId = Integer.parseInt(headerString[2]);
+            this.fileId = headerString[3];
+            this.chunkNo = Integer.parseInt(headerString[4]);
+        }
+        if (headerString.length >= 6) {
+            this.replicationDeg = Integer.parseInt(headerString[5]);
         }
     }
+
+
 
     public void separateMsg(String message) {
 

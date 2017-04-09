@@ -3,6 +3,8 @@ package channels;
 import chunk.Chunk;
 import protocol.Message;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -58,6 +60,7 @@ public class MulticastChannel implements Runnable {
 
         Message messageLine = new Message(senderId, c.getFileId(), c.getChunkNo(), c.getReplicationDegree());
         messageLine.setBody(c.getData());
+
         byte[] message = messageLine.msgPutChunk();
 
         return message;

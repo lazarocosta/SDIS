@@ -24,10 +24,9 @@ public class MulticastBackup extends MulticastChannel {
                 byte[] receive = new byte[BUF_LENGTH];
                 DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
                 socket.receive(datagramPacketReceive);
-                String messageComplete = new String(datagramPacketReceive.getData(), 0, datagramPacketReceive.getLength());
 
                 Message msg = new Message();
-                msg.separateFullMsg(messageComplete);
+                msg.separateFullMsg(datagramPacketReceive.getData());
 
                 System.out.println(msg.getMsgType());
 

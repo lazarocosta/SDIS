@@ -5,6 +5,9 @@ import chunk.ChunkInfo;
 import files.MyFile;
 import systems.Peer;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -32,6 +35,7 @@ public class Backup extends SubProtocol {
 
         if (!Peer.getDb().getBackedUpFilesDb().containsFileId(msg.getFileId())) {
             Chunk c = new Chunk(msg.getFileId(), msg.getChunkNo(), msg.getReplicationDeg(), msg.getBody());
+
             saveChunk(c);
             storedInitiator(c);
         } else {
