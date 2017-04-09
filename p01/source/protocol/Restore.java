@@ -5,6 +5,8 @@ import systems.Peer;
 import utils.ArrayUtil;
 
 import java.io.*;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.util.Random;
 
 
@@ -115,6 +117,21 @@ public class Restore extends SubProtocol {
         }
     }
 
+    public static void getChunkHandler(Message msg, InetAddress originPeerIp, int originPeerPort) {
+
+        System.out.println("Message received on getChunkHandler: " + msg.toString());
+        ChunkInfo chunkInfo = new ChunkInfo(msg.getFileId(), msg.getChunkNo());
+
+        if (Peer.getDb().getStoredChunksDb().existsChunkInfo(chunkInfo)) {
+
+            SendChunkMessage sendChunkMessage = new SendChunkMessage(chunkInfo, originPeerIp, originPeerPort);
+            sendChunkMessage.run();
+
+        } else {
+            System.out.println("This server did'not restore the file" + msg.getFileId() + "'.");
+        }
+    }
+
 
     //
     public static void chunkHandler(Message msg) {
@@ -185,10 +202,19 @@ public class Restore extends SubProtocol {
     }
 
     public static class SendChunkMessage implements Runnable {
+
         private ChunkInfo chunkInfo;
+        private InetAddress originPeerIp = null;
+        private int originPeerPort = -1;
 
         public SendChunkMessage(ChunkInfo chunkInfo) {
             this.chunkInfo = chunkInfo;
+        }
+
+        public SendChunkMessage(ChunkInfo chunkInfo, InetAddress originPeerIp, int originPeerPort) {
+            this.chunkInfo = chunkInfo;
+            this.originPeerIp = originPeerIp;
+            this.originPeerPort = originPeerPort;
         }
 
         @Override
@@ -205,7 +231,18 @@ public class Restore extends SubProtocol {
                 }
 
                 byte[] data = Peer.getDb().getStoredChunksDb().getStoredData().get(chunkInfo);
-                Peer.getUdpChannelGroup().sendForRestore(Peer.getUdpChannelGroup().getMDR().messageChunk(chunkInfo.getFileId(), chunkInfo.getChunkNo(), data));
+
+                System.out.println("Data length: " + data.length);
+
+                byte[] packet = Peer.getUdpChannelGroup().getMDR().messageChunk(chunkInfo.getFileId(), chunkInfo.getChunkNo(), data);
+
+                if(this.originPeerIp == null || this.originPeerPort == -1)   // if the peer IP was not passed, send to multicast
+                    Peer.getUdpChannelGroup().sendForRestore(packet);
+                else
+                {
+                    Peer.getUdpChannelGroup().getMDR().sendsMessageToSpecificPeer(packet, this.originPeerIp, this.originPeerPort);
+                }
+
 
             } else {
                 Peer.getDb().getRestoreUpFilesDb().getResponseRestore().remove(chunkInfo);

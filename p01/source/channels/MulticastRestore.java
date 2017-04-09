@@ -16,6 +16,16 @@ public class MulticastRestore extends MulticastChannel {
     }
 
 
+    public void sendsMessageToSpecificPeer(byte[] packet, InetAddress peerIp, int peerPort){
+        try {
+            DatagramPacket datagramPacketSend = new DatagramPacket(packet, packet.length, peerIp, peerPort);
+            socket.send(datagramPacketSend);
+            System.out.println("Sent message to specific Peer.");
+        } catch (IOException A) {
+            A.printStackTrace();
+        }
+    }
+
     @Override
     public void run() {
 
@@ -25,11 +35,14 @@ public class MulticastRestore extends MulticastChannel {
                 DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
                 socket.receive(datagramPacketReceive);
 
+                byte[] data = new byte[datagramPacketReceive.getLength()];
+                System.arraycopy(receive, 0, data, 0, data.length);
+
                 Message msg = new Message();
 
-                msg.separateFullMsg(datagramPacketReceive.getData());
+                msg.separateFullMsg(data, datagramPacketReceive.getLength());
 
-                System.out.println("Received getData:" + new String(datagramPacketReceive.getData()));
+                System.out.println("Received packet length:" + datagramPacketReceive.getLength());
 
 
                 System.out.println("Type receive: "+ msg.getMsgType());

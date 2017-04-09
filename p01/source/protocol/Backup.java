@@ -36,6 +36,8 @@ public class Backup extends SubProtocol {
         if (!Peer.getDb().getBackedUpFilesDb().containsFileId(msg.getFileId())) {
             Chunk c = new Chunk(msg.getFileId(), msg.getChunkNo(), msg.getReplicationDeg(), msg.getBody());
 
+
+
             storedInitiator(c);
         } else {
             System.out.println("This server was the initiator in the backup of '" + msg.getFileId() + "'.");
@@ -51,7 +53,7 @@ public class Backup extends SubProtocol {
 
             Peer.getUdpChannelGroup().getMC().sleep(randomGenerator.nextInt(400));
 
-            if (SubProtocol.enhancements == true) {
+            if (Peer.enhancements == true) {
                 System.out.println("Current obtained replication:" +Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()));
                 System.out.println("Chunk replication");
 

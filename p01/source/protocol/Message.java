@@ -192,20 +192,20 @@ public class Message {
         return sb.toString();
     }
 
-    public void separateFullMsg(byte[] message) throws UnsupportedEncodingException {
+    public void separateFullMsg(byte[] message, int datagramLength) throws UnsupportedEncodingException {
 
         byte[] header = null;
         byte[] body = null;
 
-        for(int i = 0; i < message.length - 3; i++)
+        for(int i = 0; i < datagramLength - 3; i++)
         {
             if(message[i] == CR && message[i+1] == LF && message[i+2] == CR && message [i+3] == LF)
             {
                 header = new byte[i];
-                body = new byte[message.length - i - 4];
+                body = new byte[datagramLength - i - 4];
 
                 System.arraycopy(message, 0, header, 0, i);
-                System.arraycopy(message, i + 4, body, 0, message.length - i - 4);
+                System.arraycopy(message, i + 4, body, 0, datagramLength - i - 4);
 
                 break;
             }

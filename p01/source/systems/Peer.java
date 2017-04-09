@@ -34,6 +34,8 @@ public class Peer {
 
     private static Database db;
 
+    public static boolean enhancements = true;
+
 
     // Main method for running a peer
     // args = <version> <senderId> <accessPoint> <IP MC> <Port MC> <IP MDB> <Port MDB> <IP MDR> <Port MDR>
@@ -62,7 +64,7 @@ public class Peer {
         System.out.println("Server with id = " + Peer.senderId + " is up and running.");
 
 
-        // Testing
+        /*// Testing
         if (Peer.getSenderId() == 1) {
 
             db.getBackedUpFilesDb().loadDatabase();
@@ -78,7 +80,7 @@ public class Peer {
             rmiService.restoreFile("linha_aveiro.pdf");
 
         } else
-            db.getStoredChunksDb().loadDatabase();
+            db.getStoredChunksDb().loadDatabase();*/
     }
 
 

@@ -4,6 +4,7 @@ import protocol.Backup;
 import protocol.Delete;
 import protocol.Message;
 import protocol.Restore;
+import systems.Peer;
 
 import java.io.*;
 import java.net.*;
@@ -38,7 +39,10 @@ public class MulticastControl extends MulticastChannel {
                 System.out.println("Type " + msg.getMsgType());
                 switch (msg.getMsgType()) {
                     case "GETCHUNK": {
-                        Restore.getChunkHandler(msg);
+                        if(Peer.enhancements == true)
+                            Restore.getChunkHandler(msg);
+                        else
+                            Restore.getChunkHandler(msg, datagramPacketReceive.getAddress(), datagramPacketReceive.getPort());
                     }
                     break;
                     case "DELETE": {

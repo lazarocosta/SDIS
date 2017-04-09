@@ -11,22 +11,11 @@ public class Chunk implements Serializable {
 
     private int replicationDegree;
     private byte[] data;
-    private int replicationObtained;
-    private int size;
 
     public Chunk(String fileId, int chunkNo, int replicationDegree, byte[] data) {
         this.chunkInfo = new ChunkInfo(fileId, chunkNo);
         this.replicationDegree = replicationDegree;
         this.data = data;
-        this.replicationObtained = 0;
-    }
-
-    public void addReplication() {
-        this.replicationObtained++;
-    }
-
-    public void reduceReplication() {
-        this.replicationObtained--;
     }
 
     public String getFileId() { return this.chunkInfo.getFileId(); }

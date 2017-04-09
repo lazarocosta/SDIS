@@ -26,7 +26,11 @@ public class MulticastBackup extends MulticastChannel {
                 socket.receive(datagramPacketReceive);
 
                 Message msg = new Message();
-                msg.separateFullMsg(datagramPacketReceive.getData());
+                msg.separateFullMsg(datagramPacketReceive.getData(), datagramPacketReceive.getLength());
+
+                System.out.println("HEREEE datagram length: " + datagramPacketReceive.getLength());
+                System.out.println("HEREEE msg body length: " + msg.getBody().length);
+
 
                 System.out.println(msg.getMsgType());
 
