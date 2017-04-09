@@ -28,7 +28,7 @@ public class Restore extends SubProtocol {
             b = endsRestore(path, fileId, numberChunks);
         } else {
             b = new byte[0];
-            System.out.println("Peer without file");
+            System.out.println("Peer did not backup file'" + path + "'.");
         }
 
         return b;
