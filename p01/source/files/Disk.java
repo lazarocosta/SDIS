@@ -23,32 +23,23 @@ public class Disk implements Serializable {
     }
 
     public synchronized boolean saveFile(long fileByteSize) {
-        try {
-            if (fileByteSize > this.getFreeBytes()) {
-                throw new Exception("Cannot save file with size larger than available space in disk .");
-            } else {
-                this.usedBytes = this.usedBytes + fileByteSize;
-                return true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (fileByteSize > this.getFreeBytes()) {
             return false;
+        } else {
+            this.usedBytes = this.usedBytes + fileByteSize;
+            return true;
         }
-
-    }
+}
 
     public synchronized boolean removeFile(long fileByteSize) {
-        try {
-            if (fileByteSize > this.getFreeBytes()) {
-                throw new Exception("Cannot remove file with size larger than occupied space in disk.");
-            } else {
-                this.usedBytes = this.usedBytes - fileByteSize;
-                return true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        if (fileByteSize > this.getFreeBytes()) {
             return false;
+        } else {
+            this.usedBytes = this.usedBytes - fileByteSize;
+            return true;
         }
+
     }
 
     public int getStorageSpace() {

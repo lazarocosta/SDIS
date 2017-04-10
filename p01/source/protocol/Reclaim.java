@@ -68,15 +68,13 @@ public class Reclaim extends SubProtocol {
             verifyStoredConfirms.run();
 
             if (verifyStoredConfirms.isConfirmed()) {
-                long chunkSpace = Peer.getDb().getStoredChunksDb().deleteChunkFromDisk(mostReplicatedChunks.get(0)) / 1000; // Bytes to kBytes
+                long chunkSpace = Peer.getDb().getStoredChunksDb().deleteChunkFromDisk(mostReplicatedChunks.get(i)); // Bytes to kBytes
 
                 spaceFreed += chunkSpace;
-                System.out.println("Deleted chunk was backed up successfully and disk space was freed on " + chunkSpace + " kB.");
+                System.out.println("Deleted chunk was backed up successfully and disk space was freed on " + (float)chunkSpace/1000 + " kB.");
             } else {
                 System.out.println("Couldn't delete this chunk, proceeding to another.");
             }
-
-            i++;
 
             if (spaceFreed >= spaceToReclaim) {
                 System.out.println("Peer was able to release " + spaceFreed + " kB, reaching the " + spaceToReclaim + " kB asked for.");
@@ -86,6 +84,8 @@ public class Reclaim extends SubProtocol {
                 System.out.println("Peer ran through all chunks and could not delete chunks in order to reclaim space.");
                 return -1;
             }
+
+            i++;
         }
 
         return 0;
