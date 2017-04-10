@@ -44,21 +44,24 @@ public class Backup extends SubProtocol {
                 e.printStackTrace();
             }
 
-            if (Peer.enhancements == true) {
-                System.out.println("Current obtained replication:" + Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()));
+            if (!Peer.getDb().getStoredChunksDb().getStoredData().containsKey(c.getChunkInfo())) // if chunk has not been saved in this Peer ever
+            {
+                if (Peer.enhancements == true) {
+                    System.out.println("Current obtained replication:" + Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()));
 
-                if (Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()) == null ||
-                        Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()) < c.getReplicationDegree()) {
+                    if (Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()) == null ||
+                            Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()) < c.getReplicationDegree()) {
+                        saveChunk(c);
+                        storeChunk(c);
+                        sendStoredMessage(c);
+                    }
+                    // else
+                    // do nothing
+                } else {
                     saveChunk(c);
                     storeChunk(c);
                     sendStoredMessage(c);
                 }
-                // else
-                // do nothing
-            } else {
-                saveChunk(c);
-                storeChunk(c);
-                sendStoredMessage(c);
             }
         }
     }
