@@ -29,7 +29,7 @@ public class Peer {
 
     private static Database db;
 
-    public static boolean enhancements = false;
+    public static boolean enhancements = true;
 
 
     // Main method for running a peer

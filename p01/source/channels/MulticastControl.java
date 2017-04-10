@@ -30,7 +30,7 @@ public class MulticastControl extends MulticastChannel {
 
                 switch (msg.getMsgType()) {
                     case "GETCHUNK": {
-                        if (Peer.enhancements == false)
+                        if (Restore.enhancements == false)
                             Restore.getChunkHandler(msg);
                         else
                             Restore.getChunkHandler(msg, datagramPacketReceive.getAddress(), datagramPacketReceive.getPort());
