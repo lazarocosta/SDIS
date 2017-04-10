@@ -1,15 +1,8 @@
 package protocol;
 
-import chunk.Chunk;
 import chunk.ChunkInfo;
-import files.StoredChunksDatabase;
 import systems.Peer;
 
-import java.io.File;
-
-/**
- * Created by jazz on 29-03-2017.
- */
 public class Delete extends SubProtocol {
     private static int ATTEMPTS = 5;
     private static long SLEEP_ms = 100;

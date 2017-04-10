@@ -8,9 +8,7 @@ public class Chunk implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static final int MAX_SIZE = 64 * 1000;   // 64 KByte
-
     private ChunkInfo chunkInfo;
-
     private int replicationDegree;
     private byte[] data;
 
@@ -20,9 +18,13 @@ public class Chunk implements Serializable {
         this.data = data;
     }
 
-    public String getFileId() { return this.chunkInfo.getFileId(); }
+    public String getFileId() {
+        return this.chunkInfo.getFileId();
+    }
 
-    public int getChunkNo() { return this.chunkInfo.getChunkNo(); }
+    public int getChunkNo() {
+        return this.chunkInfo.getChunkNo();
+    }
 
     public ChunkInfo getChunkInfo() {
         return chunkInfo;
@@ -36,20 +38,19 @@ public class Chunk implements Serializable {
         return data;
     }
 
-
     @Override
     public String toString() {
-        return "FileID: " +  chunkInfo.getFileId() + ", ChunkNo: " +  chunkInfo.getChunkNo();
+        return "FileID: " + chunkInfo.getFileId() + ", ChunkNo: " + chunkInfo.getChunkNo();
     }
 
     /**
      * Whenever a.equals(b), then a.hashCode() must be same as b.hashCode().
-     *
+     * <p>
      * In practice:
-     *
+     * <p>
      * If you override one, then you should override the other.
      * Use the same set of fields that you use to compute equals() to compute hashCode().
-     *
+     * <p>
      * From: https://www.mkyong.com/java/java-how-to-overrides-equals-and-hashcode/ section 2.:
      */
     @Override

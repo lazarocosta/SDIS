@@ -5,10 +5,8 @@ import systems.Peer;
 import utils.ArrayUtil;
 
 import java.io.*;
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.Random;
-
 
 public class Restore extends SubProtocol {
 
@@ -38,15 +36,26 @@ public class Restore extends SubProtocol {
 
     private static byte[] endsRestore(String fileName, String fileId, int numberChunks) {
 
-        try {
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         System.out.println("Peer initiate the restore");
-        System.out.println("number Chunks: " + numberChunks);
+
 
         byte[] file = new byte[0];
+
+        int confirmations = Peer.getDb().getRestoreUpFilesDb().getConfirmationFile().get(fileId);
+        System.out.println("number Chunks: " + numberChunks + "; confirmate chunks :" + confirmations);
+
+        while (confirmations != numberChunks && confirmations != -1) {
+            //  System.out.println("\n");
+            System.out.println(confirmations);
+            confirmations = Peer.getDb().getRestoreUpFilesDb().getConfirmationFile().get(fileId);
+
+        }
+
+        if (confirmations == -1) {
+            Peer.getDb().getRestoreUpFilesDb().resetConfirlamationFile(fileId);
+            System.out.println("Peer not receive complete file");
+            return null;
+        }
 
         for (int i = 1; i <= numberChunks; i++) {
             ChunkInfo chunkInfo = new ChunkInfo(fileId, i);
@@ -58,6 +67,8 @@ public class Restore extends SubProtocol {
                 file = ArrayUtil.byteArrayConcat(file, data);
             }
         }
+
+        Peer.getDb().getRestoreUpFilesDb().resetConfirlamationFile(fileId);
         //TODO: Só para testar
         saveRestoredFile(fileName, file);
 
@@ -88,23 +99,17 @@ public class Restore extends SubProtocol {
 
         System.out.println("Send Restore Request.");
         for (int i = 1; i <= numberChunks; i++) {
-            System.out.println("Message is: " + Peer.getSenderId() + ";" + fileId + ";" + "ChunkNo: " + i + ";");
-
-            byte[] message = Peer.getUdpChannelGroup().getMC().messageGetChunk(Peer.getSenderId(), fileId, i);
-            Peer.getUdpChannelGroup().getMC().sendsMessage(message);
 
             ChunkInfo chunkInfo = new ChunkInfo(fileId, i);
 
-            // VerifyRestoreConfirms verifyRestoreConfirms = new VerifyRestoreConfirms(chunkInfo);
-            //   verifyRestoreConfirms.run();
+            VerifyRestoreConfirms verifyRestoreConfirms = new VerifyRestoreConfirms(chunkInfo);
+            verifyRestoreConfirms.run();
         }
 
     }
 
-    //
     public static void getChunkHandler(Message msg) {
 
-        System.out.println("Message received on getChunkHandler: " + msg.toString());
         ChunkInfo chunkInfo = new ChunkInfo(msg.getFileId(), msg.getChunkNo());
 
         if (Peer.getDb().getStoredChunksDb().existsChunkInfo(chunkInfo)) {
@@ -132,11 +137,8 @@ public class Restore extends SubProtocol {
         }
     }
 
-
-    //
     public static void chunkHandler(Message msg) {
 
-        System.out.println("Message received on chunkHandler: " + msg.toString());
         ChunkInfo chunkInfo = new ChunkInfo(msg.getFileId(), msg.getChunkNo());
 
         if (Peer.getDb().getStoredChunksDb().existsChunkInfo(chunkInfo)) {
@@ -160,10 +162,10 @@ public class Restore extends SubProtocol {
         private static final int INITIAL_INTERVAL = 1000; // 1 seg = 1000 ms
         private static final int MAX_TRIES = 5;
 
-        private ChunkInfo chunk;
+        private ChunkInfo chunkInfo;
 
         public VerifyRestoreConfirms(ChunkInfo chunk) {
-            this.chunk = chunk;
+            this.chunkInfo = chunk;
         }
 
         @Override
@@ -173,7 +175,13 @@ public class Restore extends SubProtocol {
             int tries = 0;
             boolean confirmed = false;
 
+            byte[] message = Peer.getUdpChannelGroup().getMC().messageGetChunk(Peer.getSenderId(), chunkInfo.getFileId(), chunkInfo.getChunkNo());
+
             while (!confirmed && tries < MAX_TRIES) {
+
+                System.out.println("Message is: " + Peer.getSenderId() + ";" + chunkInfo.getFileId() + ";" + "ChunkNo: " + chunkInfo.getChunkNo());
+                Peer.getUdpChannelGroup().getMC().sendsMessage(message);
+
                 try {
                     System.out.println("Waited for " + interval + " ms");
                     Thread.sleep(interval);
@@ -181,25 +189,21 @@ public class Restore extends SubProtocol {
                     e.printStackTrace();
                 }
 
-                /*int numberOfConfirms = Peer.getDb().getStoredChunksDb().getObtainedReplication().get(this.chunk.getChunkInfo());
-
-                System.out.println("Number of confirms during the interval: " + numberOfConfirms);
-
-                if (numberOfConfirms < this.chunk.getReplicationDegree()) {
-                    Peer.getDb().getStoredChunksDb().resetReplicationObtained(this.chunk.getChunkInfo());
+                if (Peer.getDb().getRestoreUpFilesDb().getRestoredChunkDd().containsKey(chunkInfo)) {
+                    Peer.getDb().getRestoreUpFilesDb().addConfirmationFile(chunkInfo.getFileId());
+                    confirmed = true;
+                    System.out.println("Peer receive confirmation chunkNo: " + chunkInfo.getChunkNo());
+                } else {
                     tries++;
-                    interval = interval * 2;
+                    interval *= 2;
 
                     if (tries == MAX_TRIES) {
-                        System.out.println("Reached maximum tries to backup chunk with desired replication degree.");
+                        Peer.getDb().getRestoreUpFilesDb().addConfirmationErrorFile(chunkInfo.getFileId());
+
+                        System.out.println("Reached maximum tries to restore chunkNo: " + chunkInfo.getChunkNo());
                     }
-                } else {
-                    confirmed = true;
-                    System.out.println("Desired replication reached for chunk.");
-                }*/
-
+                }
             }
-
         }
     }
 
@@ -238,13 +242,11 @@ public class Restore extends SubProtocol {
 
                 byte[] packet = Peer.getUdpChannelGroup().getMDR().messageChunk(chunkInfo.getFileId(), chunkInfo.getChunkNo(), data);
 
-                if(this.originPeerIp == null || this.originPeerPort == -1)   // if the peer IP was not passed, send to multicast
+                if (this.originPeerIp == null || this.originPeerPort == -1)   // if the peer IP was not passed, send to multicast
                     Peer.getUdpChannelGroup().sendForRestore(packet);
-                else
-                {
+                else {
                     Peer.getUdpChannelGroup().getMDR().sendsMessageToSpecificPeer(packet, this.originPeerIp, this.originPeerPort);
                 }
-
 
             } else {
                 Peer.getDb().getRestoreUpFilesDb().getResponseRestore().remove(chunkInfo);

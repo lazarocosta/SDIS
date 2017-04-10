@@ -7,10 +7,6 @@ import systems.Peer;
 import java.io.IOException;
 import java.net.*;
 
-
-/**
- *
- */
 public class MulticastBackup extends MulticastChannel {
 
     public MulticastBackup(int port, String address, int senderId, ChannelGroup sender) {
@@ -49,7 +45,6 @@ public class MulticastBackup extends MulticastChannel {
             } catch (IOException A) {
                 A.fillInStackTrace();
             }
-
         }
     }
 }

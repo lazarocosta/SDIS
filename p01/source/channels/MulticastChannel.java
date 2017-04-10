@@ -4,8 +4,6 @@ import chunk.Chunk;
 import protocol.Message;
 import systems.Peer;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -100,9 +98,7 @@ public class MulticastChannel implements Runnable {
         messageLine.setBody(body);
         byte[] message = messageLine.msgChunk();
 
-
         return message;
-
     }
 
     public byte[] messageRemoved(int idSender, String fileId, int ChunkNo) {

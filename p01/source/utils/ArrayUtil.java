@@ -3,9 +3,6 @@ package utils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-/**
- * Created by jazz on 06-04-2017.
- */
 public class ArrayUtil {
 
     public static byte[] byteArrayConcat(byte[] first, byte[] second) {
@@ -22,7 +19,5 @@ public class ArrayUtil {
         byte[] c = outputStream.toByteArray();
 
         return c;
-
     }
-
 }

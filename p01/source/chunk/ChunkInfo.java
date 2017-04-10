@@ -42,13 +42,12 @@ public class ChunkInfo implements Serializable {
     public boolean equals(Object obj) {
 
         if (obj == this)
-            return true;    // if it is the same reference, it is the same object
+            return true;
 
         if (!(obj instanceof ChunkInfo))
-            return false;   // if it is not a Chunk object, it can't be the same object
+            return false;
 
         ChunkInfo c = (ChunkInfo) obj;
-
 
         return chunkNo == c.chunkNo &&
                 Objects.equals(fileId, c.fileId);
@@ -62,10 +61,5 @@ public class ChunkInfo implements Serializable {
     @Override
     public String toString() {
         return "ChunkInfo[fileID: " + this.fileId + ", chunkNo: " + this.chunkNo + "]";
-    }
-
-    // For testing
-    public static void main(String[] args) {
-
     }
 }

@@ -7,17 +7,13 @@ import systems.Peer;
 import java.io.*;
 import java.net.*;
 
-/**
- * Created by Lazaro on 23/03/2017.
- */
 public class MulticastRestore extends MulticastChannel {
 
     public MulticastRestore(int port, String address, int senderId, ChannelGroup sender) {
         super(port, address, senderId, sender);
     }
 
-
-    public void sendsMessageToSpecificPeer(byte[] packet, InetAddress peerIp, int peerPort){
+    public void sendsMessageToSpecificPeer(byte[] packet, InetAddress peerIp, int peerPort) {
         try {
             DatagramPacket datagramPacketSend = new DatagramPacket(packet, packet.length, peerIp, peerPort);
             socket.send(datagramPacketSend);
@@ -40,29 +36,24 @@ public class MulticastRestore extends MulticastChannel {
                 System.arraycopy(receive, 0, data, 0, data.length);
 
                 Message msg = new Message();
-
                 msg.separateFullMsg(data, datagramPacketReceive.getLength());
 
                 System.out.println("Received packet length:" + datagramPacketReceive.getLength());
+                System.out.println("Type receive: " + msg.getMsgType());
 
-
-                System.out.println("Type receive: "+ msg.getMsgType());
                 switch (msg.getMsgType()) {
                     case "CHUNK": {
+                        Restore.chunkHandler(msg);
                             Restore.chunkHandler(msg);
                             Peer.saveDatabase();
                     }
-
                     break;
                     default:
                         System.out.println("discard");
                 }
-
             } catch (IOException A) {
                 A.fillInStackTrace();
             }
         }
     }
-
-
 }

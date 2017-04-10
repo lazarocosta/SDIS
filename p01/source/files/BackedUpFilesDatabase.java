@@ -1,11 +1,8 @@
 package files;
 
-
 import chunk.ChunkInfo;
-import systems.Peer;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class BackedUpFilesDatabase implements Serializable {
@@ -25,16 +22,7 @@ public class BackedUpFilesDatabase implements Serializable {
     }
 
     public void addFile(String path, ChunkInfo chunkInfo) {
-
-        System.out.println("Path: " + path);
-        System.out.println("Info: " + chunkInfo);
-        System.out.println("Hash: " + pathToChunkInfo);
-
         this.pathToChunkInfo.put(path, chunkInfo);
-
-        System.out.println(this.pathToChunkInfo);
-
-
     }
 
     public void addFile(MyFile myFile) {
@@ -42,8 +30,6 @@ public class BackedUpFilesDatabase implements Serializable {
         this.addFile(myFile.getFilepath(), chunkInfo);
 
         this.pathToMyFile.put(myFile.getFilepath(), myFile);
-
-
     }
 
     public void removeFileByPath(String path) {
@@ -56,7 +42,6 @@ public class BackedUpFilesDatabase implements Serializable {
         }
 
         this.pathToMyFile.remove(path);
-
     }
 
     public String getFileId(String path) {
@@ -71,7 +56,6 @@ public class BackedUpFilesDatabase implements Serializable {
     public boolean containsPath(String path) {
         return pathToChunkInfo.containsKey(path);
     }
-
 
     public String fileIdToFilePath(String fileId) {
 

@@ -9,9 +9,6 @@ import rmi.Service;
 import java.io.*;
 import java.rmi.AlreadyBoundException;
 
-/**
- *
- */
 public class Peer {
 
     private static PeerInfo info; // info that defines the peer
@@ -59,7 +56,6 @@ public class Peer {
 
         rmiService = new Service(accessPoint);
         udpChannelGroup = new ChannelGroup(senderId, controlAddress, controlPort, dataBackupAddress, dataBackupPort, dataRestoreAddress, dataRestorePort);
-
 
         System.out.println("Server with id = " + Peer.senderId + " is up and running.");
 
