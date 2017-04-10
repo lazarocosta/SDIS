@@ -1,6 +1,7 @@
 package app;
 
 import rmi.ServiceInterface;
+import systems.Peer;
 
 import java.io.File;
 import java.rmi.NotBoundException;
@@ -55,6 +56,11 @@ public class TestApp {
                 System.out.println("Reclaiming '" +  size + "' kBytes.");
                 break;
 
+            case TestAppCommands.STATE:
+                stub.state();
+                System.out.println("Showing peer state.");
+                break;
+
             default:
                 break;
         }
@@ -86,9 +92,11 @@ public class TestApp {
 
         try {
             System.out.println("Connecting to RMI Host:  '" + rmiHost + "' on AP '" + peer_ap +"'.");
+            // TODO: FIX THIS WHEN FINISHED TESTING
             Registry registry = LocateRegistry.getRegistry();
 
             stub = (ServiceInterface) registry.lookup(peer_ap);
+
 
         } catch (RemoteException | NotBoundException e) {
             System.err.println("Invalid RMI object name.");
@@ -155,6 +163,16 @@ public class TestApp {
                     System.out.println(TestAppCommands.USAGE_DELETE + "\n");
                     return false;
                 }
+
+                break;
+
+            case TestAppCommands.STATE:
+                if (args.length != 2) {
+                    System.out.println("Wrong number of arguments.");
+                    System.out.println(TestAppCommands.USAGE_STATE + "\n");
+                    return false;
+                }
+
 
                 break;
 

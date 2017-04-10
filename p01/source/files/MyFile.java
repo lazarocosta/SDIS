@@ -51,6 +51,10 @@ public class MyFile implements Serializable{
         return fileId;
     }
 
+    public int getReplicationDegree() {
+        return replicationDegree;
+    }
+
     public Chunk getChunk(int chunkNo) {
         return this.fileChunks.get(chunkNo);
     }

@@ -4,6 +4,7 @@ package files;
 import chunk.ChunkInfo;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class BackedUpFilesDatabase implements Serializable {
@@ -11,10 +12,12 @@ public class BackedUpFilesDatabase implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private final String DATABASE_FILE = Database.DATA_FILE + "backed_up_files.data";
-    private HashMap<String, ChunkInfo> pathToFileIdMap; // key = path, value = fileId --> Numero de chunks do fichiro no chunkInfo
+    private HashMap<String, ChunkInfo> pathToChunkInfo; // key = path, value = fileId --> Numero de chunks do fichiro no chunkInfo
+    private HashMap<String, MyFile> pathToMyFile;
 
     BackedUpFilesDatabase() {
-        this.pathToFileIdMap = new HashMap<>();
+        this.pathToChunkInfo = new HashMap<>();
+        this.pathToMyFile = new HashMap<>();
     }
 
     public void saveDatabase() {
@@ -22,7 +25,7 @@ public class BackedUpFilesDatabase implements Serializable {
         try {
             FileOutputStream f = new FileOutputStream(file);
             ObjectOutputStream s = new ObjectOutputStream(f);
-            s.writeObject(this.pathToFileIdMap);
+            s.writeObject(this.pathToChunkInfo);
             s.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -37,7 +40,7 @@ public class BackedUpFilesDatabase implements Serializable {
             try {
                 FileInputStream f = new FileInputStream(file);
                 ObjectInputStream s = new ObjectInputStream(f);
-                this.pathToFileIdMap = (HashMap<String, ChunkInfo>) s.readObject();
+                this.pathToChunkInfo = (HashMap<String, ChunkInfo>) s.readObject();
 
                 System.out.println("load Database");
                 s.close();
@@ -53,52 +56,64 @@ public class BackedUpFilesDatabase implements Serializable {
 
     public void addFile(String path, ChunkInfo chunkInfo) {
 
-        this.pathToFileIdMap.put(path, chunkInfo);
+        System.out.println("Path: " + path);
+        System.out.println("Info: " + chunkInfo);
+        System.out.println("Hash: " + pathToChunkInfo);
+
+        this.pathToChunkInfo.put(path, chunkInfo);
 
         this.saveDatabase();
 
-        System.out.println(this.pathToFileIdMap);
+        System.out.println(this.pathToChunkInfo);
     }
 
     public void addFile(MyFile myFile) {
         ChunkInfo chunkInfo = new ChunkInfo(myFile.getFileId(), myFile.getChunksNum()); //--> numero total de chunks do file
         this.addFile(myFile.getFilepath(), chunkInfo);
+
+        this.pathToMyFile.put(myFile.getFilepath(), myFile);
     }
 
     public void removeFileByPath(String path) {
 
-        System.out.println(pathToFileIdMap);
+        System.out.println(pathToChunkInfo);
 
-        if (this.pathToFileIdMap.containsKey(path)) {
-            this.pathToFileIdMap.remove(path);
+        if (this.pathToChunkInfo.containsKey(path)) {
+            this.pathToChunkInfo.remove(path);
             this.saveDatabase();
-            System.out.println("delete file in to <<pathToFileIdMap>>");
+            System.out.println("delete file in to <<pathToChunkInfo>>");
         }
+
+        this.pathToMyFile.remove(path);
     }
 
     public String getFileId(String path) {
-        ChunkInfo chunkInfo = pathToFileIdMap.get(path);
+        ChunkInfo chunkInfo = pathToChunkInfo.get(path);
         return chunkInfo.getFileId();
     }
 
     public ChunkInfo getChunkInfo(String path) {
-        return this.pathToFileIdMap.get(path);
+        return this.pathToChunkInfo.get(path);
     }
 
     public boolean containsPath(String path) {
-        return pathToFileIdMap.containsKey(path);
+        return pathToChunkInfo.containsKey(path);
     }
 
 
     public String fileIdToFilePath(String fileId) {
 
-        for (String key : this.pathToFileIdMap.keySet()) {
-            ChunkInfo chunkInfo = pathToFileIdMap.get(key);
+        for (String key : this.pathToChunkInfo.keySet()) {
+            ChunkInfo chunkInfo = pathToChunkInfo.get(key);
             if (chunkInfo.getFileId().equals(fileId))
                 return key;
         }
 
         return null;
+    }
+
+    public HashMap<String, MyFile> getPathToMyFile() {
+        return pathToMyFile;
     }
 }
 

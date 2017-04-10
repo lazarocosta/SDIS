@@ -159,7 +159,9 @@ public class Service implements ServiceInterface {
      * @throws RemoteException
      */
     private void createRegistry() throws RemoteException {
-        this.createRegistry(DEFAULT_REGISTRY_PORT);
+        // TODO: FIX THIS WHEN FINISHED TESTING
+
+        this.createRegistry(DEFAULT_REGISTRY_PORT + Peer.getSenderId() - 1);
     }
 
     public static void main(String args[]) {
