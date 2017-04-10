@@ -27,9 +27,9 @@ public class BackedUpFilesDatabase implements Serializable {
 
     public void addFile(MyFile myFile) {
         ChunkInfo chunkInfo = new ChunkInfo(myFile.getFileId(), myFile.getChunksNum()); //--> numero total de chunks do file
-        this.addFile(myFile.getFilepath(), chunkInfo);
+        this.addFile(myFile.getFilename(), chunkInfo);
 
-        this.pathToMyFile.put(myFile.getFilepath(), myFile);
+        this.pathToMyFile.put(myFile.getFilename(), myFile);
     }
 
     public void removeFileByPath(String path) {

@@ -17,13 +17,17 @@ public class MyFile implements Serializable{
     private HashMap<Integer, Chunk> fileChunks; //chunkNo--->chunk
     private String fileId;
     private String filepath;
+    private String filename;
     private int replicationDegree;
     private File file;
 
     public MyFile(String filepath, int replicationDegree) {
+
         this.filepath = filepath;
         this.replicationDegree = replicationDegree;
         this.file = new File(this.filepath);
+
+        this.filename = file.getName();
 
         fileChunks = new HashMap<>();
         this.generateFileId();
@@ -39,6 +43,10 @@ public class MyFile implements Serializable{
 
     public String getFilepath() {
         return filepath;
+    }
+
+    public String getFilename() {
+        return filename;
     }
 
     public String getFileId() {
