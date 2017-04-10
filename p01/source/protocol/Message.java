@@ -211,9 +211,6 @@ public class Message {
 
         this.body = body;
 
-        System.out.println("Byte body size: " + body.length);
-
-        System.out.println(new String(header));
         String[] headerString = new String(header).split("\\s+");
         System.out.println("headerString[0]:" + headerString[0]);
 

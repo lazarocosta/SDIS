@@ -62,7 +62,6 @@ public class StoredChunksDatabase implements Serializable {
 
             OutputStream os = new FileOutputStream(fChunk);
 
-            System.out.println("Length of the chunk(bytes): " + c.getData().length);
             os.write(c.getData());
 
             os.close();
@@ -85,7 +84,6 @@ public class StoredChunksDatabase implements Serializable {
         long fileLength = file.length();
 
         file.delete();
-        System.out.println("delete diretory" + file.toPath());
 
         Peer.getDb().getStoredChunksDb().removeChunk(info);
         Peer.getDb().getDisk().removeFile(fileLength);

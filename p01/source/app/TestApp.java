@@ -37,28 +37,28 @@ public class TestApp {
 
         switch (command) {
             case TestAppCommands.BACKUP:
-                stub.backupFile(filePath, replication_degree);
                 System.out.println("Executing backup of file '" + filePath + "' with replication degree equal to " + replication_degree);
+                stub.backupFile(filePath, replication_degree);
                 break;
 
             case TestAppCommands.RESTORE:
-                stub.restoreFile(filePath);
                 System.out.println("Executing restore of file '" + filePath);
+                stub.restoreFile(filePath);
                 break;
 
             case TestAppCommands.DELETE:
-                stub.deleteFile(filePath);
                 System.out.println("Executing deletion of file '" + filePath);
+                stub.deleteFile(filePath);
                 break;
 
             case TestAppCommands.RECLAIM:
-                stub.reclaim(size);
                 System.out.println("Reclaiming '" +  size + "' kBytes.");
+                stub.reclaim(size);
                 break;
 
             case TestAppCommands.STATE:
-                stub.state();
                 System.out.println("Showing peer state.");
+                stub.state();
                 break;
 
             default:

@@ -18,21 +18,16 @@ public class Backup extends SubProtocol {
         System.out.println("Peer is executing backup of file '" + path + "' with replication degree " + replicationDegree);
 
         MyFile myFile = Backup.saveFileToBackedUpFiles(path, replicationDegree);    // create and save file in initiation server
-        System.out.println("Created myFile.");
 
         sendBackupRequest(myFile.getChunks());
     }
 
     public static void backupHandler(Message msg) {
 
-        System.out.println("Message received on backupHandler: ");
-
         if (!Peer.getDb().getBackedUpFilesDb().containsFileId(msg.getFileId())) {
             Chunk c = new Chunk(msg.getFileId(), msg.getChunkNo(), msg.getReplicationDeg(), msg.getBody());
 
             storedInitiator(c);
-        } else {
-            System.out.println("This server was the initiator in the backup of '" + msg.getFileId() + "'.");
         }
 
     }
@@ -47,7 +42,6 @@ public class Backup extends SubProtocol {
 
             if (Peer.enhancements == true) {
                 System.out.println("Current obtained replication:" + Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()));
-                System.out.println("Chunk replication");
 
                 if (Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()) == null ||
                         Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()) < c.getReplicationDegree()) {
@@ -92,7 +86,7 @@ public class Backup extends SubProtocol {
 
     public static void sendBackupRequest(ArrayList<Chunk> chunks) {
 
-        System.out.println("Send backup request.");
+        System.out.println("Sending backup request.");
 
         for (Chunk c : chunks) {
             VerifyStoredConfirms verifyStoredConfirms = new VerifyStoredConfirms(c);
@@ -145,7 +139,6 @@ public class Backup extends SubProtocol {
 
 
             while (!confirmed && tries < MAX_TRIES) {
-                System.out.println("Message is: " + chunk.getFileId() + ";" + chunk.getChunkNo() + ";" + chunk.getReplicationDegree() + ";" + chunk.getData());
                 Peer.getUdpChannelGroup().getMDB().sendsMessage(message);
 
                 try {

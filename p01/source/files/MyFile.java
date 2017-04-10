@@ -110,8 +110,6 @@ public class MyFile implements Serializable{
 
     public void divideFileIntoChunks() {
 
-        System.out.println("Dividing chunks.");
-
         int currentByte = 0;
         int currentChunk = 1;
 
@@ -119,7 +117,6 @@ public class MyFile implements Serializable{
 
             InputStream is = new FileInputStream(this.filepath);
             int size = is.available();
-            System.out.println("File size is " + size + " bytes.");
 
             while (currentByte <= size) {
 

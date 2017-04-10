@@ -29,11 +29,10 @@ public class MulticastBackup extends MulticastChannel {
                     case "PUTCHUNK": {
                         Backup.backupHandler(msg);
                         Peer.saveDatabase();
-                        System.out.println("Saved chunk.");
                     }
                     break;
                     default:
-                        System.out.println("Discard.");
+                        System.out.println("Discarded message.");
                 }
 
             } catch (IOException A) {

@@ -28,7 +28,6 @@ public class MulticastControl extends MulticastChannel {
                 Message msg = new Message();
                 msg.separateMsg(messageComplete);
 
-                System.out.println("Type " + msg.getMsgType());
                 switch (msg.getMsgType()) {
                     case "GETCHUNK": {
                         if (Peer.enhancements == true)
@@ -56,7 +55,7 @@ public class MulticastControl extends MulticastChannel {
                     }
                     break;
                     default:
-                        System.out.println("discard");
+                        System.out.println("Message discarded");
                 }
             } catch (IOException e) {
                 e.printStackTrace();

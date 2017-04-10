@@ -37,16 +37,16 @@ public class Delete extends SubProtocol {
         String fileId = msg.getFileId();
 
         if (Peer.getDb().getBackedUpFilesDb().containsFileId(fileId)) {
-            System.out.println("Peer will eliminate the file into backedUpFilesDatabase");
+            System.out.println("Peer will eliminate the file from backedUpFilesDatabase");
 
             String path = Peer.getDb().getBackedUpFilesDb().fileIdToFilePath(fileId);
             deleteFilesBackup(path);
 
         } else if (storedFile(fileId)) {
-            System.out.println("Peer will eliminate the file into StoredChunksDatabase");
+            System.out.println("Peer will eliminate the file from StoredChunksDatabase");
             deleteFilesDatabase(fileId);
         } else {
-            System.out.println("This server did'not restore the file" + fileId + "'.");
+            System.out.println("This server did not backup the file" + fileId + "'.");
         }
     }
 
