@@ -92,7 +92,7 @@ public class MyFile implements Serializable{
 
         try {
             BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-            String str = file.getName() + attr.creationTime() + attr.size();    // generate hash from file name, creation time and size
+            String str = file.getName() + attr.creationTime() + attr.size() + attr.lastModifiedTime();    // generate hash from file name, creation time and size
             MessageDigest md = MessageDigest.getInstance("SHA-256");
 
             md.update(str.getBytes("UTF-8")); // Change this to "UTF-16" if needed
