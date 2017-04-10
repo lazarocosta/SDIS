@@ -28,4 +28,4 @@ java -cp <bin folder> app.TestApp
 
 ### Activate enhancements
 
-To activate enhancements, simply change the boolean variable "enhancements" in source/systems.Peer from false to true and rebuild the project.
+To activate enhancements, simply change the boolean variable "enhancements" in source/protocols.<whichever protocol> from false to true and rebuild the project.
