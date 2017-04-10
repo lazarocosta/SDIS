@@ -1,4 +1,4 @@
 #start Peer	
 echo "Starting peer..."
-java -cp ./bin systems.Peer 1.0 1 accessPoint1 228.5.6.7 3000 228.5.6.6 4000 228.5.6.8 5000
+java -cp ./bin systems.Peer 1.0 1 accessPoint 224.0.0.1 8000 224.0.0.2 8001 224.0.0.3 8002
 

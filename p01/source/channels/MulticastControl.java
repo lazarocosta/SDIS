@@ -30,10 +30,10 @@ public class MulticastControl extends MulticastChannel {
 
                 switch (msg.getMsgType()) {
                     case "GETCHUNK": {
-                        if (Restore.enhancements == false)
+
                             Restore.getChunkHandler(msg);
-                        else
-                            Restore.getChunkHandler(msg, datagramPacketReceive.getAddress(), datagramPacketReceive.getPort());
+
+                            //TODO Enh: Restore.getChunkHandler(msg, datagramPacketReceive.getAddress(), datagramPacketReceive.getPort());
 
                         Peer.saveDatabase();
                     }

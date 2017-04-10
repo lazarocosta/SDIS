@@ -48,7 +48,7 @@ public class Backup extends SubProtocol {
 
             if (!Peer.getDb().getStoredChunksDb().getStoredData().containsKey(c.getChunkInfo())) // if chunk has not been saved in this Peer ever
             {
-                if (Backup.enhancements == true && Peer.enhancements == true) {
+                if (Peer.enhancements == true) {
                     System.out.println("Current obtained replication:" + Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()));
 
                     if (Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()) == null ||

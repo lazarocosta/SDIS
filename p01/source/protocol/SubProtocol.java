@@ -2,8 +2,6 @@ package protocol;
 
 public class SubProtocol {
 
-    public static boolean enhancements;
-
     private static String version;
 
     public static String getVersion() {
