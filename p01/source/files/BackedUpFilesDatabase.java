@@ -1,6 +1,7 @@
 package files;
 
 import chunk.ChunkInfo;
+import systems.Peer;
 
 import java.io.*;
 import java.util.HashMap;
@@ -11,7 +12,7 @@ public class BackedUpFilesDatabase implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private ConcurrentHashMap<String, ChunkInfo> pathToChunkInfo; // key = path, value = fileId --> Numero de chunks do fichiro no chunkInfo
-    private ConcurrentHashMap<String, MyFile> pathToMyFile;
+    private ConcurrentHashMap<String, MyFile> pathToMyFile; // file name to MyFile
 
     BackedUpFilesDatabase() {
         this.pathToChunkInfo = new ConcurrentHashMap<>();
@@ -31,16 +32,20 @@ public class BackedUpFilesDatabase implements Serializable {
         this.addFile(myFile.getFilename(), chunkInfo);
 
         this.pathToMyFile.put(myFile.getFilename(), myFile);
+
+        Peer.saveDatabase();
     }
 
     public void removeFileByPath(String path) {
 
         if (this.pathToChunkInfo.containsKey(path)) {
             this.pathToChunkInfo.remove(path);
-            System.out.println("delete file in to <<pathToChunkInfo>>");
+            System.out.println("Deleted file with name: " + path);
         }
 
         this.pathToMyFile.remove(path);
+
+        Peer.saveDatabase();
     }
 
     public String getFileId(String path) {

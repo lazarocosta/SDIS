@@ -27,6 +27,7 @@ public class Delete extends SubProtocol {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
                 attempts--;
             }
 
@@ -37,7 +38,7 @@ public class Delete extends SubProtocol {
         String fileId = msg.getFileId();
 
         if (Peer.getDb().getBackedUpFilesDb().containsFileId(fileId)) {
-            System.out.println("Peer will eliminate the file from backedUpFilesDatabase");
+            System.out.println("Peer will eliminate the file from BackedUpFilesDatabase");
 
             String path = Peer.getDb().getBackedUpFilesDb().fileIdToFilePath(fileId);
             deleteFilesBackup(path);
