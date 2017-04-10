@@ -10,6 +10,8 @@ import java.util.Random;
 
 public class Restore extends SubProtocol {
 
+    public static boolean enhancements = false;
+
     private static String FILE_RESTORE_DIR = "RESTORED/peer" + Peer.getSenderId();
 
     public static byte[] restoreInitiator(String path) {
@@ -121,7 +123,7 @@ public class Restore extends SubProtocol {
 
         if (Peer.getDb().getStoredChunksDb().existsChunkInfo(chunkInfo)) {
             SendChunkMessage sendChunkMessage = new SendChunkMessage(chunkInfo, originPeerIp, originPeerPort);
-            new Thread(sendChunkMessage).start();
+            sendChunkMessage.run();
 
         } else {
             System.out.println("This server backed up the file: " + msg.getFileId() + "'.");

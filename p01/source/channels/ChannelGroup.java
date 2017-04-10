@@ -1,5 +1,7 @@
 package channels;
 
+import systems.Peer;
+
 import java.io.IOException;
 
 

@@ -9,14 +9,25 @@ import java.net.*;
 
 public class MulticastRestore extends MulticastChannel {
 
+    private DatagramSocket unicastSocket;
+
     public MulticastRestore(int port, String address, int senderId, ChannelGroup sender) {
         super(port, address, senderId, sender);
+
+        if(Restore.enhancements == true)
+        {
+            try {
+                this.unicastSocket = new DatagramSocket();
+            } catch (SocketException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void sendsMessageToSpecificPeer(byte[] packet, InetAddress peerIp, int peerPort) {
         try {
             DatagramPacket datagramPacketSend = new DatagramPacket(packet, packet.length, peerIp, peerPort);
-            socket.send(datagramPacketSend);
+            unicastSocket.send(datagramPacketSend);
             System.out.println("Sent message to specific Peer.");
         } catch (IOException A) {
             A.printStackTrace();

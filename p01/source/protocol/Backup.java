@@ -15,6 +15,7 @@ import java.util.Random;
 
 public class Backup extends SubProtocol {
 
+    public static boolean enhancements = false;
 
     public static void backupInitiator(String path, int replicationDegree) {
         System.out.println("Peer is executing backup of file '" + path + "' with replication degree " + replicationDegree);
@@ -48,7 +49,7 @@ public class Backup extends SubProtocol {
 
             if (!Peer.getDb().getStoredChunksDb().getStoredData().containsKey(c.getChunkInfo())) // if chunk has not been saved in this Peer ever
             {
-                if (Peer.enhancements == true) {
+                if (Backup.enhancements == true) {
                     System.out.println("Current obtained replication:" + Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()));
 
                     if (Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()) == null ||

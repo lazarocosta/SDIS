@@ -24,16 +24,18 @@ public class MulticastControl extends MulticastChannel {
                 byte[] receive = new byte[BUF_LENGTH];
                 DatagramPacket datagramPacketReceive = new DatagramPacket(receive, receive.length);
                 socket.receive(datagramPacketReceive);
+
                 String messageComplete = new String(datagramPacketReceive.getData(), 0, datagramPacketReceive.getLength());
+
                 Message msg = new Message();
                 msg.separateMsg(messageComplete);
 
                 switch (msg.getMsgType()) {
                     case "GETCHUNK": {
-
+                        if(Restore.enhancements == false)
                             Restore.getChunkHandler(msg);
-
-                            //TODO Enh: Restore.getChunkHandler(msg, datagramPacketReceive.getAddress(), datagramPacketReceive.getPort());
+                        else
+                            Restore.getChunkHandler(msg, datagramPacketReceive.getAddress(), datagramPacketReceive.getPort());
 
                         Peer.saveDatabase();
                     }
