@@ -47,7 +47,7 @@ public class Restore extends SubProtocol {
         }
 
         if (confirmations == -1) {
-            Peer.getDb().getRestoreUpFilesDb().resetConfirlamationFile(fileId);
+            Peer.getDb().getRestoreUpFilesDb().resetConfirmationFile(fileId);
             System.out.println("Peer did not receive complete file");
             return null;
         }
@@ -63,7 +63,7 @@ public class Restore extends SubProtocol {
             }
         }
 
-        Peer.getDb().getRestoreUpFilesDb().resetConfirlamationFile(fileId);
+        Peer.getDb().getRestoreUpFilesDb().resetConfirmationFile(fileId);
         //TODO: Só para testar
         saveRestoredFile(fileName, file);
 
@@ -111,7 +111,7 @@ public class Restore extends SubProtocol {
             sendChunkMessage.run();
 
         } else {
-            System.out.println("This server did not backup the file" + msg.getFileId() + "'.");
+            System.out.println("This server did not backup the file: " + msg.getFileId() + "'.");
         }
     }
 
@@ -120,12 +120,11 @@ public class Restore extends SubProtocol {
         ChunkInfo chunkInfo = new ChunkInfo(msg.getFileId(), msg.getChunkNo());
 
         if (Peer.getDb().getStoredChunksDb().existsChunkInfo(chunkInfo)) {
-
             SendChunkMessage sendChunkMessage = new SendChunkMessage(chunkInfo, originPeerIp, originPeerPort);
-            sendChunkMessage.run();
+            new Thread(sendChunkMessage).start();
 
         } else {
-            System.out.println("This server did backup restore the file" + msg.getFileId() + "'.");
+            System.out.println("This server backed up the file: " + msg.getFileId() + "'.");
         }
     }
 

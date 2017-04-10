@@ -38,7 +38,11 @@ public class Backup extends SubProtocol {
 
             Random randomGenerator = new Random();
 
-            Peer.getUdpChannelGroup().getMC().sleep(randomGenerator.nextInt(400));
+            try {
+                Thread.sleep(randomGenerator.nextInt(400));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
             if (Peer.enhancements == true) {
                 System.out.println("Current obtained replication:" + Peer.getDb().getStoredChunksDb().getObtainedReplication().get(c.getChunkInfo()));
@@ -90,7 +94,7 @@ public class Backup extends SubProtocol {
 
         for (Chunk c : chunks) {
             VerifyStoredConfirms verifyStoredConfirms = new VerifyStoredConfirms(c);
-            verifyStoredConfirms.run();
+            new Thread(verifyStoredConfirms).start();
         }
     }
 
@@ -139,6 +143,7 @@ public class Backup extends SubProtocol {
 
 
             while (!confirmed && tries < MAX_TRIES) {
+
                 Peer.getUdpChannelGroup().getMDB().sendsMessage(message);
 
                 try {
@@ -153,7 +158,7 @@ public class Backup extends SubProtocol {
                 if (Peer.getDb().getStoredChunksDb().getObtainedReplication().get(this.chunk.getChunkInfo()) != null)
                     numberOfConfirms = Peer.getDb().getStoredChunksDb().getObtainedReplication().get(this.chunk.getChunkInfo());
 
-                System.out.println("Number of confirms during the interval: " + numberOfConfirms);
+                System.out.println("Number of confirms of chunk no." + this.chunk.getChunkNo() + " during the interval: " + numberOfConfirms);
 
                 if (numberOfConfirms < this.chunk.getReplicationDegree()) {
                     Peer.getDb().getStoredChunksDb().resetReplicationObtained(this.chunk.getChunkInfo());
@@ -161,11 +166,11 @@ public class Backup extends SubProtocol {
                     interval = interval * 2;
 
                     if (tries == MAX_TRIES) {
-                        System.out.println("Reached maximum tries to backup chunk with desired replication degree.");
+                        System.out.println("Reached maximum tries to backup chunk with no." + this.chunk.getChunkNo() + " with desired replication degree.");
                     }
                 } else {
                     confirmed = true;
-                    System.out.println("Desired replication reached for chunk.");
+                    System.out.println("Desired replication reached for chunk with no." + this.chunk.getChunkNo() +".");
                 }
 
             }

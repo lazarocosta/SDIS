@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RestoreUpFilesDatabase implements Serializable{
 
@@ -18,9 +19,9 @@ public class RestoreUpFilesDatabase implements Serializable{
 
     public RestoreUpFilesDatabase() {
 
-        this.restoredChunkDd = new HashMap<>();
+        this.restoredChunkDd = new ConcurrentHashMap<>();
         this.responseRestore = new ArrayList<>();
-        this.confirmationFile = new HashMap<>();
+        this.confirmationFile = new ConcurrentHashMap<>();
     }
 
     public Map<ChunkInfo, byte[]> getRestoredChunkDd() {
@@ -35,7 +36,7 @@ public class RestoreUpFilesDatabase implements Serializable{
         return confirmationFile;
     }
 
-    public void resetConfirlamationFile(String fileId){
+    public void resetConfirmationFile(String fileId){
         confirmationFile.remove(fileId);
     }
 

@@ -6,6 +6,8 @@ import systems.Peer;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class StoredChunksDatabase implements Serializable {
 
@@ -18,9 +20,9 @@ public class StoredChunksDatabase implements Serializable {
     private Map<ChunkInfo, Integer> obtainedReplication;
 
     StoredChunksDatabase() {
-        this.storedData = new HashMap<>();
-        this.desiredReplication = new HashMap<>();
-        this.obtainedReplication = new HashMap<>();
+        this.storedData = new ConcurrentHashMap<>();
+        this.desiredReplication = new ConcurrentHashMap<>();
+        this.obtainedReplication = new ConcurrentHashMap<>();
     }
 
     /**

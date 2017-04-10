@@ -44,12 +44,11 @@ public class MulticastChannel implements Runnable {
         }
     }
 
-    public void sendsMessage(byte[] packet) {
+    public synchronized void sendsMessage(byte[] packet) {
 
         try {
             DatagramPacket datagramPacketSend = new DatagramPacket(packet, packet.length, addr, port);
             socket.send(datagramPacketSend);
-            System.out.println("sends message");
         } catch (IOException A) {
             A.printStackTrace();
         }

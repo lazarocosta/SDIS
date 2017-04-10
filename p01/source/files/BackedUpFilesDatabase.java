@@ -4,17 +4,18 @@ import chunk.ChunkInfo;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BackedUpFilesDatabase implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private HashMap<String, ChunkInfo> pathToChunkInfo; // key = path, value = fileId --> Numero de chunks do fichiro no chunkInfo
-    private HashMap<String, MyFile> pathToMyFile;
+    private ConcurrentHashMap<String, ChunkInfo> pathToChunkInfo; // key = path, value = fileId --> Numero de chunks do fichiro no chunkInfo
+    private ConcurrentHashMap<String, MyFile> pathToMyFile;
 
     BackedUpFilesDatabase() {
-        this.pathToChunkInfo = new HashMap<>();
-        this.pathToMyFile = new HashMap<>();
+        this.pathToChunkInfo = new ConcurrentHashMap<>();
+        this.pathToMyFile = new ConcurrentHashMap<>();
     }
 
     public boolean containsFileId(String fileId) {
@@ -33,8 +34,6 @@ public class BackedUpFilesDatabase implements Serializable {
     }
 
     public void removeFileByPath(String path) {
-
-        System.out.println(pathToChunkInfo);
 
         if (this.pathToChunkInfo.containsKey(path)) {
             this.pathToChunkInfo.remove(path);
@@ -68,7 +67,7 @@ public class BackedUpFilesDatabase implements Serializable {
         return null;
     }
 
-    public HashMap<String, MyFile> getPathToMyFile() {
+    public ConcurrentHashMap<String, MyFile> getPathToMyFile() {
         return pathToMyFile;
     }
 }

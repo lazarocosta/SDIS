@@ -212,7 +212,6 @@ public class Message {
         this.body = body;
 
         String[] headerString = new String(header).split("\\s+");
-        System.out.println("headerString[0]:" + headerString[0]);
 
         if (headerString.length >= 5) {
             this.msgType = headerString[0];

@@ -29,7 +29,7 @@ public class Peer {
 
     private static Database db;
 
-    public static boolean enhancements = true;
+    public static boolean enhancements = false;
 
 
     // Main method for running a peer
@@ -104,14 +104,12 @@ public class Peer {
         if (!f.exists())
             try {
                 f.createNewFile();
-
-                System.out.println("Created new database file.");
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
         db = new Database();
-        System.out.println("Created new database object.");
+        System.out.println("Created new database.");
 
         saveDatabase();
 
@@ -127,15 +125,10 @@ public class Peer {
 
             oos.writeObject(db);
 
-            System.out.println(db.getBackedUpFilesDb());
-
             fos.close();
-
-            System.out.println("Saved peer database.");
         }
         catch (FileNotFoundException e) {
 
-                System.out.println("Peer database not found");
                 createDatabase();
 
             }
@@ -156,11 +149,9 @@ public class Peer {
 
             fis.close();
 
-            System.out.println("Loaded already created database.");
+            System.out.println("Loaded database.");
 
         } catch (FileNotFoundException e) {
-
-            System.out.println("Peer database not found");
 
             createDatabase();
 

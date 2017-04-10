@@ -24,19 +24,19 @@ public class Database implements Serializable {
     }
 
     // GETTERS
-    public RestoreUpFilesDatabase getRestoreUpFilesDb() {
+    public synchronized RestoreUpFilesDatabase getRestoreUpFilesDb() {
         return restoreUpFilesDb;
     }
 
-    public Disk getDisk() {
+    public synchronized Disk getDisk() {
         return disk;
     }
 
-    public BackedUpFilesDatabase getBackedUpFilesDb() {
+    public synchronized BackedUpFilesDatabase getBackedUpFilesDb() {
         return backedUpFilesDb;
     }
 
-    public StoredChunksDatabase getStoredChunksDb() {
+    public synchronized StoredChunksDatabase getStoredChunksDb() {
         return storedChunksDb;
     }
 
@@ -45,11 +45,11 @@ public class Database implements Serializable {
     /**
      * Execute when a client asks for a file to be backed up.
      */
-    public void saveBackedUpFile(MyFile myFile) {
+    public synchronized void saveBackedUpFile(MyFile myFile) {
         this.backedUpFilesDb.addFile(myFile);
     }
 
-    public String getFileId(String path) {
+    public synchronized String getFileId(String path) {
         return this.backedUpFilesDb.getFileId(path);
     }
 }
