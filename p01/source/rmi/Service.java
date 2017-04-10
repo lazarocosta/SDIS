@@ -37,8 +37,6 @@ public class Service implements ServiceInterface {
     Registry serverRegistry;
 
 
-
-
     public Service(String accessPoint) throws AlreadyBoundException, IOException, InterruptedException {
         this.accessPoint = accessPoint;
         this.createRegistry();

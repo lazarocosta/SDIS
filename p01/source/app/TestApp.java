@@ -93,7 +93,7 @@ public class TestApp {
         try {
             System.out.println("Connecting to RMI Host:  '" + rmiHost + "' on AP '" + peer_ap +"'.");
             // TODO: FIX THIS WHEN FINISHED TESTING
-            Registry registry = LocateRegistry.getRegistry(1100);
+            Registry registry = LocateRegistry.getRegistry();
 
             stub = (ServiceInterface) registry.lookup(peer_ap);
 
