@@ -12,7 +12,6 @@ public class BackedUpFilesDatabase implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final String DATABASE_FILE = Database.DATA_FILE + "backed_up_files.data";
     private HashMap<String, ChunkInfo> pathToChunkInfo; // key = path, value = fileId --> Numero de chunks do fichiro no chunkInfo
     private HashMap<String, MyFile> pathToMyFile;
 
@@ -33,9 +32,9 @@ public class BackedUpFilesDatabase implements Serializable {
 
         this.pathToChunkInfo.put(path, chunkInfo);
 
-        Peer.saveDatabase();
-
         System.out.println(this.pathToChunkInfo);
+
+
     }
 
     public void addFile(MyFile myFile) {
@@ -43,6 +42,8 @@ public class BackedUpFilesDatabase implements Serializable {
         this.addFile(myFile.getFilepath(), chunkInfo);
 
         this.pathToMyFile.put(myFile.getFilepath(), myFile);
+
+
     }
 
     public void removeFileByPath(String path) {
@@ -51,11 +52,11 @@ public class BackedUpFilesDatabase implements Serializable {
 
         if (this.pathToChunkInfo.containsKey(path)) {
             this.pathToChunkInfo.remove(path);
-            Peer.saveDatabase();
             System.out.println("delete file in to <<pathToChunkInfo>>");
         }
 
         this.pathToMyFile.remove(path);
+
     }
 
     public String getFileId(String path) {

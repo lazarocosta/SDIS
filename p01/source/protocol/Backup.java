@@ -36,8 +36,6 @@ public class Backup extends SubProtocol {
         if (!Peer.getDb().getBackedUpFilesDb().containsFileId(msg.getFileId())) {
             Chunk c = new Chunk(msg.getFileId(), msg.getChunkNo(), msg.getReplicationDeg(), msg.getBody());
 
-
-
             storedInitiator(c);
         } else {
             System.out.println("This server was the initiator in the backup of '" + msg.getFileId() + "'.");

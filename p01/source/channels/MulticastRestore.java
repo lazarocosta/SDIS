@@ -2,6 +2,7 @@ package channels;
 
 import protocol.Message;
 import protocol.Restore;
+import systems.Peer;
 
 import java.io.*;
 import java.net.*;
@@ -49,6 +50,7 @@ public class MulticastRestore extends MulticastChannel {
                 switch (msg.getMsgType()) {
                     case "CHUNK": {
                             Restore.chunkHandler(msg);
+                            Peer.saveDatabase();
                     }
 
                     break;

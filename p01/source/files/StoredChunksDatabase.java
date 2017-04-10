@@ -39,7 +39,6 @@ public class StoredChunksDatabase implements Serializable {
 
         this.incrementReplicationObtained(c.getChunkInfo());
 
-        Peer.saveDatabase();
     }
 
     /**
@@ -53,7 +52,6 @@ public class StoredChunksDatabase implements Serializable {
 
         this.decrementReplicationObtained(chunkInfo);
 
-        Peer.saveDatabase();
     }
 
     public void saveChunkToDisk(Chunk c) {

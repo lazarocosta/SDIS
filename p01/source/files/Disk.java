@@ -36,7 +36,7 @@ public class Disk implements Serializable{
             else
             {
                 this.usedBytes = this.usedBytes + fileByteSize;
-                Peer.saveDatabase();
+
                 return true;
             }
         }
@@ -57,7 +57,6 @@ public class Disk implements Serializable{
             else
             {
                 this.usedBytes = this.usedBytes - fileByteSize;
-                Peer.saveDatabase();
                 return true;
             }
         }
@@ -87,13 +86,11 @@ public class Disk implements Serializable{
 
     public void addStorageSpace(int bytes){
         this.storageSpace = this.storageSpace + bytes;
-        Peer.saveDatabase();
     }
 
 
     public void removeStorageSpace(int bytes){
         this.storageSpace = this.storageSpace - bytes;
-        Peer.saveDatabase();
     }
 
     @Override

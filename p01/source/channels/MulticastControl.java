@@ -43,10 +43,13 @@ public class MulticastControl extends MulticastChannel {
                             Restore.getChunkHandler(msg);
                         else
                             Restore.getChunkHandler(msg, datagramPacketReceive.getAddress(), datagramPacketReceive.getPort());
+
+                        Peer.saveDatabase();
                     }
                     break;
                     case "DELETE": {
                         Delete.deleteFile(msg);
+                        Peer.saveDatabase();
                     }
                     break;
                     case "REMOVED": {
@@ -55,8 +58,8 @@ public class MulticastControl extends MulticastChannel {
                     break;
                     case "STORED": {
                         if (msg.getSenderId() != senderId) {
-
                             Backup.storedHandler(msg);
+                            Peer.saveDatabase();
                         }
                         //
                     }

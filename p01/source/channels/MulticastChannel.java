@@ -2,6 +2,7 @@ package channels;
 
 import chunk.Chunk;
 import protocol.Message;
+import systems.Peer;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -54,6 +55,8 @@ public class MulticastChannel implements Runnable {
         } catch (IOException A) {
             A.printStackTrace();
         }
+
+        Peer.saveDatabase();
     }
 
     public byte[] messagePutChunk(int senderId, Chunk c) {

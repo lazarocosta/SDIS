@@ -2,6 +2,7 @@ package channels;
 
 import protocol.Backup;
 import protocol.Message;
+import systems.Peer;
 
 import java.io.IOException;
 import java.net.*;
@@ -37,6 +38,7 @@ public class MulticastBackup extends MulticastChannel {
                 switch (msg.getMsgType()) {
                     case "PUTCHUNK": {
                         Backup.backupHandler(msg);
+                        Peer.saveDatabase();
                         System.out.println("Saved chunk.");
                     }
                     break;
