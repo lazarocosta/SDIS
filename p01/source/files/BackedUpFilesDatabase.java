@@ -2,6 +2,7 @@ package files;
 
 
 import chunk.ChunkInfo;
+import systems.Peer;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -20,36 +21,6 @@ public class BackedUpFilesDatabase implements Serializable {
         this.pathToMyFile = new HashMap<>();
     }
 
-    public void saveDatabase() {
-        File file = new File(this.DATABASE_FILE);
-        try {
-            FileOutputStream f = new FileOutputStream(file);
-            ObjectOutputStream s = new ObjectOutputStream(f);
-            s.writeObject(this.pathToChunkInfo);
-            s.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void loadDatabase() {
-        File file = new File(this.DATABASE_FILE);
-        if (file.exists()) {
-            try {
-                FileInputStream f = new FileInputStream(file);
-                ObjectInputStream s = new ObjectInputStream(f);
-                this.pathToChunkInfo = (HashMap<String, ChunkInfo>) s.readObject();
-
-                System.out.println("load Database");
-                s.close();
-            } catch (ClassNotFoundException | IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     public boolean containsFileId(String fileId) {
         return (this.fileIdToFilePath(fileId) != null);
     }
@@ -62,7 +33,7 @@ public class BackedUpFilesDatabase implements Serializable {
 
         this.pathToChunkInfo.put(path, chunkInfo);
 
-        this.saveDatabase();
+        Peer.saveDatabase();
 
         System.out.println(this.pathToChunkInfo);
     }
@@ -80,7 +51,7 @@ public class BackedUpFilesDatabase implements Serializable {
 
         if (this.pathToChunkInfo.containsKey(path)) {
             this.pathToChunkInfo.remove(path);
-            this.saveDatabase();
+            Peer.saveDatabase();
             System.out.println("delete file in to <<pathToChunkInfo>>");
         }
 

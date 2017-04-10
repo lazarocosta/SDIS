@@ -15,7 +15,6 @@ public class StoredChunksDatabase implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final String DATABASE_FILE = Database.DATA_FILE + "chunks.data";
     private final String CHUNKS_DIR = "CHUNKS/peer" + Peer.getSenderId() + "/";
 
     private Map<ChunkInfo, byte[]> storedData;
@@ -26,36 +25,6 @@ public class StoredChunksDatabase implements Serializable {
         this.storedData = new HashMap<>();
         this.desiredReplication = new HashMap<>();
         this.obtainedReplication = new HashMap<>();
-    }
-
-    public void saveDatabase() {
-        File file = new File(this.DATABASE_FILE);
-        try {
-            FileOutputStream f = new FileOutputStream(file);
-            ObjectOutputStream s = new ObjectOutputStream(f);
-            s.writeObject(this.storedData);
-            s.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void loadDatabase() {
-        File file = new File(this.DATABASE_FILE);
-        if(file.exists()) {
-            try {
-                FileInputStream f = new FileInputStream(file);
-                ObjectInputStream s = new ObjectInputStream(f);
-                this.storedData = (HashMap<ChunkInfo, byte[]> ) s.readObject();
-
-                System.out.println("load Database");
-                s.close();
-            } catch (ClassNotFoundException | IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
 
@@ -70,7 +39,7 @@ public class StoredChunksDatabase implements Serializable {
 
         this.incrementReplicationObtained(c.getChunkInfo());
 
-        saveDatabase();
+        Peer.saveDatabase();
     }
 
     /**
@@ -83,7 +52,8 @@ public class StoredChunksDatabase implements Serializable {
         this.desiredReplication.remove(chunkInfo);
 
         this.decrementReplicationObtained(chunkInfo);
-        saveDatabase();
+
+        Peer.saveDatabase();
     }
 
     public void saveChunkToDisk(Chunk c) {

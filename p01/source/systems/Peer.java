@@ -108,17 +108,20 @@ public class Peer {
         if (!f.exists())
             try {
                 f.createNewFile();
+
+                System.out.println("Created new database file.");
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
         db = new Database();
+        System.out.println("Created new database object.");
 
         saveDatabase();
 
     }
 
-    private static void saveDatabase(){
+    public static void saveDatabase(){
 
         try {
 
@@ -128,9 +131,19 @@ public class Peer {
 
             oos.writeObject(db);
 
+            System.out.println(db.getBackedUpFilesDb());
+
             fos.close();
 
-        } catch (IOException e) {
+            System.out.println("Saved peer database.");
+        }
+        catch (FileNotFoundException e) {
+
+                System.out.println("Peer database not found");
+                createDatabase();
+
+            }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -146,6 +159,8 @@ public class Peer {
             db = (Database) ois.readObject();
 
             fis.close();
+
+            System.out.println("Loaded already created database.");
 
         } catch (FileNotFoundException e) {
 
