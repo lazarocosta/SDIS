@@ -8,7 +8,6 @@ public class Database implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static String RESTORES_DIR = "RESTORES/peer" + Peer.getSenderId() + "/";
     public static String DATA_FILE = "./DATA/peer" +  Peer.getSenderId() + "/database.data";
 
 

@@ -81,7 +81,7 @@ public class Backup extends SubProtocol {
 
         MyFile myFile = new MyFile(filepath, replicationDegree);
         myFile.divideFileIntoChunks();  // create chunks and store them
-        Peer.getDb().saveBackedUpFile(myFile);    // TODO: ask whether the PATH or the FILENAME should be saved
+        Peer.getDb().saveBackedUpFile(myFile);
 
         //  System.out.println(Peer.getDb().getBackedUpFiles());
 

@@ -14,9 +14,8 @@ public class State {
 
     public static void show(){
 
-        // TODO: BACKED UP FILES
         // Iterate through backed up files
-        if(Peer.getDb().getBackedUpFilesDb().getPathToMyFile() != null) {
+        if(Peer.getDb().getBackedUpFilesDb().getPathToMyFile() == null || Peer.getDb().getBackedUpFilesDb().getPathToMyFile().size() == 0) {
             System.out.println("\nBACKED UP FILES: \n");
 
             for (Map.Entry<String, MyFile> entry : Peer.getDb().getBackedUpFilesDb().getPathToMyFile().entrySet()) {

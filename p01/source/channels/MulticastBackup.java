@@ -25,12 +25,6 @@ public class MulticastBackup extends MulticastChannel {
                 Message msg = new Message();
                 msg.separateFullMsg(datagramPacketReceive.getData(), datagramPacketReceive.getLength());
 
-                System.out.println("HEREEE datagram length: " + datagramPacketReceive.getLength());
-                System.out.println("HEREEE msg body length: " + msg.getBody().length);
-
-
-                System.out.println(msg.getMsgType());
-
                 switch (msg.getMsgType()) {
                     case "PUTCHUNK": {
                         Backup.backupHandler(msg);

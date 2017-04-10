@@ -1,3 +1,5 @@
 .idea/
 
 /p01/production/
+/p01/vagrant/
+/p01/.vagrant/
