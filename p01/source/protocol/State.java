@@ -60,6 +60,6 @@ public class State {
             System.out.println("\nNo chunks stored yet.\n");
         }
 
-        System.out.println("Disk capacity: " + Peer.getDb().getDisk().getStorageSpace() + " kB; occupied: " + Peer.getDb().getDisk().getUsedBytes() + " kB.");
+        System.out.println("Disk capacity: " + Peer.getDb().getDisk().getStorageSpace()/ 1000 + " kB; occupied: " + Peer.getDb().getDisk().getUsedBytes()/1000 + " kB.");
     }
 }
